@@ -709,9 +709,97 @@
         <h1>Demystifying<br/>AI Coding Agents</h1>
         <p class="subtitle">A first-principles look at how modern coding agents actually work — for engineers who already think in APIs, loops, state, and side effects.</p>
         <div class="meta">
-          <div>Format<strong>9-section deep dive</strong></div>
+          <div>Format<strong>Compressed map + deep dive</strong></div>
           <div>Audience<strong>IT &amp; engineering</strong></div>
           <div>Anchors<strong>APIs · loops · tool calls</strong></div>
+        </div>
+      </section>
+
+      <!-- EXECUTIVE COMPRESSION -->
+      <section class="balanced-slide">
+        <div class="content-stack">
+          <span class="slide-title">The whole system in one sentence</span>
+          <h2>A coding agent is not just a model.</h2>
+          <p class="pull-quote">A coding agent is a <span class="accent">stateless model API</span> wrapped in a <span class="accent-3">purpose-built harness</span> that manages context, tools, permissions, and feedback loops.</p>
+          <p class="key-callout"><strong>Most of the engineering is outside the model:</strong> request construction, tool execution, state management, safety gates, and verification.</p>
+        </div>
+      </section>
+
+      <section class="balanced-slide">
+        <div class="content-stack">
+          <span class="slide-title">Compressed model - request</span>
+          <h2>The request is the atomic unit.</h2>
+          <p class="lede">The model does not remember your project. Every turn is a model request assembled by the harness.</p>
+          <div class="grid grid-4" style="font-size: 0.84em; margin-top: 1em;">
+            <div class="card"><h4>Prompt</h4><p>System rules, role, style, policy, and developer instructions.</p></div>
+            <div class="card alt"><h4>Task</h4><p>The current user request or next agent-loop objective.</p></div>
+            <div class="card"><h4>Context</h4><p>Relevant history, file snippets, search results, and tool outputs.</p></div>
+            <div class="card alt"><h4>Capabilities</h4><p>Tool definitions, schemas, and resource descriptions the model can use.</p></div>
+          </div>
+          <p class="key-callout"><strong>Continuity is constructed.</strong> If it matters, the harness has to put it into the current request.</p>
+        </div>
+      </section>
+
+      <section class="balanced-slide">
+        <div class="content-stack">
+          <span class="slide-title">Compressed model - harness</span>
+          <h2>Harnesses are purpose-built runtimes.</h2>
+          <p class="lede">A harness is the code around model request(s). Different harnesses are built around different control patterns.</p>
+          <div class="grid grid-3" style="margin-top: 1em;">
+            <div class="card"><h4>Chat harness</h4><h3>User-driven turns</h3><p>The user supplies the next prompt. The harness packages context and returns a response.</p></div>
+            <div class="card alt"><h4>Workflow harness</h4><h3>Program flow</h3><p>The path is predefined in software. The model handles bounded steps inside the sequence.</p></div>
+            <div class="card"><h4>Agent harness</h4><h3>Model-driven loop</h3><p>The model chooses the next step or tool. The harness executes only what is allowed.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="balanced-slide">
+        <div class="content-stack">
+          <span class="slide-title">Compressed model - agent</span>
+          <h2>Agent means model-driven control flow.</h2>
+          <div class="two-col" style="align-items: stretch;">
+            <div class="card alt">
+              <h4>Workflow</h4>
+              <h3>Code chooses the path</h3>
+              <p>The harness follows a predefined sequence: classify, retrieve, draft, evaluate, send.</p>
+            </div>
+            <div class="card">
+              <h4>Agent loop</h4>
+              <h3>Model chooses the next step</h3>
+              <p>The model asks to read files, run tests, edit code, inspect errors, and continue until done.</p>
+            </div>
+          </div>
+          <p class="key-callout"><strong>The harness still controls reality.</strong> The model can propose actions; the harness validates, authorizes, executes, records, and stops the loop.</p>
+        </div>
+      </section>
+
+      <section class="balanced-slide">
+        <div class="content-stack">
+          <span class="slide-title">Compressed model - tools</span>
+          <h2>Tools are the capability boundary.</h2>
+          <div class="grid grid-4" style="font-size: 0.82em; margin-top: 1em;">
+            <div class="card"><h4>Advertise</h4><p>The harness exposes names, descriptions, and schemas.</p></div>
+            <div class="card alt"><h4>Propose</h4><p>The model emits a tool name and structured arguments.</p></div>
+            <div class="card"><h4>Gate</h4><p>The harness validates arguments and checks permissions.</p></div>
+            <div class="card alt"><h4>Record</h4><p>The result becomes context for the next model request.</p></div>
+          </div>
+          <p class="key-callout"><strong>The model proposes. The harness disposes.</strong> Nothing touches files, shell, network, or APIs until the harness executes it.</p>
+        </div>
+      </section>
+
+      <section class="balanced-slide">
+        <div class="content-stack">
+          <span class="slide-title">Compressed model - practical stack</span>
+          <h2>The practical coding-agent stack.</h2>
+          <div class="grid grid-3" style="font-size: 0.84em; margin-top: 1em;">
+            <div class="card"><h4>Model</h4><p>Stateless capability: code understanding, language, planning, tool-call proposals.</p></div>
+            <div class="card alt"><h4>Harness</h4><p>State, context selection, permissions, loop control, tracing, and verification.</p></div>
+            <div class="card"><h4>Tools / MCP</h4><p>Discoverable capability surface for filesystem, shell, APIs, docs, and services.</p></div>
+            <div class="card alt"><h4>Skills / prompts</h4><p>Procedure, policy, conventions, examples, and task-specific guidance.</p></div>
+            <div class="card"><h4>Sub-agents</h4><p>Scoped child loops for isolation, parallelism, and specialization.</p></div>
+            <div class="card alt"><h4>Workspace</h4><p>The real environment where side effects happen and ground truth is observed.</p></div>
+          </div>
+          <p class="key-callout"><strong>If time is short, remember this stack.</strong> The rest of the deck unpacks each layer.</p>
         </div>
       </section>
 
@@ -745,8 +833,9 @@
       <!-- AGENDA -->
       <section>
         <span class="slide-title">Agenda</span>
-        <h2>Nine layers, bottom-up.</h2>
+        <h2>Compressed map, then nine layers.</h2>
         <div class="grid grid-4 agenda-grid" style="margin-top: 1em;">
+          <div class="card success"><h4>00</h4><h3 style="font-size:1em;margin:0;">The whole system in 10 minutes</h3></div>
           <div class="card"><h4>01</h4><h3 style="font-size:1em;margin:0;">The LLM as a hosted service</h3></div>
           <div class="card"><h4>02</h4><h3 style="font-size:1em;margin:0;">The API request, conceptually</h3></div>
           <div class="card alt"><h4>03</h4><h3 style="font-size:1em;margin:0;">The harness — what it actually is</h3></div>
