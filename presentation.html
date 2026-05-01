@@ -698,24 +698,26 @@
       padding: 1em 1.35em;
     }
 
-    .stack-flow {
+    .agent-loop-diagram {
+      position: relative;
       display: grid;
-      grid-template-columns: 0.9fr 1.25fr 1fr 1.15fr 1.15fr;
-      gap: 0.74em;
-      align-items: stretch;
-      margin-top: 0.9em;
+      grid-template-columns: 1fr 1.15fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 0.85em 1.05em;
+      margin-top: 0.55em;
+      min-height: 16.6em;
     }
 
-    .flow-node {
+    .loop-node {
       background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 0.9em 0.9em;
+      padding: 0.72em 0.82em;
       position: relative;
-      min-height: 7.1em;
+      z-index: 2;
     }
 
-    .flow-node::before {
+    .loop-node::before {
       content: '';
       position: absolute;
       top: 0;
@@ -727,23 +729,35 @@
       opacity: 0.8;
     }
 
-    .flow-node.alt::before { background: linear-gradient(90deg, var(--accent-3), var(--accent-2)); }
-    .flow-node.tool::before { background: linear-gradient(90deg, var(--accent-2), var(--accent-4)); }
-    .flow-node.world::before { background: linear-gradient(90deg, var(--danger), var(--accent)); }
+    .loop-node.harness {
+      grid-column: 2;
+      grid-row: 2;
+      min-height: 7.2em;
+      border-color: rgba(184, 148, 255, 0.35);
+      box-shadow: 0 0 36px rgba(184, 148, 255, 0.08);
+    }
+    .loop-node.harness::before { background: linear-gradient(90deg, var(--accent-3), var(--accent-2)); }
+    .loop-node.user { grid-column: 1; grid-row: 2; align-self: center; }
+    .loop-node.model { grid-column: 2; grid-row: 1; border-color: rgba(255, 184, 77, 0.35); }
+    .loop-node.gate { grid-column: 3; grid-row: 2; align-self: center; }
+    .loop-node.gate::before { background: linear-gradient(90deg, var(--accent-2), var(--accent-4)); }
+    .loop-node.workspace { grid-column: 2; grid-row: 3; border-color: rgba(110, 231, 163, 0.35); }
+    .loop-node.workspace::before { background: linear-gradient(90deg, var(--accent-4), var(--accent-2)); }
 
-    .flow-node h4 {
+    .loop-node h4 {
       margin: 0 0 0.5em;
       font-size: 0.62em;
       letter-spacing: 0.12em;
     }
 
-    .flow-node p {
-      font-size: 0.66em;
-      line-height: 1.35;
-      margin-bottom: 0.45em;
+    .loop-node p {
+      font-size: 0.61em;
+      line-height: 1.3;
+      margin-bottom: 0.35em;
     }
 
-    .flow-node .mono {
+    .loop-node .mono,
+    .loop-label .mono {
       display: inline-block;
       font-size: 0.8em;
       color: var(--accent);
@@ -752,31 +766,77 @@
       padding: 0.08em 0.32em;
     }
 
-    .flow-arrow {
+    .loop-node .node-title {
+      font-family: 'Fraunces', serif;
+      color: var(--fg-0);
+      font-size: 1.08em;
+      line-height: 1.12;
+      margin-bottom: 0.38em;
+      font-weight: 700;
+    }
+
+    .loop-svg {
       position: absolute;
-      right: -0.58em;
-      top: 45%;
-      color: var(--fg-3);
-      font-size: 1.2em;
-      z-index: 2;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
     }
 
-    .stack-loop {
-      margin-top: 0.82em;
-      display: grid;
-      grid-template-columns: 1.4fr 2fr;
-      gap: 0.9em;
-      align-items: stretch;
-      font-size: 0.82em;
+    .loop-path {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.88;
     }
 
-    .stack-loop .loop-card {
-      border: 1px dashed rgba(110, 231, 163, 0.45);
+    .loop-request { stroke: var(--accent); }
+    .loop-response { stroke: var(--accent-3); }
+    .loop-execute { stroke: var(--accent-2); }
+    .loop-observe { stroke: var(--accent-4); }
+    .loop-seed { stroke: var(--fg-3); stroke-width: 3; opacity: 0.7; }
+
+    .loop-label {
+      position: absolute;
+      z-index: 3;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.4em;
+      line-height: 1.25;
+      color: var(--fg-0);
+      background: rgba(21, 27, 35, 0.9);
+      border: 1px solid var(--border-strong);
       border-radius: 14px;
-      padding: 0.82em 1em;
-      background: rgba(110, 231, 163, 0.06);
-      color: var(--fg-1);
-      line-height: 1.36;
+      padding: 0.45em 0.65em;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
+      max-width: 17em;
+    }
+
+    .label-seed { left: 22%; top: 47%; }
+    .label-request { left: 43%; top: 15%; color: var(--accent); }
+    .label-response { right: 21%; top: 26%; color: var(--accent-3); }
+    .label-execute { right: 22%; bottom: 26%; color: var(--accent-2); }
+    .label-observe { left: 42%; bottom: 13%; color: var(--accent-4); }
+
+    .loop-takeaway {
+      margin-top: 0.48em;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8em;
+      font-size: 0.66em;
+    }
+
+    .loop-takeaway .takeaway {
+      border: 1px dashed rgba(110, 231, 163, 0.42);
+      border-radius: 14px;
+      padding: 0.72em 0.95em;
+      background: rgba(110, 231, 163, 0.05);
+      line-height: 1.34;
+    }
+
+    .loop-diagram-slide h2 {
+      margin-bottom: 0.42em;
     }
   </style>
 </head>
@@ -797,7 +857,7 @@
       </section>
 
       <!-- EXECUTIVE COMPRESSION -->
-      <section class="balanced-slide">
+      <section class="balanced-slide loop-diagram-slide">
         <div class="content-stack">
           <span class="slide-title">The whole system in one sentence</span>
           <h2>A coding agent is not just a model.</h2>
@@ -887,41 +947,63 @@
       <section class="balanced-slide">
         <div class="content-stack">
           <span class="slide-title">Compressed model - end to end</span>
-          <h2>One prompt through the stack.</h2>
-          <div class="stack-flow">
-            <div class="flow-node">
-              <h4>User</h4>
+          <h2>One prompt becomes a loop.</h2>
+          <div class="agent-loop-diagram">
+            <svg class="loop-svg" viewBox="0 0 1000 560" aria-hidden="true">
+              <defs>
+                <marker id="arrow-amber" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10" fill="none" stroke="#ffb84d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></marker>
+                <marker id="arrow-purple" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10" fill="none" stroke="#b894ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></marker>
+                <marker id="arrow-blue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10" fill="none" stroke="#4dd2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></marker>
+                <marker id="arrow-green" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10" fill="none" stroke="#6ee7a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></marker>
+                <marker id="arrow-gray" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10" fill="none" stroke="#5a6678" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></marker>
+              </defs>
+              <path class="loop-path loop-seed fragment" data-fragment-index="1" d="M185 285 C260 285 290 285 355 285" marker-end="url(#arrow-gray)" />
+              <path class="loop-path loop-request fragment" data-fragment-index="2" d="M500 235 C500 170 500 132 500 94" marker-end="url(#arrow-amber)" />
+              <path class="loop-path loop-response fragment" data-fragment-index="3" d="M585 102 C760 120 825 180 815 260" marker-end="url(#arrow-purple)" />
+              <path class="loop-path loop-execute fragment" data-fragment-index="6" d="M815 320 C815 410 710 462 590 462" marker-end="url(#arrow-blue)" />
+              <path class="loop-path loop-observe fragment" data-fragment-index="7" d="M442 462 C320 430 292 340 365 302" marker-end="url(#arrow-green)" />
+            </svg>
+
+            <div class="loop-node user fragment" data-fragment-index="1">
+              <h4>User prompt</h4>
+              <div class="node-title">Fix auth</div>
               <p><span class="mono">Fix the failing auth test</span></p>
-              <p>Natural-language task starts the agent loop.</p>
-              <div class="flow-arrow">→</div>
             </div>
-            <div class="flow-node alt">
-              <h4>Agent harness</h4>
-              <p>Builds request with repo context, tool schemas, skill metadata, and history.</p>
-              <p>Owns permissions and loop state.</p>
-              <div class="flow-arrow">→</div>
-            </div>
-            <div class="flow-node">
+
+            <div class="loop-node model fragment" data-fragment-index="2">
               <h4>Model API</h4>
-              <p>Sees one stateless request.</p>
-              <p>Proposes: load <span class="mono">python-debugging</span>, read file, run test.</p>
-              <div class="flow-arrow">→</div>
+              <div class="node-title">Stateless call</div>
+              <p>Receives one request. Returns text or a tool-call proposal.</p>
             </div>
-            <div class="flow-node tool">
+
+            <div class="loop-node harness">
+              <h4>Agent harness</h4>
+              <div class="node-title">Build · gate · record · loop</div>
+              <p>Owns context, history, tool schemas, skill loading, permissions, and stopping conditions.</p>
+            </div>
+
+            <div class="loop-node gate fragment" data-fragment-index="4">
               <h4>Skill + tool gate</h4>
-              <p>Harness loads <span class="mono">SKILL.md</span> into the next request.</p>
-              <p>Validates <span class="mono">run_bash("pytest ...")</span>.</p>
-              <div class="flow-arrow">→</div>
+              <div class="node-title">Context vs side effect</div>
+              <p><span class="mono">python-debugging/SKILL.md</span> goes into the next request.</p>
+              <p><span class="mono">run_bash("pytest ...")</span> needs validation.</p>
             </div>
-            <div class="flow-node world">
+
+            <div class="loop-node workspace fragment" data-fragment-index="6">
               <h4>Workspace</h4>
-              <p>Allowed tool touches the real world: files, shell, tests, APIs.</p>
-              <p>Test output becomes observation.</p>
+              <div class="node-title">Real world</div>
+              <p>Files, shell, tests, APIs. Produces observations: stdout, stderr, diffs, errors.</p>
             </div>
+
+            <div class="loop-label label-seed fragment" data-fragment-index="1">task enters harness</div>
+            <div class="loop-label label-request fragment" data-fragment-index="2">Request #1<br/>system + user + context + tools</div>
+            <div class="loop-label label-response fragment" data-fragment-index="3">Response<br/><span class="mono">load_skill</span> / <span class="mono">tool_call</span></div>
+            <div class="loop-label label-execute fragment" data-fragment-index="6">allowed side effect</div>
+            <div class="loop-label label-observe fragment" data-fragment-index="7">observation appended;<br/>next request built</div>
           </div>
-          <div class="stack-loop">
-            <div class="loop-card"><strong>Skill loading changes the next request.</strong><br/>It adds procedure and examples, not side effects.</div>
-            <div class="loop-card"><strong>Tool execution changes the world.</strong><br/>The harness appends the result to history, then builds the next model request. That is the agent loop.</div>
+          <div class="loop-takeaway fragment" data-fragment-index="8">
+            <div class="takeaway"><strong>Skill loading changes the next request.</strong><br/>It adds procedure and examples, not side effects.</div>
+            <div class="takeaway"><strong>Tool execution changes the world.</strong><br/>The harness validates, executes, records the result, and loops.</div>
           </div>
         </div>
       </section>
