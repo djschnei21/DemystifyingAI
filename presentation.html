@@ -697,6 +697,87 @@
     .compact-code-slide pre code {
       padding: 1em 1.35em;
     }
+
+    .stack-flow {
+      display: grid;
+      grid-template-columns: 0.9fr 1.25fr 1fr 1.15fr 1.15fr;
+      gap: 0.74em;
+      align-items: stretch;
+      margin-top: 0.9em;
+    }
+
+    .flow-node {
+      background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 0.9em 0.9em;
+      position: relative;
+      min-height: 7.1em;
+    }
+
+    .flow-node::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      border-radius: 14px 14px 0 0;
+      opacity: 0.8;
+    }
+
+    .flow-node.alt::before { background: linear-gradient(90deg, var(--accent-3), var(--accent-2)); }
+    .flow-node.tool::before { background: linear-gradient(90deg, var(--accent-2), var(--accent-4)); }
+    .flow-node.world::before { background: linear-gradient(90deg, var(--danger), var(--accent)); }
+
+    .flow-node h4 {
+      margin: 0 0 0.5em;
+      font-size: 0.62em;
+      letter-spacing: 0.12em;
+    }
+
+    .flow-node p {
+      font-size: 0.66em;
+      line-height: 1.35;
+      margin-bottom: 0.45em;
+    }
+
+    .flow-node .mono {
+      display: inline-block;
+      font-size: 0.8em;
+      color: var(--accent);
+      background: rgba(255, 184, 77, 0.1);
+      border-radius: 5px;
+      padding: 0.08em 0.32em;
+    }
+
+    .flow-arrow {
+      position: absolute;
+      right: -0.58em;
+      top: 45%;
+      color: var(--fg-3);
+      font-size: 1.2em;
+      z-index: 2;
+    }
+
+    .stack-loop {
+      margin-top: 0.82em;
+      display: grid;
+      grid-template-columns: 1.4fr 2fr;
+      gap: 0.9em;
+      align-items: stretch;
+      font-size: 0.82em;
+    }
+
+    .stack-loop .loop-card {
+      border: 1px dashed rgba(110, 231, 163, 0.45);
+      border-radius: 14px;
+      padding: 0.82em 1em;
+      background: rgba(110, 231, 163, 0.06);
+      color: var(--fg-1);
+      line-height: 1.36;
+    }
   </style>
 </head>
 <body>
@@ -800,6 +881,48 @@
             <div class="card alt"><h4>Workspace</h4><p>The real environment where side effects happen and ground truth is observed.</p></div>
           </div>
           <p class="key-callout"><strong>If time is short, remember this stack.</strong> The rest of the deck unpacks each layer.</p>
+        </div>
+      </section>
+
+      <section class="balanced-slide">
+        <div class="content-stack">
+          <span class="slide-title">Compressed model - end to end</span>
+          <h2>One prompt through the stack.</h2>
+          <div class="stack-flow">
+            <div class="flow-node">
+              <h4>User</h4>
+              <p><span class="mono">Fix the failing auth test</span></p>
+              <p>Natural-language task starts the agent loop.</p>
+              <div class="flow-arrow">→</div>
+            </div>
+            <div class="flow-node alt">
+              <h4>Agent harness</h4>
+              <p>Builds request with repo context, tool schemas, skill metadata, and history.</p>
+              <p>Owns permissions and loop state.</p>
+              <div class="flow-arrow">→</div>
+            </div>
+            <div class="flow-node">
+              <h4>Model API</h4>
+              <p>Sees one stateless request.</p>
+              <p>Proposes: load <span class="mono">python-debugging</span>, read file, run test.</p>
+              <div class="flow-arrow">→</div>
+            </div>
+            <div class="flow-node tool">
+              <h4>Skill + tool gate</h4>
+              <p>Harness loads <span class="mono">SKILL.md</span> into the next request.</p>
+              <p>Validates <span class="mono">run_bash("pytest ...")</span>.</p>
+              <div class="flow-arrow">→</div>
+            </div>
+            <div class="flow-node world">
+              <h4>Workspace</h4>
+              <p>Allowed tool touches the real world: files, shell, tests, APIs.</p>
+              <p>Test output becomes observation.</p>
+            </div>
+          </div>
+          <div class="stack-loop">
+            <div class="loop-card"><strong>Skill loading changes the next request.</strong><br/>It adds procedure and examples, not side effects.</div>
+            <div class="loop-card"><strong>Tool execution changes the world.</strong><br/>The harness appends the result to history, then builds the next model request. That is the agent loop.</div>
+          </div>
         </div>
       </section>
 
