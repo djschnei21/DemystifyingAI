@@ -1,0 +1,1414 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Demystifying AI Coding Agents</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+
+  <style>
+    :root {
+      --bg-0: #07090d;
+      --bg-1: #0d1117;
+      --bg-2: #151b23;
+      --bg-3: #1c242e;
+      --fg-0: #f5f7fa;
+      --fg-1: #c8d1dc;
+      --fg-2: #8a96a8;
+      --fg-3: #5a6678;
+      --accent: #ffb84d;
+      --accent-2: #4dd2ff;
+      --accent-3: #b894ff;
+      --accent-4: #6ee7a3;
+      --danger: #ff6b6b;
+      --border: rgba(200, 209, 220, 0.12);
+      --border-strong: rgba(200, 209, 220, 0.25);
+    }
+
+    html, body { background: var(--bg-0); }
+
+    .reveal {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 400;
+      font-size: 32px;
+      color: var(--fg-1);
+      letter-spacing: -0.005em;
+    }
+
+    .reveal .slides {
+      text-align: left;
+    }
+
+    .reveal .slides > section:not(.stack) {
+      padding: 0.45em 4.5% 0.65em;
+      box-sizing: border-box;
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+      height: 100%;
+    }
+
+    .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+      font-family: 'Fraunces', 'Inter', serif;
+      font-weight: 700;
+      color: var(--fg-0);
+      letter-spacing: -0.025em;
+      line-height: 1.05;
+      text-transform: none;
+      margin: 0 0 0.4em 0;
+    }
+    .reveal h1 { font-size: 4.2em; font-weight: 800; }
+    .reveal h2 { font-size: 2em; line-height: 1.3; margin-bottom: 0.68em; }
+    .reveal h3 { font-size: 1.18em; line-height: 1.34; font-weight: 600; color: var(--fg-0); }
+    .reveal h4 { font-size: 1.1em; font-weight: 600; color: var(--accent); font-family: 'Inter', sans-serif; letter-spacing: 0.05em; text-transform: uppercase; }
+
+    .reveal p { line-height: 1.45; margin: 0 0 0.7em 0; }
+    .reveal ul, .reveal ol { display: block; margin: 0.4em 0; padding-left: 1.2em; }
+    .reveal li { margin: 0.35em 0; line-height: 1.4; }
+    .reveal li::marker { color: var(--accent); }
+    .reveal strong { color: var(--fg-0); font-weight: 600; }
+    .reveal em { color: var(--fg-0); font-style: italic; }
+
+    .reveal a { color: var(--accent-2); text-decoration: none; }
+
+    .reveal pre {
+      width: 100%;
+      box-shadow: none;
+      font-size: 0.55em;
+      line-height: 1.45;
+      margin: 0.6em 0;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+      overflow: hidden;
+    }
+    .reveal pre code {
+      padding: 1.2em 1.5em;
+      font-family: 'JetBrains Mono', monospace;
+      max-height: none;
+      border-radius: 12px;
+      background: transparent;
+    }
+    .reveal code {
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(255, 184, 77, 0.10);
+      color: var(--accent);
+      padding: 0.08em 0.35em;
+      border-radius: 4px;
+      font-size: 0.92em;
+    }
+    .reveal pre code {
+      background: transparent !important;
+      color: var(--fg-1);
+    }
+
+    /* Title slide */
+    .title-slide {
+      text-align: left !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      height: 100%;
+      padding-top: 0.4em;
+      padding-bottom: 0.4em;
+    }
+    .title-slide .eyebrow {
+      font-size: 0.6em;
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      margin-bottom: 1.35em;
+    }
+    .title-slide h1 {
+      font-size: 3.95em;
+      line-height: 1.28;
+      max-width: 82%;
+      margin-bottom: 0.42em;
+      background: linear-gradient(135deg, #fff 0%, #ffb84d 60%, #4dd2ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .title-slide .subtitle {
+      font-size: 1.08em;
+      color: var(--fg-1);
+      margin-top: 0.2em;
+      max-width: 66%;
+      line-height: 1.48;
+    }
+    .title-slide .meta {
+      margin-top: 2.4em;
+      display: flex;
+      gap: 2.2em;
+      font-size: 0.6em;
+      color: var(--fg-2);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      max-width: 72%;
+    }
+    .title-slide .meta strong { color: var(--fg-0); display: block; margin-top: 0.3em; font-size: 1.3em; letter-spacing: 0; text-transform: none; font-family: 'Fraunces', serif; }
+
+    /* Section divider */
+    .section-divider {
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      height: 100%;
+      padding-top: 0.35em;
+      padding-bottom: 0.35em;
+    }
+    .section-divider .num {
+      font-family: 'Fraunces', serif;
+      font-size: 5.05em;
+      font-weight: 800;
+      line-height: 1.2;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-3) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.18em;
+    }
+    .section-divider h2 {
+      font-size: 2.42em;
+      line-height: 1.42;
+      max-width: 74%;
+      margin-bottom: 0.34em;
+    }
+    .section-divider .lead {
+      font-size: 1.05em;
+      color: var(--fg-2);
+      max-width: 62%;
+      margin-top: 0.45em;
+      line-height: 1.5;
+    }
+
+    /* Balanced composition slide */
+    .balanced-slide {
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      height: 100%;
+      padding-top: 0.75em;
+      padding-bottom: 0.75em;
+    }
+    .balanced-slide .content-stack {
+      width: 100%;
+      margin: auto 0;
+    }
+    .balanced-slide h2 {
+      max-width: 62%;
+    }
+    .balanced-slide .lede {
+      max-width: 74%;
+      margin-bottom: 1.15em;
+    }
+    .balanced-slide .threebox {
+      margin-top: 0.6em !important;
+    }
+    .balanced-slide .key-callout {
+      margin-top: 1.3em;
+    }
+
+    /* Slide titles */
+    .slide-title {
+      font-size: 0.55em;
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 1.38em;
+      display: block;
+    }
+
+    /* Cards / boxes */
+    .grid {
+      display: grid;
+      gap: 1.18em;
+      margin-top: 0.75em;
+    }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    .card {
+      background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.15em 1.22em;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      opacity: 0.7;
+    }
+    .card.alt::before { background: linear-gradient(90deg, var(--accent-3), var(--accent-2)); }
+    .card.success::before { background: var(--accent-4); }
+    .card.danger::before { background: var(--danger); }
+    .card h3 { margin-bottom: 0.6em; }
+    .card h4 { margin-bottom: 0.46em; }
+    .card p { font-size: 0.85em; color: var(--fg-1); margin-bottom: 0; }
+    .card ul { font-size: 0.85em; }
+    .card > :last-child { margin-bottom: 0; }
+
+    /* Pull quote */
+    .pull-quote {
+      font-family: 'Fraunces', serif;
+      font-size: 2.38em;
+      line-height: 1.2;
+      font-weight: 600;
+      color: var(--fg-0);
+      letter-spacing: -0.02em;
+      max-width: 88%;
+      padding-left: 0.6em;
+      border-left: 6px solid var(--accent);
+      margin: 0.18em 0 0;
+    }
+    .pull-quote .attribution {
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.32em;
+      color: var(--fg-2);
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      margin-top: 1em;
+    }
+
+    /* Big stat */
+    .big-stat {
+      font-family: 'Fraunces', serif;
+      font-size: 6.2em;
+      line-height: 0.95;
+      font-weight: 800;
+      color: var(--accent);
+      letter-spacing: -0.04em;
+    }
+    .big-stat .unit { font-size: 0.4em; color: var(--fg-1); margin-left: 0.2em; }
+    .cost-cards .big-stat {
+      font-size: 5.2em;
+      line-height: 0.9;
+      margin: 0.18em 0 0.08em;
+    }
+    .cost-cards .big-stat .unit {
+      display: block;
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.18em;
+      line-height: 1;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 0.3em 0 0 0.15em;
+      white-space: nowrap;
+    }
+
+    .skill-flow {
+      align-items: stretch;
+    }
+    .skill-flow-slide .lede {
+      max-width: 68em;
+    }
+    .skill-flow-slide .grid {
+      margin-top: 0.75em;
+    }
+    .skill-flow .card {
+      display: grid;
+      grid-template-rows: auto 4.25em auto 1fr auto;
+      gap: 0.72em;
+      padding: 1.05em 1.14em;
+    }
+    .skill-flow .card h4 {
+      margin-bottom: 0;
+      letter-spacing: 0.11em;
+    }
+    .skill-flow .card > p:not(.small) {
+      margin-bottom: 0;
+    }
+    .skill-flow .stage-token {
+      align-self: flex-start;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.66em;
+      line-height: 1.1;
+      color: var(--accent);
+      background: rgba(255, 184, 77, 0.12);
+      border: 1px solid rgba(255, 184, 77, 0.35);
+      border-radius: 999px;
+      padding: 0.42em 0.76em;
+      white-space: nowrap;
+    }
+    .skill-flow .card.alt .stage-token {
+      color: var(--accent-2);
+      background: rgba(77, 210, 255, 0.10);
+      border-color: rgba(77, 210, 255, 0.35);
+    }
+    .skill-flow .small {
+      margin-top: 0;
+    }
+
+    /* Architecture diagram */
+    .archdiag {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 1.2em;
+      margin: 1em 0;
+    }
+    .archdiag .node {
+      flex: 1;
+      background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+      border: 2px solid var(--border-strong);
+      border-radius: 16px;
+      padding: 1.4em 1.2em;
+      text-align: center;
+      position: relative;
+    }
+    .archdiag .node .label {
+      font-size: 0.55em;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 0.6em;
+    }
+    .archdiag .node .name {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5em;
+      font-weight: 700;
+      color: var(--fg-0);
+      margin-bottom: 0.4em;
+      line-height: 1.1;
+    }
+    .archdiag .node .detail {
+      font-size: 0.7em;
+      color: var(--fg-2);
+      line-height: 1.4;
+    }
+    .archdiag .node.model { border-color: rgba(255, 184, 77, 0.4); }
+    .archdiag .node.harness { border-color: rgba(184, 148, 255, 0.4); }
+    .archdiag .node.tools { border-color: rgba(77, 210, 255, 0.4); }
+    .archdiag .arrow {
+      align-self: center;
+      font-size: 2em;
+      color: var(--fg-3);
+      flex: 0 0 auto;
+    }
+
+    /* Compare table */
+    .compare {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.74em;
+      margin-top: 0.75em;
+    }
+    .compare th {
+      text-align: left;
+      padding: 0.7em 0.9em;
+      color: var(--accent);
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      font-size: 0.85em;
+      border-bottom: 2px solid var(--border-strong);
+    }
+    .compare td {
+      padding: 0.85em 0.9em;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border);
+      color: var(--fg-1);
+      line-height: 1.4;
+    }
+    .compare td:first-child { color: var(--fg-0); font-weight: 600; }
+
+    /* Loop pseudo-code highlight */
+    .loop-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.58em;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.4em 1.7em;
+      line-height: 1.58;
+      color: var(--fg-1);
+    }
+    .loop-code .kw { color: var(--accent-3); font-weight: 600; }
+    .loop-code .fn { color: var(--accent-2); }
+    .loop-code .str { color: var(--accent-4); }
+    .loop-code .cm { color: var(--fg-3); font-style: italic; }
+
+    /* Two column */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.4em;
+      align-items: start;
+      margin-top: 0.7em;
+    }
+    .two-col.uneven { grid-template-columns: 1.2fr 1fr; }
+
+    /* Footer */
+    .reveal .slide-number {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--fg-3);
+      background: transparent;
+      font-size: 16px;
+      bottom: 24px;
+      right: 32px;
+    }
+
+    /* Progress */
+    .reveal .progress {
+      color: var(--accent);
+      height: 4px;
+    }
+
+    /* Body background subtle gradient */
+    .reveal-viewport {
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(184, 148, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(77, 210, 255, 0.06) 0%, transparent 50%),
+        var(--bg-0);
+    }
+
+    /* Misc */
+    .lede { font-size: 1.08em; color: var(--fg-0); line-height: 1.46; max-width: 80%; margin-bottom: 0.95em; }
+    .small { font-size: 0.75em; color: var(--fg-2); }
+    .accent { color: var(--accent); }
+    .accent-2 { color: var(--accent-2); }
+    .accent-3 { color: var(--accent-3); }
+    .accent-4 { color: var(--accent-4); }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+
+    .key-callout {
+      background: linear-gradient(135deg, rgba(255, 184, 77, 0.12) 0%, rgba(184, 148, 255, 0.06) 100%);
+      border: 1px solid rgba(255, 184, 77, 0.3);
+      border-radius: 14px;
+      padding: 1em 1.3em;
+      margin: 1.15em 0 0;
+      font-size: 0.95em;
+      line-height: 1.45;
+    }
+    .key-callout::before {
+      content: '◆';
+      color: var(--accent);
+      margin-right: 0.5em;
+      font-size: 0.9em;
+    }
+
+    .pill {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.6em;
+      padding: 0.3em 0.7em;
+      border-radius: 99px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      color: var(--fg-1);
+      margin: 0.15em 0.2em 0.15em 0;
+    }
+    .pill.accent { background: rgba(255, 184, 77, 0.12); border-color: rgba(255, 184, 77, 0.4); color: var(--accent); }
+    .pill.alt { background: rgba(77, 210, 255, 0.10); border-color: rgba(77, 210, 255, 0.35); color: var(--accent-2); }
+
+    /* Walkthrough steps */
+    .step {
+      display: grid;
+      grid-template-columns: 70px 1fr;
+      gap: 1em;
+      align-items: start;
+      padding: 0.84em 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0.5em;
+    }
+    .step:last-child { border-bottom: none; margin-bottom: 0; }
+    .step .n {
+      font-family: 'Fraunces', serif;
+      font-size: 1.6em;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .step .body { font-size: 0.82em; line-height: 1.35; }
+    .step .body strong { color: var(--fg-0); }
+
+    .agenda-grid h3 {
+      font-size: 0.88em !important;
+      line-height: 1.42 !important;
+      margin: 0 !important;
+    }
+
+    .request-slide .step {
+      grid-template-columns: 58px 1fr;
+      padding: 0.42em 0;
+      margin-bottom: 0.68em;
+    }
+
+    .request-slide .step .body {
+      font-size: 0.68em;
+      line-height: 1.26;
+    }
+
+    .request-slide .key-callout {
+      margin-top: 0.68em !important;
+      font-size: 0.85em;
+      padding: 0.88em 1.15em;
+    }
+
+    .compact-headline h2 {
+      line-height: 1.34;
+      max-width: 88%;
+    }
+
+    .analogy-cards {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.12em;
+      font-size: 0.7em !important;
+      margin-top: 0.8em;
+    }
+
+    .analogy-cards .card {
+      padding: 0.82em 0.9em;
+    }
+
+    /* Three-box visual */
+    .threebox {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.48em;
+      margin-top: 0.8em;
+    }
+    .threebox .box {
+      border-radius: 14px;
+      padding: 1.3em 1.2em;
+      border: 1px solid var(--border);
+      background: var(--bg-2);
+    }
+    .threebox .box .label {
+      font-size: 0.6em;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 0.5em;
+    }
+    .threebox .box.model .label { color: var(--accent); }
+    .threebox .box.harness .label { color: var(--accent-3); }
+    .threebox .box.tools .label { color: var(--accent-2); }
+    .threebox .box .title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.24em;
+      font-weight: 700;
+      color: var(--fg-0);
+      line-height: 1.16;
+      margin-bottom: 0.5em;
+    }
+    .threebox .box .body {
+      font-size: 0.78em;
+      color: var(--fg-1);
+      line-height: 1.4;
+    }
+
+    /* Misconception list */
+    .miscon {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.72em;
+      margin-top: 0.8em;
+    }
+    .miscon .row {
+      display: grid;
+      grid-template-columns: auto 1fr 1fr;
+      gap: 1em;
+      padding: 0.78em 0.8em;
+      border-bottom: 1px solid var(--border);
+      align-items: start;
+      font-size: 0.73em;
+    }
+    .miscon .row .num {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5em;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+      width: 1.5em;
+    }
+    .miscon .row .myth { color: var(--danger); font-weight: 500; line-height: 1.35; }
+    .miscon .row .myth::before { content: '✗ '; }
+    .miscon .row .truth { color: var(--fg-0); line-height: 1.35; }
+    .miscon .row .truth::before { content: '✓ '; color: var(--accent-4); font-weight: 700; }
+
+    /* Tag list */
+    .tags { display: flex; flex-wrap: wrap; gap: 0.4em; margin-top: 0.75em; }
+
+    .analogies-grid {
+      font-size: 0.78em !important;
+      gap: 0.95em;
+      margin-top: 0.48em;
+    }
+
+    .analogies-grid .card {
+      padding: 0.82em 0.9em;
+    }
+
+    .slide-title + h2,
+    .slide-title + h2.mono {
+      margin-top: 0.18em;
+    }
+
+    h2 + .lede,
+    h2 + .lead,
+    h2 + p,
+    h2 + .grid,
+    h2 + .two-col,
+    h2 + .threebox,
+    h2 + .compare,
+    h2 + .loop-code,
+    h2 + pre,
+    h2 + .pull-quote,
+    h2 + .miscon,
+    h2 + .archdiag {
+      margin-top: 0.7em;
+    }
+
+    .grid + .key-callout,
+    .threebox + .key-callout,
+    .pull-quote + .key-callout,
+    pre + .key-callout,
+    .loop-code + .key-callout,
+    .compare + .key-callout,
+    .miscon + .key-callout {
+      margin-top: 1.2em;
+    }
+
+    .compact-code-slide pre {
+      font-size: 0.49em;
+      line-height: 1.36;
+      margin: 0.45em 0;
+    }
+
+    .compact-code-slide pre code {
+      padding: 1em 1.35em;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- TITLE -->
+      <section class="title-slide">
+        <div class="eyebrow">CDL Offsite · Technical Briefing</div>
+        <h1>Demystifying<br/>AI Coding Agents</h1>
+        <p class="subtitle">A first-principles look at how modern coding agents actually work — for engineers who already think in APIs, loops, state, and side effects.</p>
+        <div class="meta">
+          <div>Format<strong>9-section deep dive</strong></div>
+          <div>Audience<strong>IT &amp; engineering</strong></div>
+          <div>Anchors<strong>APIs · loops · tool calls</strong></div>
+        </div>
+      </section>
+
+      <!-- THESIS -->
+      <section class="balanced-slide">
+        <div class="content-stack">
+          <span class="slide-title">The whole talk in one slide</span>
+          <h2>There is no magic.</h2>
+          <p class="lede">Everything we are about to look at is one of three things:</p>
+          <div class="threebox" style="margin-top: 1em;">
+            <div class="box model">
+              <div class="label">Model</div>
+              <div class="title">A stateless service over HTTP</div>
+              <div class="body">Weights on a GPU behind an API. Pure function: tokens in, token probabilities out.</div>
+            </div>
+            <div class="box harness">
+              <div class="label">Harness</div>
+              <div class="title">Code around request(s)</div>
+              <div class="body">A purpose-built runtime that builds requests, stores state, exposes tools, gates permissions, and records what happened.</div>
+            </div>
+            <div class="box tools">
+              <div class="label">Tools</div>
+              <div class="title">JSON Schema between the two</div>
+              <div class="body">Typed capabilities the model can request. The harness validates and runs the actual code.</div>
+            </div>
+          </div>
+        <p class="key-callout"><strong>The model is a commodity. The purpose-built harness is the product.</strong></p>
+        </div>
+      </section>
+
+      <!-- AGENDA -->
+      <section>
+        <span class="slide-title">Agenda</span>
+        <h2>Nine layers, bottom-up.</h2>
+        <div class="grid grid-4 agenda-grid" style="margin-top: 1em;">
+          <div class="card"><h4>01</h4><h3 style="font-size:1em;margin:0;">The LLM as a hosted service</h3></div>
+          <div class="card"><h4>02</h4><h3 style="font-size:1em;margin:0;">The API request, conceptually</h3></div>
+          <div class="card alt"><h4>03</h4><h3 style="font-size:1em;margin:0;">The harness — what it actually is</h3></div>
+           <div class="card alt"><h4>04</h4><h3 style="font-size:1em;margin:0;">Interaction models</h3></div>
+          <div class="card alt"><h4>05</h4><h3 style="font-size:1em;margin:0;">Tools as capability boundaries</h3></div>
+          <div class="card"><h4>06</h4><h3 style="font-size:1em;margin:0;">MCP as extension surface</h3></div>
+          <div class="card"><h4>07</h4><h3 style="font-size:1em;margin:0;">Skills as context packages</h3></div>
+          <div class="card alt"><h4>08</h4><h3 style="font-size:1em;margin:0;">Sub-agents as loop composition</h3></div>
+          <div class="card alt"><h4>09</h4><h3 style="font-size:1em;margin:0;">Putting it all together</h3></div>
+        </div>
+        <p class="small" style="margin-top: 1em;">Plus cross-cutting: <span class="accent-2">stateless/stateful split</span> · <span class="accent-3">common misconceptions</span></p>
+      </section>
+
+      <!-- ============ SECTION 1 ============ -->
+      <section class="section-divider">
+        <div class="num">01</div>
+        <h2>The LLM as a hosted service.</h2>
+        <p class="lead">Start with the boring part: a model is an HTTP service backed by GPU memory.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">The LLM as a hosted service - physical model</span>
+        <h2>Weights on GPUs. HTTP at the edge.</h2>
+        <div class="grid grid-2" style="margin-top: 1em;">
+          <div class="card">
+            <h4>Weights</h4>
+            <p>A production LLM is a set of binary weight files loaded into GPU memory. At inference time those weights are read, not rewritten.</p>
+          </div>
+          <div class="card alt">
+            <h4>Service</h4>
+            <p>The serving layer accepts HTTP/JSON requests, runs the model, and streams generated tokens back to the caller.</p>
+          </div>
+          <div class="card">
+            <h4>Stateless</h4>
+            <p>The server does not remember your conversation between calls. Any continuity must arrive again as input text.</p>
+          </div>
+          <div class="card alt">
+            <h4>Cost shape</h4>
+            <p>Longer prompts and longer outputs cost more because the model must process more tokens through the same fixed weights.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="request-slide">
+        <span class="slide-title">The LLM as a hosted service - stateless inference</span>
+        <h2>A forward pass does not remember.</h2>
+        <div class="pull-quote">
+          <code style="font-size:0.85em;background:transparent;color:var(--accent);padding:0;">f(weights, input_tokens) → next_token_probabilities</code>
+          <span class="attribution">Same weights + supplied input tokens → a distribution for what token should come next.</span>
+        </div>
+        <p style="margin-top: 1em;">Generation is repeated next-token prediction. The model sees the tokens you send in this request, predicts what comes next, appends that token, and repeats until it stops.</p>
+        <div class="key-callout">
+          <strong>The model only knows the current request.</strong> If a fact, file, or prior turn matters, the harness has to include that text in the API call it sends now.
+        </div>
+      </section>
+
+      <!-- ============ SECTION 2 ============ -->
+      <section class="section-divider">
+        <div class="num">02</div>
+        <h2>The API request,<br/>conceptually.</h2>
+        <p class="lead">A JSON POST. That's it. A multi-turn agent conversation is multiple stateless calls, each carrying the relevant history again.</p>
+      </section>
+
+      <section class="compact-code-slide">
+        <span class="slide-title">The API request, conceptually - request body</span>
+        <h2>Every turn is a request body.</h2>
+        <div class="loop-code">
+          POST /model-api<br/>
+          {<br/>
+          &nbsp;&nbsp;<span class="str">"model"</span>: <span class="str">"some-model-id"</span>,<br/>
+          &nbsp;&nbsp;<span class="str">"messages"</span>: [system, user, prior_turns, tool_results],<br/>
+          &nbsp;&nbsp;<span class="str">"tools"</span>: [read_file_schema, run_bash_schema, apply_edit_schema],<br/>
+          &nbsp;&nbsp;<span class="str">"max_tokens"</span>: 4096,<br/>
+          &nbsp;&nbsp;<span class="str">"stream"</span>: true<br/>
+          }
+        </div>
+        <p class="small" style="margin-top: 0.65em;">The exact provider shape varies. The important part is the harness builds one complete model invocation at a time.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">The API request, conceptually - what comes back</span>
+        <h2>Two things can come back.</h2>
+        <div class="grid grid-2" style="margin-top: 1em;">
+          <div class="card">
+            <h4>Assistant text</h4>
+            <h3 style="font-size:1.3em;">Answer or clarification</h3>
+            <p>Plain text for the user. This may be the final answer, a status update, or a question before doing more work.</p>
+          </div>
+          <div class="card alt">
+            <h4>Tool-call request</h4>
+            <h3 style="font-size:1.3em;">A typed action proposal</h3>
+            <p>Structured arguments naming a tool and inputs. The model proposes the action; the harness decides whether and how to run it.</p>
+          </div>
+        </div>
+        <p class="key-callout"><strong>The response is data.</strong> Even a tool call is still just output from the model until the harness validates and executes it.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">The API request, conceptually - memory</span>
+        <h2 style="color: var(--accent);">Memory is rebuilt, not remembered.</h2>
+        <div class="pull-quote">
+          The model invocation is independent. Continuity comes from the harness rebuilding the next request.
+          <span class="attribution">Prior turns, file snippets, tool results, summaries, and retrieved docs only matter if the harness includes them again.</span>
+        </div>
+        <p class="key-callout"><strong>The model does not own the conversation.</strong> The request body does. Context engineering is deciding what belongs in that request right now.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">The API request, conceptually - context budget</span>
+        <h2>The context window is the budget.</h2>
+        <div class="grid grid-2" style="margin-top: 1em;">
+          <div class="card">
+            <h4>History</h4>
+            <p>Prior user messages, assistant responses, tool outputs, summaries, and decisions compete for space.</p>
+          </div>
+          <div class="card alt">
+            <h4>Workspace context</h4>
+            <p>Files, diffs, test output, logs, search results, and retrieved docs are only useful if included in the current call.</p>
+          </div>
+          <div class="card">
+            <h4>Tool definitions</h4>
+            <p>The available functions and their schemas also consume prompt budget before the model can call them.</p>
+          </div>
+          <div class="card alt">
+            <h4>Output room</h4>
+            <p>The model's answer needs space too. If the prompt consumes the whole budget, useful generation gets squeezed.</p>
+          </div>
+        </div>
+        <p class="key-callout"><strong>This is why the harness matters.</strong> Bad answers often come from missing, stale, or buried context, not from the model randomly forgetting.</p>
+      </section>
+
+      <!-- ============ SECTION 3 ============ -->
+      <section class="section-divider">
+        <div class="num">03</div>
+        <h2>Harnesses.</h2>
+        <p class="lead">Section 2 showed that the request is the unit of work. The harness is the purpose-built code around one or more model requests.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Harnesses - purpose-built runtime</span>
+        <h2>A harness wraps model request(s).</h2>
+        <p class="lede">It can be built for chat, for a fixed workflow, or for an agent loop. The difference is who drives the next step.</p>
+        <div class="loop-code">
+request = harness.<span class="fn">build_request</span>(user_input, context, tools)<br/>
+response = model_api.<span class="fn">call</span>(request)<br/>
+<br/>
+<span class="cm"># Then the harness follows its interaction model:</span><br/>
+chat:     <span class="fn">return_to_user</span>(response)<br/>
+workflow: <span class="fn">run_next_coded_step</span>(response)<br/>
+agent:    <span class="fn">execute_tool_and_loop</span>(response)
+        </div>
+        <p class="key-callout"><strong>Harness is not synonymous with agent.</strong> A coding-agent harness is a harness purpose-built for the agent-loop interaction model.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">The harness - what the harness owns</span>
+        <h2>All the state. All the side effects.</h2>
+        <div class="grid grid-2 analogies-grid">
+          <div class="card">
+            <h4>Request construction &amp; state</h4>
+            <ul>
+              <li><strong>Prompt assembly</strong> — identity, rules, environment, project config</li>
+              <li><strong>Context selection</strong> — files, snippets, search results, test output, summaries</li>
+              <li><strong>History management</strong> — append, compact, truncate, and replay useful state</li>
+              <li><strong>Telemetry &amp; tracing</strong> — record each request, response, and decision</li>
+            </ul>
+          </div>
+          <div class="card alt">
+            <h4>Execution &amp; safety</h4>
+            <ul>
+              <li><strong>Tool registration</strong> — capabilities → JSON Schema</li>
+              <li><strong>Execution boundary</strong> — filesystem, shell, network, and APIs</li>
+              <li><strong>Policy boundary</strong> — approvals, command blocking, sandboxing, isolation</li>
+              <li><strong>Feedback loop</strong> — tests, linters, errors, retries, and verification</li>
+              <li><strong>Delegation</strong> — scoped child runs and merged summaries</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="compact-headline">
+        <span class="slide-title">The harness - why this matters</span>
+        <h2>The harness is the product.</h2>
+        <p class="lede" style="margin-top: 1em;">OpenCode, Claude Code, and Copilot can call similar models and still feel different because their coding-agent harnesses make different choices.</p>
+        <div class="grid grid-2" style="font-size: 0.82em; margin-top: 1em;">
+          <div class="card"><strong>OpenCode</strong><p>Terminal-native coding-agent harness used heavily by the team. Selectable agents/profiles, local tools, permissions, and child runs all sit around the same loop.</p></div>
+          <div class="card"><strong>Claude Code</strong><p>Purpose-built coding-agent harness with strong permission flow, skills, sub-agents, hooks, and a polished execution loop.</p></div>
+          <div class="card"><strong>GitHub Copilot agent mode</strong><p>IDE-integrated coding-agent harness that brings the loop into editor context, repo state, and familiar VS Code workflows.</p></div>
+          <div class="card alt"><strong>Others</strong><p>Cursor, Aider, Cline, Codex CLI, Goose, Devin, OpenHands: different UX and policy choices around model calls, context, tools, and edits.</p></div>
+        </div>
+        <p class="key-callout"><strong>The base model matters, but the harness determines the working experience:</strong> interaction model, context selection, tool surface, permissions, edit mechanics, and feedback loops.</p>
+      </section>
+
+      <!-- ============ SECTION 4 ============ -->
+      <section class="section-divider">
+        <div class="num">04</div>
+        <h2>Interaction<br/>models.</h2>
+        <p class="lead">Harnesses are usually purpose-built around one primary control pattern.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Interaction models - who drives the next step</span>
+        <h2>Chat. Workflow. Agent loop.</h2>
+        <div class="grid grid-3">
+          <div class="card">
+            <h4>Chat harness</h4>
+            <h3 style="font-size: 1.4em;">User-driven turns</h3>
+            <p>The user or app drives each turn. The harness builds a request, returns a response, and waits for the next user action.</p>
+          </div>
+          <div class="card alt">
+            <h4>Workflow harness</h4>
+            <h3 style="font-size: 1.4em;">Code-driven steps</h3>
+            <p>The harness follows predefined code paths. The model fills in specific steps, but code decides the sequence.</p>
+          </div>
+          <div class="card">
+            <h4>Agent harness</h4>
+            <h3 style="font-size: 1.4em;">Model-driven loop</h3>
+            <p>The model chooses the next step or tool. The harness executes allowed actions, observes results, and calls the model again.</p>
+          </div>
+        </div>
+        <p class="key-callout"><strong>The distinction is control flow, not intelligence.</strong> Chat is user-driven. Workflow is code-driven. Agent loop is model-driven within harness limits.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Interaction models - naming</span>
+        <h2>Different words. Same control split.</h2>
+        <div class="grid grid-3">
+          <div class="card">
+            <h4>User turn</h4>
+            <h3 style="font-size: 1.28em;">Chat or assistant</h3>
+            <p>The user supplies the next prompt. The harness packages context, calls the model, returns a response, and waits.</p>
+          </div>
+          <div class="card alt">
+            <h4>Program flow</h4>
+            <h3 style="font-size: 1.28em;">Workflow, chain, pipeline</h3>
+            <p>The path is predefined by the harness. The model handles bounded steps inside that coded sequence.</p>
+          </div>
+          <div class="card">
+            <h4>Model loop</h4>
+            <h3 style="font-size: 1.28em;">Agent or agentic system</h3>
+            <p>The model picks the next step or tool. The harness still owns execution, state, permissions, and stopping conditions.</p>
+          </div>
+        </div>
+        <p class="key-callout"><strong>&ldquo;Agent&rdquo; is overloaded.</strong> In this deck, it means model-driven control flow inside a harness, not magic and not unchecked autonomy.</p>
+      </section>
+
+      <!-- ============ SECTION 5 ============ -->
+      <section class="section-divider">
+        <div class="num">05</div>
+        <h2>Tools &amp;<br/>function calling.</h2>
+        <p class="lead">From here, focus on coding-agent harnesses. Tools can appear in workflows too, but they matter most when the model chooses the next action.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Tools &amp; function calling - the contract</span>
+        <h2>A tool call is a typed request.</h2>
+        <div class="grid grid-2" style="margin-top: 1em;">
+          <div class="card">
+            <h4>Advertise</h4>
+            <p>The harness includes tool names, descriptions, and schemas in the request body it sends to the model.</p>
+          </div>
+          <div class="card alt">
+            <h4>Propose</h4>
+            <p>The model emits a tool name and structured arguments. It is asking for work, not doing the work.</p>
+          </div>
+          <div class="card">
+            <h4>Gate</h4>
+            <p>The harness validates the arguments, checks permissions, and decides whether the action is allowed.</p>
+          </div>
+          <div class="card alt">
+            <h4>Record</h4>
+            <p>The result, error, or denial is appended to history and becomes context for the next model call.</p>
+          </div>
+        </div>
+        <p class="key-callout"><strong>The response is still data.</strong> In an agent loop, the model discovers and requests capabilities; nothing touches disk, shell, network, or APIs until the harness chooses to execute it.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Tools &amp; function calling - the wire format</span>
+        <h2>Schema in. Request out.</h2>
+        <div class="two-col">
+          <div>
+            <h4>Tool definition in the request</h4>
+            <div class="loop-code">
+{<br/>
+&nbsp;&nbsp;<span class="str">"name"</span>: <span class="str">"run_bash"</span>,<br/>
+&nbsp;&nbsp;<span class="str">"description"</span>: <span class="str">"Run a command"</span>,<br/>
+&nbsp;&nbsp;<span class="str">"parameters"</span>: {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"command"</span>: <span class="str">"string"</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"timeout_seconds"</span>: <span class="str">"number"</span><br/>
+&nbsp;&nbsp;}<br/>
+}
+            </div>
+          </div>
+          <div>
+            <h4>Model output</h4>
+            <div class="loop-code">
+{<br/>
+&nbsp;&nbsp;<span class="str">"tool"</span>: <span class="str">"run_bash"</span>,<br/>
+&nbsp;&nbsp;<span class="str">"arguments"</span>: {<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"command"</span>: <span class="str">"pytest"</span>,<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="str">"timeout_seconds"</span>: 120<br/>
+&nbsp;&nbsp;}<br/>
+}
+            </div>
+          </div>
+        </div>
+        <p class="key-callout" style="margin-top: 1em;"><strong>The description is part of the prompt.</strong> It helps the model decide when a tool is relevant; the schema tells it what shape the arguments should have.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Tools &amp; function calling - validation</span>
+        <h2>The schema helps. The harness still gates.</h2>
+        <div class="grid grid-2" style="margin-top: 1em;">
+          <div class="card">
+            <h4>Shape</h4>
+            <p>The schema nudges the model toward the expected fields and types. It makes tool calls easier to parse.</p>
+          </div>
+          <div class="card alt">
+            <h4>Validate</h4>
+            <p>The harness rejects malformed arguments, missing required fields, invalid paths, or unsupported options.</p>
+          </div>
+          <div class="card">
+            <h4>Authorize</h4>
+            <p>Dangerous or high-impact calls require approval, sandboxing, or denial before anything executes.</p>
+          </div>
+          <div class="card alt">
+            <h4>Feedback</h4>
+            <p>Success, failure, and denial are appended as tool results so the model can choose the next step.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Tools &amp; function calling - the recurring tool surface</span>
+        <h2>Most tools are boring.</h2>
+        <div class="grid grid-2" style="font-size: 0.88em; margin-top: 1em;">
+          <div class="card">
+            <h4>Read</h4>
+            <p><span class="pill accent mono">read_file</span> <span class="pill accent mono">list</span> <span class="pill accent mono">glob</span> <span class="pill accent mono">grep</span></p>
+            <p>Bring workspace state into the next request.</p>
+          </div>
+          <div class="card alt">
+            <h4>Edit</h4>
+            <p><span class="pill accent mono">apply_edit</span> <span class="pill accent mono">write_file</span></p>
+            <p>Change files, usually through diffs or patch operations the harness can inspect.</p>
+          </div>
+          <div class="card">
+            <h4>Run</h4>
+            <p><span class="pill alt mono">run_bash</span> <span class="pill alt mono">run_tests</span> <span class="pill alt mono">run_linter</span></p>
+            <p>Execute commands and turn output into feedback.</p>
+          </div>
+          <div class="card alt">
+            <h4>Delegate / extend</h4>
+            <p><span class="pill alt mono">task</span> <span class="pill alt mono">web_fetch</span> <span class="pill alt mono">MCP tools</span></p>
+            <p>Spawn scoped work or connect to external services.</p>
+          </div>
+        </div>
+        <p class="key-callout"><strong>OpenCode, Claude Code, and Copilot expose different names and UX.</strong> In an agent harness, this surface must be discoverable because the model is choosing among read, search, edit, run, verify, delegate, and extend.</p>
+      </section>
+
+      <!-- ============ SECTION 6 ============ -->
+      <section class="section-divider">
+        <div class="num">06</div>
+        <h2>MCP.</h2>
+        <p class="lead">A standard way for agent harnesses to discover and invoke external tools, resources, and prompts.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">MCP - what it is</span>
+        <h2>MCP is not a model protocol.</h2>
+        <p class="lede">The model never speaks MCP directly. The harness speaks MCP to servers, then translates discovered capabilities into model-visible context and tool definitions.</p>
+        <div class="grid grid-4" style="margin-top: 1em;">
+          <div class="card"><h4>Host</h4><p>The user-facing harness or app: editor, CLI, desktop client, or coding agent.</p></div>
+          <div class="card alt"><h4>Client</h4><p>An MCP client embedded in the host. Usually one client connection per server.</p></div>
+          <div class="card"><h4>Server</h4><p>A local or remote process exposing tools, resources, prompts, and capabilities.</p></div>
+          <div class="card alt"><h4>Model</h4><p>Sees the translated descriptions in the request. It does not open MCP connections.</p></div>
+        </div>
+        <p class="key-callout"><strong>MCP standardizes host-to-server discovery and invocation.</strong> That discovery matters most when an agent loop needs a model-visible capability surface.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">MCP - what it standardizes</span>
+        <h2>Discovery. Invocation. Results.</h2>
+        <div class="grid grid-2">
+          <div class="card">
+            <h4>Tools</h4>
+            <p>Callable actions the server exposes. The harness can present them to the model as tool definitions.</p>
+          </div>
+          <div class="card alt">
+            <h4>Resources</h4>
+            <p>Read-only context the host can fetch and include in a model request when relevant.</p>
+          </div>
+          <div class="card">
+            <h4>Prompts</h4>
+            <p>Server-supplied templates or workflows that can help shape the next request.</p>
+          </div>
+          <div class="card alt">
+            <h4>Capabilities</h4>
+            <p>The host and server negotiate what each side supports during initialization.</p>
+          </div>
+        </div>
+        <p class="key-callout"><strong>Same boundary as tools.</strong> The model can request an action; the harness decides whether and how to invoke the MCP server.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">MCP - wire format</span>
+        <h2>JSON-RPC over stdio or HTTP.</h2>
+        <div class="grid grid-2">
+          <div class="card">
+            <h4>Session</h4>
+            <p>A stateful <span class="mono">initialize</span> handshake negotiates protocol version and capabilities between host client and server.</p>
+          </div>
+          <div class="card alt">
+            <h4>Transports</h4>
+            <p><strong>stdio</strong> for local subprocess servers. <strong>Streamable HTTP</strong> for remote servers.</p>
+          </div>
+          <div class="card">
+            <h4>Messages</h4>
+            <p>Requests, responses, and notifications flow over the connection until it closes.</p>
+          </div>
+          <div class="card alt">
+            <h4>Model API</h4>
+            <p>Still separate and stateless. The harness folds MCP results into later model requests.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="compact-headline">
+        <span class="slide-title">MCP - security boundary</span>
+        <h2>MCP expands the tool surface.</h2>
+        <div class="grid grid-2">
+          <div class="card danger">
+            <h4>Prompt surface</h4>
+            <p>Tool names, descriptions, annotations, resources, and prompts can enter the model request. Treat server-provided text as untrusted unless the server is trusted.</p>
+          </div>
+          <div class="card alt">
+            <h4>Execution surface</h4>
+            <p>MCP servers can expose powerful actions. The harness still owns auth, allowlists, permissions, confirmation, and logging.</p>
+          </div>
+        </div>
+        <p class="key-callout"><strong>The model does not execute MCP tools.</strong> It emits requests; the host/harness invokes the server if policy allows.</p>
+      </section>
+
+      <!-- ============ SECTION 7 ============ -->
+      <section class="section-divider">
+        <div class="num">07</div>
+        <h2>Skills.</h2>
+        <p class="lead">Skills are context packages for agent harnesses: cheap metadata first, detailed instructions only when relevant.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Skills - what a skill actually is</span>
+        <h2>A folder. A markdown file. That's it.</h2>
+        <div class="two-col">
+          <div>
+            <pre style="font-size: 0.65em;"><code data-trim>my-skill/
+├── SKILL.md       # required: YAML + markdown
+├── scripts/       # optional: Python, Bash, JS
+├── references/    # optional: docs, loaded on demand
+└── assets/        # optional: templates, schemas</code></pre>
+            <p style="margin-top: 0.8em;">Versionable, reviewable, and shareable as plain files. No framework-specific code required.</p>
+          </div>
+          <div>
+            <pre><code class="language-markdown" data-trim>---
+name: pdf-processing
+description: Extract text and tables from PDF
+  files, fill forms, merge documents. Use when
+  working with PDFs or when the user mentions
+  forms or document extraction.
+---
+# PDF Processing
+## Quick start
+Use pdfplumber to extract text from PDFs:
+```python
+import pdfplumber
+with pdfplumber.open("doc.pdf") as pdf: ...
+```
+For form filling, see forms.md.</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <section class="skill-flow-slide">
+        <span class="slide-title">Skills - the architectural trick</span>
+        <h2>Progressive disclosure.</h2>
+        <p class="lede">Skills start as cheap metadata. The harness loads detail only when the task needs it.</p>
+        <div class="grid grid-3 skill-flow" style="margin-top: 1em;">
+          <div class="card">
+            <h4>1 · Discovery</h4>
+            <p>The harness exposes <strong>name + description</strong> so the model knows what exists.</p>
+            <div class="stage-token">name + description</div>
+            <p class="small">Most bodies stay out of the request.</p>
+          </div>
+          <div class="card alt">
+            <h4>2 · Loading</h4>
+            <p>When selected, the harness reads <span class="mono">SKILL.md</span> and includes it in a later request.</p>
+            <div class="stage-token">SKILL.md</div>
+            <p class="small">Detailed guidance is paid for when relevant.</p>
+          </div>
+          <div class="card alt">
+            <h4>3 · Use</h4>
+            <p>Instructions shape tool calls and verification. Bundled files are resources, not actions.</p>
+            <div class="stage-token">references + scripts</div>
+            <p class="small">Running a script still goes through a tool.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Skills - three things, often confused</span>
+        <h2>Tools vs skills vs prompts.</h2>
+        <table class="compare">
+          <thead><tr><th></th><th>What it is</th><th>When loaded</th></tr></thead>
+          <tbody>
+            <tr><td>Tool</td><td>A callable capability with a JSON-Schema signature</td><td><span class="accent-2">Exposed</span> — available to this turn when the harness advertises it</td></tr>
+            <tr><td>Skill</td><td>A bundle of instructions, scripts, and references</td><td><span class="accent-3">Loaded</span> — harness includes the body after model selection / request</td></tr>
+            <tr><td>System prompt</td><td>Baseline identity, behavior, and policy rules</td><td><span class="accent">Included</span> — assembled by the harness for the request</td></tr>
+          </tbody>
+        </table>
+        <p class="key-callout" style="margin-top: 1em;">Conceptually: <strong>tools are verbs. Skills are know-how. Prompts are policies.</strong> In agent harnesses, this separation helps the model choose actions without confusing instructions with executable capabilities.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Skills - what changes</span>
+        <h2>What skills change. What they do not.</h2>
+        <div class="grid grid-2">
+          <div class="card">
+            <h4>Add procedure</h4>
+            <p>Skills add conventions, examples, checklists, scripts, references, and domain-specific operating procedures.</p>
+          </div>
+          <div class="card alt">
+            <h4>Shape tool use</h4>
+            <p>The model can use the loaded instructions to choose tools, sequence steps, and verify work more consistently.</p>
+          </div>
+          <div class="card">
+            <h4>No private memory</h4>
+            <p>A skill does not make the model remember anything outside the current request. The harness still has to include the relevant context.</p>
+          </div>
+          <div class="card alt">
+            <h4>No bypass</h4>
+            <p>A skill does not execute itself or skip permissions. Even bundled scripts still run through an allowed tool path.</p>
+          </div>
+        </div>
+        <p class="key-callout"><strong>The agent loop does not change.</strong> Skills add procedural context and resources; tools perform actions; the harness gates side effects.</p>
+      </section>
+
+      <!-- ============ SECTION 8 ============ -->
+      <section class="section-divider">
+        <div class="num">08</div>
+        <h2>Sub-agents &amp;<br/>coordination.</h2>
+        <p class="lead">Once an agent harness has tools, MCP, and skills, it can compose multiple scoped loops with isolated context.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Sub-agents &amp; coordination - sub-agents</span>
+        <h2>Same loop. Isolated context.</h2>
+        <div class="two-col">
+          <div>
+            <p class="lede">A <strong>sub-agent</strong> is another instance of the same loop, launched with:</p>
+            <ul>
+              <li>A <strong>separate, isolated context window</strong></li>
+              <li>A <strong>scoped task</strong> described by the parent</li>
+              <li>Possibly a <strong>reduced tool set</strong> &amp; stricter permissions</li>
+              <li>Possibly a <strong>different model</strong></li>
+            </ul>
+            <p style="margin-top: 1em;">Mechanically: the OS spawning a child process. Parent passes initial state. Child runs its own loop. Usually the parent receives a summary or selected result; intermediate noise can stay in the child context.</p>
+            <p class="small" style="margin-top: 0.8em;">The important property is isolation: the child can search, run commands, and accumulate noisy context without polluting the parent loop.</p>
+          </div>
+          <div>
+            <h4>Why you'd want one</h4>
+            <div class="card"><strong>Context isolation</strong><p>Running tests can produce 50k tokens of output you don't need in the main window.</p></div>
+            <div class="card alt" style="margin-top:0.6em"><strong>Parallelism</strong><p>Investigate auth, DB, and API modules simultaneously and synthesize.</p></div>
+            <div class="card" style="margin-top:0.6em"><strong>Specialization</strong><p>A read-only &ldquo;code-reviewer&rdquo;; a sandboxed &ldquo;test-runner&rdquo; that can't touch source.</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Sub-agents &amp; coordination - the cost reality</span>
+        <h2>Sub-agents aren't free.</h2>
+        <p class="lede">Every spawned loop has its own context, requests, tool calls, and summaries. Useful planning anchors:</p>
+        <div class="grid grid-3 cost-cards" style="margin-top: 1em;">
+          <div class="card">
+            <h4>Chat call</h4>
+            <div class="big-stat">1×<span class="unit">tokens</span></div>
+            <p>Single request/response. Baseline.</p>
+          </div>
+          <div class="card alt">
+            <h4>Single-agent loop</h4>
+            <div class="big-stat" style="color: var(--accent-3);">~4×<span class="unit">tokens</span></div>
+            <p>Multi-turn loop with tool calls.</p>
+          </div>
+          <div class="card danger">
+            <h4>Multi-agent system</h4>
+            <div class="big-stat" style="color: var(--danger);">~15×<span class="unit">tokens</span></div>
+            <p>Parent + parallel sub-agents.</p>
+          </div>
+        </div>
+        <p class="key-callout"><strong>Use sub-agents when the gain justifies the cost.</strong> Coordination overhead grows non-linearly. Nesting beyond 1–2 levels rarely pays off.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Sub-agents &amp; coordination - common patterns</span>
+        <h2>Common coordination patterns.</h2>
+        <div class="grid grid-2">
+          <div class="card">
+            <h4>Agents as tools</h4>
+            <p>A parent loop keeps control and calls specialist agents for bounded subtasks.</p>
+          </div>
+          <div class="card alt">
+            <h4>Handoff</h4>
+            <p>Control transfers to a specialist agent for the next part of the interaction.</p>
+          </div>
+          <div class="card">
+            <h4>Orchestrator-workers</h4>
+            <p>A central loop breaks down an open-ended task, fans out work, and synthesizes results.</p>
+          </div>
+          <div class="card alt">
+            <h4>Evaluator-optimizer</h4>
+            <p>One loop produces an answer; another evaluates it and feeds back improvements.</p>
+          </div>
+        </div>
+        <p class="small" style="margin-top: 0.7em;">Names vary by framework. The mechanics are what matter: start scoped loops, control what context they see, and merge back only the useful result.</p>
+      </section>
+
+      <!-- ============ SECTION 9 ============ -->
+      <section class="section-divider">
+        <div class="num">09</div>
+        <h2>Demo.</h2>
+        <p class="lead">Placeholder for live walkthrough.</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+
+  <script>
+    Reveal.initialize({
+      // 4K-friendly base. Reveal.js scales the slide to fit; this base means
+      // text rendered at "32px" actually paints at ~64px on a 4K projector.
+      width: 1920,
+      height: 1080,
+      margin: 0.04,
+      minScale: 0.3,
+      maxScale: 3.0,
+
+      hash: true,
+      controls: true,
+      progress: true,
+      slideNumber: 'c/t',
+      center: true,
+      transition: 'fade',
+      transitionSpeed: 'default',
+      backgroundTransition: 'fade',
+      pdfSeparateFragments: false,
+
+      plugins: [RevealHighlight, RevealNotes]
+    });
+  </script>
+</body>
+</html>
