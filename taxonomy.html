@@ -504,8 +504,8 @@
     <li><a href="#loop" data-section="loop">The Agentic Loop</a></li>
     <li><a href="#agents" data-section="agents">Agents</a></li>
     <li><a href="#tools" data-section="tools">Tools</a></li>
-    <li><a href="#mcp" data-section="mcp">MCP</a></li>
     <li><a href="#skills" data-section="skills">Skills</a></li>
+    <li><a href="#mcp" data-section="mcp">MCP</a></li>
     <li><a href="#subagents" data-section="subagents">Subagents</a></li>
     <li><a href="#axes" data-section="axes">The Three Axes</a></li>
     <li><a href="#implications" data-section="implications">Implications</a></li>
@@ -594,24 +594,8 @@
 }</pre>
   </section>
 
-  <section id="mcp">
-    <h2><span class="num">VII &middot; A Primitive Extended</span>MCP</h2>
-    <p>MCP (Model Context Protocol) is not a new primitive. It is a standardized protocol boundary between the harness and external capability servers.</p>
-    <p>The protocol is broader than tool delivery. An MCP server can expose tools, resources, and prompts; the harness can expose capabilities back to the server, such as LLM inference, workspace scope, and user input collection. But none of these introduce new mechanics inside the model. They resolve into patterns this document has already described:</p>
-    <ul>
-      <li>An MCP tool, once registered by the harness, is a tool: schema enters context, implementation remains opaque, result returns as context.</li>
-      <li>An MCP resource or prompt, once injected by the harness, is context: tokens added to the next model call, no different in kind from a local file, a system prompt fragment, or a skill body.</li>
-    </ul>
-    <p>What MCP changes is the source and governance boundary. Authentication, portability, vendor coupling, permissions, and service ownership move out of the local harness and into a protocol relationship with another system. What MCP does not change is the harness's responsibility: deciding what to expose, what to execute, what to inject, and what reaches the model.</p>
-    <p>In practice, most harnesses fully surface MCP tools. Support for resources and prompts is uneven. Some expose them as attachable context and slash commands; others ignore them entirely. That variance is the point: the specification may define what can cross the boundary, but the harness decides what actually becomes available in the loop.</p>
-    <div class="callout">
-      <span class="label">Key Takeaway</span>
-      MCP standardizes the boundary, not the primitive. What arrives over MCP still becomes a tool, context, or harness-mediated request before it reaches the model.
-    </div>
-  </section>
-
   <section id="skills">
-    <h2><span class="num">VIII &middot; Primitive</span>Skills</h2>
+    <h2><span class="num">VII &middot; Primitive</span>Skills</h2>
     <p>Skills package procedural knowledge (runbooks, templates, conventions, and the supporting files needed to execute them) and inject that knowledge into the context window on demand. Where a tool exposes a <em>capability</em>, a skill delivers <em>instructions</em> on how to accomplish something, often by orchestrating one or more tool calls along the way.</p>
     <p>Two mechanical properties distinguish them from tools:</p>
     <ul>
@@ -631,6 +615,22 @@
     files:        [check_ci.sh, rollback_template.yaml, smoke_tests.py]
   }
 }</pre>
+  </section>
+
+  <section id="mcp">
+    <h2><span class="num">VIII &middot; The Harness Extended</span>MCP</h2>
+    <p>MCP (Model Context Protocol) is not a new primitive. It is a standardized protocol boundary between the harness and external capability servers.</p>
+    <p>Today, MCP exposed tools are the most common use case. However, the protocol is broader than tool delivery. An MCP server can expose tools, resources, and prompts; the harness can expose capabilities back to the server, such as LLM inference, workspace scope, and user input collection. But none of these introduce new mechanics inside the model. They resolve into patterns this document has already described:</p>
+    <ul>
+      <li>An MCP tool, once registered by the harness, is a tool: schema enters context, implementation remains opaque, result returns as context.</li>
+      <li>An MCP resource or prompt, once injected by the harness, is context: tokens added to the next model call, no different in kind from a local file, a system prompt fragment, or a skill body.</li>
+    </ul>
+    <p>What MCP changes is the source and governance boundary. Authentication, portability, vendor coupling, permissions, and service ownership move out of the local harness and into a protocol relationship with another system. What MCP does not change is the harness's responsibility: deciding what to expose, what to execute, what to inject, and what reaches the model.</p>
+    <p>In practice, most harnesses fully surface MCP tools. Support for resources and prompts is uneven. Some expose them as attachable context and slash commands; others ignore them entirely. That variance is the point: the specification may define what can cross the boundary, but the harness decides what actually becomes available in the loop.</p>
+    <div class="callout">
+      <span class="label">Key Takeaway</span>
+      MCP standardizes the boundary, not the primitive. What arrives over MCP still becomes a tool, context, or harness-mediated request before it reaches the model.
+    </div>
   </section>
 
   <section id="subagents">
