@@ -67,6 +67,12 @@
     padding: 4.5rem 0 8rem;
   }
   .page > * { grid-column: 2; }
+  .loading,
+  .load-error {
+    font-family: var(--font-display);
+    color: var(--text-muted);
+    text-align: center;
+  }
 
   /* Sticky TOC sidebar - desktop only */
   .toc {
@@ -504,238 +510,240 @@
 
 <nav class="toc" aria-label="Table of contents">
   <div class="toc-label">Contents</div>
-  <ol>
-    <li class="toc-preamble"><a href="#what-this-is" data-section="what-this-is">What This Is</a></li>
-    <li><a href="#model" data-section="model">The Model</a></li>
-    <li><a href="#context-window" data-section="context-window">The Context Window</a></li>
-    <li><a href="#harness" data-section="harness">The Harness</a></li>
-    <li><a href="#loop" data-section="loop">The Agentic Loop</a></li>
-    <li><a href="#agents" data-section="agents">Agents</a></li>
-    <li><a href="#tools" data-section="tools">Tools</a></li>
-    <li><a href="#skills" data-section="skills">Skills</a></li>
-    <li><a href="#mcp" data-section="mcp">MCP</a></li>
-    <li><a href="#subagents" data-section="subagents">Subagents</a></li>
-    <li><a href="#axes" data-section="axes">The Three Axes</a></li>
-    <li><a href="#implications" data-section="implications">Implications</a></li>
-  </ol>
+  <ol id="toc-list"></ol>
 </nav>
 
 <div class="page">
-
-  <header class="masthead">
-    <div class="eyebrow">CDL <span class="dot"></span> Architecture Reference <span class="dot"></span> 2026</div>
-    <h1 class="title">A <em>Mechanical</em> Agentic Taxonomy</h1>
-    <div class="title-rule"><span class="ornament"></span></div>
-  </header>
-
-  <section id="what-this-is">
-    <h2><span class="num">Preamble</span>What This Document Is</h2>
-    <p>Anthropomorphic metaphors have their place in how we talk about agentic systems. Calling an agent a <em>persona</em>, a skill a <em>runbook</em>, or a subagent a <em>teammate</em> can speed up early design conversations. But for engineers without a working intuition for these systems, the same vocabulary can feel imprecise or worse, inaccessible. Metaphors must yield to the mechanical and architectural realities of how these primitives actually work; the mechanics are the foundation, and metaphors sit on top of them.</p>
-    <p>This document is what you get when you commit to that view. It is a mechanical reference for the primitives that make up modern agentic systems: harness, agentic loop, agent, tool, MCP, skill, and subagent. The organizing lens is simple: each primitive is defined by how it interacts with the model's context window. From there, the architectural tradeoffs that follow become surfaceable rather than speculative.</p>
-    <p>It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CLI, OpenCode, etc.), or an API reference. The goal is a shared mental model that any team member can use to evaluate, design, or critique an agentic system without getting trapped in vendor-specific metaphor.</p>
-  </section>
-
-  <section id="model">
-    <h2><span class="num">I &middot; Foundations</span>The Model</h2>
-    <p>An LLM is a stateless engine that does one thing: it reads a sequence of tokens and predicts the next sequence of tokens. It retains no memory between calls, executes no code, and possesses no tools, skills, agents, or goals of its own.</p>
-    <p>When we say a model <em>has</em> a tool, <em>uses</em> a skill, or <em>acts</em> as an agent, we are describing harness behavior around the model, not properties inside the model. The model only receives tokens and emits tokens. Everything else in this document exists because the harness decides what tokens to send, how to interpret the tokens that come back, and what to do before the next call.</p>
-  </section>
-
-  <section id="context-window">
-    <h2><span class="num">II &middot; Foundations</span>The Context Window</h2>
-    <p>The context window is the total set of tokens sent to the model in a single request. It is the model's entire working state for that inference. Anything not present in the context window does not exist to the model; anything present consumes finite token budget and competes for attention.</p>
-    <p>This is why agentic architecture is largely context architecture. A system prompt, a tool schema, a file attachment, a skill body, a tool result, or a subagent summary becomes operational only when the harness places it into a model request. The mechanical question is always when something enters context, how much space it consumes, and what role it plays in the next inference.</p>
-  </section>
-
-  <section id="harness">
-    <h2><span class="num">III &middot; Foundations</span>The Harness</h2>
-    <p>Because the model cannot act on its own, it requires a runtime environment. This is the harness (sometimes called the host).</p>
-    <p>Whether it is a coding assistant in your IDE, a chat interface, or a custom Python script calling an API, the harness is responsible for:</p>
-    <ul>
-      <li>Feeding text to the model.</li>
-      <li>Parsing the model's output.</li>
-      <li>Executing any code or actions the model requests.</li>
-      <li>Feeding the results back into the model's context window.</li>
-    </ul>
-    <p>Every construct in this document is fundamentally a design pattern dictating how the harness manages the context window and routes execution.</p>
-  </section>
-
-  <section id="loop">
-    <h2><span class="num">IV &middot; Foundations</span>The Agentic Loop</h2>
-    <p>A single model inference produces one chunk of text. To accomplish complex tasks, such as looking up documentation, calculating a value, or mutating state, the system must iterate. The agentic loop is how the harness iterates.</p>
-    <ol>
-      <li><strong>Inference:</strong> The harness sends an atomic API request to the model with the current context, and receives a generated text output in response.</li>
-      <li><strong>Parsing:</strong> The harness parses the output for any requested actions (like a formatted JSON tool call).</li>
-      <li><strong>Execution:</strong> The harness executes the requested external actions in its own runtime environment, between model requests.</li>
-      <li><strong>Context Update:</strong> The harness appends the execution results to the context window. Because the model's token capacity is finite, the harness is mechanically responsible for bounded state management, ensuring the accumulated payload remains within limits before the next inference.</li>
-      <li><strong>Recurse:</strong> The harness sends a new request to the model with the extended context. This repeats until the model produces an output with no further action requests.</li>
-    </ol>
-    <p>The <em>agent</em> in <em>agentic</em> is simply this loop. Strip it away, and you have a standard chatbot. Add it, and you have a system capable of chaining actions together to achieve a goal.</p>
-  </section>
-
-  <section id="agents">
-    <h2><span class="num">V &middot; Foundations</span>Agents</h2>
-    <p>An agent is not a peer to tools or skills; it is the container.</p>
-    <p>Mechanically, an agent is a configured agentic loop defined by three things:</p>
-    <ol>
-      <li><strong>A System Prompt:</strong> Defining the model's role, purpose, and behavioral guidance.</li>
-      <li><strong>A Toolset:</strong> The specific capabilities exposed to the loop, including the permissions and access boundaries enforced by the harness.</li>
-      <li><strong>A Skill Set:</strong> The procedural knowledge available for the model to read in on demand.</li>
-    </ol>
-    <p>Most harnesses ship with one or more <strong>built-in agents</strong>: predefined system prompts and toolsets exposed as <em>modes</em> (e.g., Planner, Coder, Researcher). Some harnesses also support <strong>user-defined agents</strong>, allowing operators to register their own system prompts and curate which tools, MCPs, and skills are available within that agent's loop. The capability to bring your own agent is not universal; it is a deliberate harness feature, and its absence can be a meaningful constraint when evaluating a platform.</p>
-    <p>Tools, MCPs, skills, and subagents are the primitives that fill this container, whether the container is built-in or user-defined.</p>
-  </section>
-
-  <section id="tools">
-    <h2><span class="num">VI &middot; Primitive</span>Tools</h2>
-    <p>A tool is the smallest functional construct. It consists of a description and a parameter schema.</p>
-    <ul>
-      <li><strong>Initialization:</strong> The schema is loaded into the system prompt at the start of the session. Some harnesses with large tool inventories route schemas into context based on relevance rather than loading them all at session start; the payload itself remains opaque schema either way.</li>
-      <li><strong>Execution:</strong> When the model emits a tool call matching the schema, the harness intercepts the request, runs the underlying code in its own runtime environment, and appends the return value as text to the context window before issuing the next model request. The model itself never executes code; it only requests execution.</li>
-      <li><strong>Visibility:</strong> The implementation is opaque to the model. The model only sees the schema going in and the text result coming back; it never sees the underlying code.</li>
-    </ul>
-<pre><span class="comment"># PSEUDOCODE - illustrative only; actual syntax varies by harness</span>
-<span class="keyword">tool</span> {
-  name:           <span class="string">"search_docs"</span>
-  description:    <span class="string">"Search the IBM Knowledge Center. Use when the user
-                   asks about a product, configuration, or how-to."</span>
-  parameters: {
-    query:        string    <span class="comment"># required</span>
-    max_results:  integer   <span class="comment"># default: 5</span>
-    product:      string    <span class="comment"># optional filter, e.g. "watsonx"</span>
-  }
-  implementation: search_docs_impl()   <span class="comment"># executed by harness; opaque to model</span>
-}</pre>
-  </section>
-
-  <section id="skills">
-    <h2><span class="num">VII &middot; Primitive</span>Skills</h2>
-    <p>Skills package procedural knowledge (runbooks, templates, conventions, and the supporting files needed to execute them) and inject that knowledge into the context window on demand. Where a tool exposes a <em>capability</em>, a skill delivers <em>instructions</em> on how to accomplish something, often by orchestrating one or more tool calls along the way.</p>
-    <p>Two mechanical properties distinguish them from tools:</p>
-    <ul>
-      <li><strong>Lazy Loading:</strong> Only the skill's name and a brief description sit in the system prompt. The full body (manifest, instructions, supporting files) is only injected into the context window when the model explicitly decides to read it.</li>
-      <li><strong>Transparent Payload:</strong> A skill is a directory containing a manifest and supporting files (scripts, templates, prose). Unlike a tool, which hides its code, a skill allows the model to open and read its bundled contents <em>before</em> invoking them (usually via a generic execution tool provided by the harness).</li>
-    </ul>
-    <p>Crucially, skills compose with tools rather than replacing them. A skill's instructions typically direct the model to invoke specific tools (local or MCP-delivered) in a particular sequence, with branching logic the model interprets at read time. The relationship is hierarchical: skills can orchestrate tools; tools cannot contain skills.</p>
-<pre><span class="comment"># PSEUDOCODE - illustrative only; actual structure varies by harness</span>
-<span class="keyword">skill</span> {
-  name:        <span class="string">"deploy-to-prod"</span>
-  description: <span class="string">"Production deployment runbook. Invoke before pushing
-                to prod or when a deployment fails."</span>
-  body: {        <span class="comment"># lazy-loaded only when the model decides to read it</span>
-    instructions: <span class="string">"1. Verify CI status.  2. Run canary deploy.  3. Smoke
-                   test endpoints.  4. Promote to full prod.  5. On
-                   failure, invoke rollback_template.yaml."</span>
-    files:        [check_ci.sh, rollback_template.yaml, smoke_tests.py]
-  }
-}</pre>
-  </section>
-
-  <section id="mcp">
-    <h2><span class="num">VIII &middot; The Harness Extended</span>MCP</h2>
-    <p>MCP (Model Context Protocol) is not a new primitive. It is a standardized protocol boundary between the harness and external capability servers.</p>
-    <p>Today, MCP exposed tools are the most common use case. However, the protocol is broader than tool delivery. An MCP server can expose tools, resources, and prompts; the harness can expose capabilities back to the server, such as LLM inference, workspace scope, and user input collection. But none of these introduce new mechanics inside the model. They resolve into patterns this document has already described:</p>
-    <ul>
-      <li>An MCP tool, once registered by the harness, is a tool: schema enters context, implementation remains opaque, result returns as context.</li>
-      <li>An MCP resource or prompt, once injected by the harness, is context: tokens added to the next model call, no different in kind from a local file, a system prompt fragment, or a skill body.</li>
-    </ul>
-    <p>What MCP changes is the source and governance boundary. Authentication, portability, vendor coupling, permissions, and service ownership move out of the local harness and into a protocol relationship with another system. What MCP does not change is the harness's responsibility: deciding what to expose, what to execute, what to inject, and what reaches the model.</p>
-    <p>In practice, most harnesses fully surface MCP tools. Support for resources and prompts is uneven. Some expose them as attachable context and slash commands; others ignore them entirely. That variance is the point: the specification may define what can cross the boundary, but the harness decides what actually becomes available in the loop.</p>
-    <div class="callout">
-      <span class="label">Key Takeaway</span>
-      MCP standardizes the boundary, not the primitive. What arrives over MCP still becomes a tool, context, or harness-mediated request before it reaches the model.
-    </div>
-  </section>
-
-  <section id="subagents">
-    <h2><span class="num">IX &middot; Primitive</span>Subagents</h2>
-    <p>Long exploratory tasks eventually bloat the context window, leaving the model with no token space to <em>think</em>. Subagents solve this through <strong>context and toolset isolation</strong>.</p>
-    <p>When a parent agent invokes a subagent, the harness spins up a secondary agentic loop with its own blank context window, system prompt, and toolset. That toolset can be narrower than, or entirely different from, the parent's: useful when a planner subagent should not have write access, or a research subagent should be restricted to read-only operations. The parent's loop pauses. When the subagent finishes, only its final output (a summary or artifact) is returned to the parent's context window. Subagents trade intermediate detail for context preservation and capability scoping.</p>
-    <p>This isolation comes at a measurable token cost. Anthropic's June 2025 multi-agent research system report found that multi-agent workflows consume roughly 15&times; more tokens than equivalent chat interactions, with token usage alone explaining ~80% of performance variance on research evaluations. For coding workflows specifically, Claude Code's documentation cites ~7&times; token consumption for agent teams over single-thread sessions. Despite the higher total spend, the value is keeping the parent's context window clean while expensive work happens elsewhere, and enabling parallel exploration that a single loop cannot achieve. The corollary is that for trivial or tightly-coupled work, the startup cost is not worth paying; stay on the main thread.</p>
-<pre><span class="comment"># PSEUDOCODE - illustrative only; actual structure varies by harness</span>
-<span class="keyword">subagent</span> {
-  name:          <span class="string">"code-reviewer"</span>
-  description:   <span class="string">"Invoke for pull request review or pre-commit code audit."</span>
-  system_prompt: <span class="string">"You are a senior reviewer. Focus on correctness,
-                  security, and style. Cite line numbers and propose
-                  concrete diffs when possible."</span>
-  tools:         [read_file, grep, run_tests]   <span class="comment"># narrower than parent</span>
-  model:         <span class="string">"sonnet"</span>   <span class="comment"># cheaper than parent's opus</span>
-  permissions:   read_only
-}</pre>
-  </section>
-
-  <section id="axes">
-    <h2><span class="num">X &middot; Synthesis</span>The Three Axes</h2>
-    <p>The meaningful differences between these primitives come down to three mechanical axes:</p>
-    <ol>
-      <li><strong>Initialization:</strong> When does it enter the context window?</li>
-      <li><strong>Execution Context:</strong> Where does the work happen?</li>
-      <li><strong>Payload:</strong> What is exposed to the model?</li>
-    </ol>
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Primitive</th>
-            <th>Initialization</th>
-            <th>Execution Context</th>
-            <th>Payload</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Tool</td>
-            <td>Session start</td>
-            <td>Current context</td>
-            <td>Schema only (opaque code)</td>
-          </tr>
-          <tr>
-            <td>MCP Tool</td>
-            <td>Session start</td>
-            <td>Current context</td>
-            <td>Schema only (remote code)</td>
-          </tr>
-          <tr>
-            <td>Skill</td>
-            <td>Lazy (on-demand)</td>
-            <td>Current context</td>
-            <td>Manifest, scripts, files (transparent)</td>
-          </tr>
-          <tr>
-            <td>Subagent</td>
-            <td>On parent invocation</td>
-            <td>Separate context</td>
-            <td>Isolated prompt &amp; toolset</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <p>Note that this table flattens primitives onto comparable axes but does not capture composition: skills routinely invoke tools (local or MCP), and subagents are themselves agents configured with their own tools and skills.</p>
-  </section>
-
-  <section id="implications" class="implications">
-    <h2><span class="num">XI &middot; Synthesis</span>Implications</h2>
-    <p>By evaluating these constructs mechanically rather than metaphorically, several architectural tradeoffs become clear:</p>
-    <ul>
-      <li><strong>The harness, the loop, and the agent are givens.</strong> You do not choose between a tool and an agent. The tool exists <em>because</em> the agentic loop exists.</li>
-      <li><strong>MCP is not a peer to skills.</strong> MCP is a delivery mechanism. You can have a local tool, an MCP-delivered tool, or a skill that utilizes an MCP tool.</li>
-      <li><strong>Skills and tools are not peers; they compose.</strong> A skill typically directs the model through a procedure that invokes one or more tools. The reverse does not hold: tools have no mechanism to contain or invoke skills.</li>
-      <li><strong>Subagents are the only primitive that provides context isolation.</strong> No amount of clever skill engineering can substitute for a fresh context window. If you need to spend tokens on a side investigation without cluttering the main thread (or to scope down capabilities for a delegated task), you need a subagent.</li>
-      <li><strong>Skills optimize for procedural guidance and transparency.</strong> If you need a predictable action with a rigid contract, write a tool. If you have procedural knowledge (a runbook, a template-driven workflow, a sequence of tool calls with branching logic) that the model should pull in only when relevant, write a skill. If you need an execution context with its own system prompt and toolset, write an agent. A skill is content read into a loop, while an agent is the loop itself.</li>
-      <li><strong>Design concepts versus architecture.</strong> Personas, runbooks, and teammates can be useful metaphors while sketching a system, but they do not properly define implementation boundaries or architectural tradeoffs. The mechanical question is always when a construct enters the context window, where execution happens, and what payload is exposed to the model. Once framed that way, primitive selection becomes an architectural decision rather than a naming exercise.</li>
-    </ul>
-  </section>
-
-  <footer>
-    Customer Design Labs <span class="dot"></span> 2026
-  </footer>
-
+  <header class="masthead" id="masthead"></header>
+  <main id="content" aria-live="polite">
+    <p class="loading">Loading taxonomy.md...</p>
+  </main>
+  <footer id="footer"></footer>
 </div>
 
 <script>
-  // Scroll spy for TOC
-  (function() {
+  const MARKDOWN_SOURCE = 'taxonomy.md';
+
+  const escapeHtml = (value) => value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+
+  const slugify = (value) => value
+    .toLowerCase()
+    .replace(/<[^>]*>/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  const formatWithDots = (value) => escapeHtml(value)
+    .split(/\s+•\s+/)
+    .join(' <span class="dot"></span> ');
+
+  const inlineMarkdown = (value) => {
+    const code = [];
+    let html = escapeHtml(value).replace(/`([^`]+)`/g, (_, match) => {
+      code.push(`<code>${match}</code>`);
+      return `@@CODE${code.length - 1}@@`;
+    });
+
+    html = html
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
+      .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+
+    return html.replace(/@@CODE(\d+)@@/g, (_, index) => code[Number(index)]);
+  };
+
+  const parseFrontMatter = (markdown) => {
+    if (!markdown.startsWith('---\n')) {
+      return [{}, markdown];
+    }
+
+    const end = markdown.indexOf('\n---\n', 4);
+    if (end === -1) {
+      return [{}, markdown];
+    }
+
+    const metadata = {};
+    markdown.slice(4, end).split('\n').forEach((line) => {
+      const separator = line.indexOf(':');
+      if (separator === -1) return;
+      metadata[line.slice(0, separator).trim()] = line.slice(separator + 1).trim();
+    });
+
+    return [metadata, markdown.slice(end + 5).trim()];
+  };
+
+  const parseHeading = (line) => {
+    const match = line.match(/^##\s+(?:\[([^\]]+)\]\s+)?(.+?)(?:\s+\{#([a-z0-9-]+)\})?$/i);
+    if (!match) return null;
+
+    const title = match[2].trim();
+    return {
+      label: match[1] || '',
+      title,
+      id: match[3] || slugify(title),
+    };
+  };
+
+  const parseTable = (lines, start) => {
+    const tableLines = [];
+    let index = start;
+    while (index < lines.length && /^\s*\|.+\|\s*$/.test(lines[index])) {
+      tableLines.push(lines[index].trim());
+      index += 1;
+    }
+
+    if (tableLines.length < 2 || !/^\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?$/.test(tableLines[1])) {
+      return null;
+    }
+
+    const cellsFor = (line) => line.replace(/^\||\|$/g, '').split('|').map((cell) => inlineMarkdown(cell.trim()));
+    const headers = cellsFor(tableLines[0]);
+    const rows = tableLines.slice(2).map(cellsFor);
+
+    const thead = `<thead><tr>${headers.map((cell) => `<th>${cell}</th>`).join('')}</tr></thead>`;
+    const tbody = `<tbody>${rows.map((row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody>`;
+
+    return {
+      html: `<div class="table-wrap"><table>${thead}${tbody}</table></div>`,
+      next: index,
+    };
+  };
+
+  const renderBlocks = (markdown) => {
+    const lines = markdown.split(/\r?\n/);
+    const toc = [];
+    const html = [];
+    let index = 0;
+    let sectionOpen = false;
+
+    const closeSection = () => {
+      if (sectionOpen) {
+        html.push('</section>');
+        sectionOpen = false;
+      }
+    };
+
+    while (index < lines.length) {
+      const line = lines[index];
+
+      if (!line.trim()) {
+        index += 1;
+        continue;
+      }
+
+      const heading = parseHeading(line);
+      if (heading) {
+        closeSection();
+        toc.push(heading);
+        const sectionClass = heading.id === 'implications' ? ' class="implications"' : '';
+        html.push(`<section id="${heading.id}"${sectionClass}>`);
+        html.push(`<h2><span class="num">${inlineMarkdown(heading.label)}</span>${inlineMarkdown(heading.title)}</h2>`);
+        sectionOpen = true;
+        index += 1;
+        continue;
+      }
+
+      if (line.startsWith('```')) {
+        const codeLines = [];
+        index += 1;
+        while (index < lines.length && !lines[index].startsWith('```')) {
+          codeLines.push(lines[index]);
+          index += 1;
+        }
+        html.push(`<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
+        index += 1;
+        continue;
+      }
+
+      const table = parseTable(lines, index);
+      if (table) {
+        html.push(table.html);
+        index = table.next;
+        continue;
+      }
+
+      if (/^>\s?/.test(line)) {
+        const quoteLines = [];
+        while (index < lines.length && /^>\s?/.test(lines[index])) {
+          quoteLines.push(lines[index].replace(/^>\s?/, ''));
+          index += 1;
+        }
+        const quote = quoteLines.join(' ');
+        const callout = quote.match(/^\*\*([^*]+):\*\*\s*(.+)$/);
+        if (callout) {
+          html.push(`<div class="callout"><span class="label">${inlineMarkdown(callout[1])}</span>${inlineMarkdown(callout[2])}</div>`);
+        } else {
+          html.push(`<blockquote>${inlineMarkdown(quote)}</blockquote>`);
+        }
+        continue;
+      }
+
+      if (/^-\s+/.test(line)) {
+        const items = [];
+        while (index < lines.length && /^-\s+/.test(lines[index])) {
+          items.push(lines[index].replace(/^-\s+/, ''));
+          index += 1;
+        }
+        html.push(`<ul>${items.map((item) => `<li>${inlineMarkdown(item)}</li>`).join('')}</ul>`);
+        continue;
+      }
+
+      if (/^\d+\.\s+/.test(line)) {
+        const items = [];
+        while (index < lines.length && /^\d+\.\s+/.test(lines[index])) {
+          items.push(lines[index].replace(/^\d+\.\s+/, ''));
+          index += 1;
+        }
+        html.push(`<ol>${items.map((item) => `<li>${inlineMarkdown(item)}</li>`).join('')}</ol>`);
+        continue;
+      }
+
+      const paragraph = [];
+      while (
+        index < lines.length &&
+        lines[index].trim() &&
+        !parseHeading(lines[index]) &&
+        !lines[index].startsWith('```') &&
+        !/^>\s?/.test(lines[index]) &&
+        !/^-\s+/.test(lines[index]) &&
+        !/^\d+\.\s+/.test(lines[index]) &&
+        !parseTable(lines, index)
+      ) {
+        paragraph.push(lines[index].trim());
+        index += 1;
+      }
+      html.push(`<p>${inlineMarkdown(paragraph.join(' '))}</p>`);
+    }
+
+    closeSection();
+    return { html: html.join('\n'), toc };
+  };
+
+  const renderPage = (metadata, body) => {
+    document.title = metadata.title ? metadata.title.replace(/\*/g, '') : document.title;
+
+    document.getElementById('masthead').innerHTML = `
+      <div class="eyebrow">${formatWithDots(metadata.eyebrow || '')}</div>
+      <h1 class="title">${inlineMarkdown(metadata.title || 'Taxonomy')}</h1>
+      <div class="title-rule"><span class="ornament"></span></div>
+    `;
+
+    const rendered = renderBlocks(body);
+    document.getElementById('content').innerHTML = rendered.html;
+    document.getElementById('toc-list').innerHTML = rendered.toc.map((entry) => {
+      const className = entry.label.toLowerCase() === 'preamble' ? ' class="toc-preamble"' : '';
+      return `<li${className}><a href="#${entry.id}" data-section="${entry.id}">${inlineMarkdown(entry.title.replace(/^What This Document Is$/, 'What This Is'))}</a></li>`;
+    }).join('');
+    document.getElementById('footer').innerHTML = formatWithDots(metadata.footer || '');
+
+    activateScrollSpy();
+  };
+
+  const activateScrollSpy = () => {
     const sections = document.querySelectorAll('section[id]');
     const tocLinks = document.querySelectorAll('.toc a[data-section]');
     if (!sections.length || !tocLinks.length) return;
@@ -755,7 +763,26 @@
     });
 
     sections.forEach(s => observer.observe(s));
-  })();
+  };
+
+  fetch(MARKDOWN_SOURCE, { cache: 'no-cache' })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Could not load ${MARKDOWN_SOURCE}: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then((markdown) => {
+      const [metadata, body] = parseFrontMatter(markdown);
+      renderPage(metadata, body);
+    })
+    .catch((error) => {
+      document.getElementById('content').innerHTML = `
+        <p class="load-error">
+          ${escapeHtml(error.message)}. Serve this directory over HTTP so taxonomy.html can fetch taxonomy.md.
+        </p>
+      `;
+    });
 </script>
 
 </body>
