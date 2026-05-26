@@ -17,6 +17,7 @@ It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CL
 **Definition:** A model is a stateless token-prediction engine that reads tokens in and emits tokens out, with no memory, code execution, or capabilities of its own between calls.
 
 > **Examples:**
+>
 > - GPT-5.5, Claude Opus 4.7, Gemini 2.5 Pro, Llama 4 Maverick, and other named model endpoints.
 
 When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are describing harness behavior around the model, not properties inside the model. Everything else in this document exists because the harness decides what tokens to send, how to interpret the tokens that come back, and what to do before the next call.
@@ -32,6 +33,7 @@ This is why agentic architecture is largely context architecture. A system promp
 **Definition:** The harness is the runtime that wraps the model: it sends tokens in, parses tokens out, executes any requested actions in its own environment, and decides what enters the context window for the next call.
 
 > **Examples:**
+>
 > - Claude Code, GitHub Copilot CLI, Cursor, Aider, Cline, OpenHands, and custom LangChain or LangGraph applications.
 
 Whether it is a coding assistant in your IDE, a chat interface, or a custom Python script calling an API, the harness owns the state and side effects the model lacks. The model can request execution only by emitting tokens; the harness decides whether that request maps to an available capability, runs the action if allowed, and formats the result for the next inference.
@@ -57,6 +59,7 @@ The *agent* in *agentic* is simply this loop. Strip it away, and you have a stan
 **Definition:** An agent is a configured agentic loop defined by a system prompt, a toolset, and a skill set; it is the container that drives the repeated cycle of calling a model and executing what the model asks for.
 
 > **Examples:**
+>
 > - Planner, Builder, Researcher, Code Reviewer, QA, and Security Reviewer agents configured with different prompts, tools, skills, and permissions.
 
 An agent is not a peer to tools or skills; it is the container that gives those primitives a specific operating shape. Mechanically, that configuration is defined by three things:
@@ -74,6 +77,7 @@ Tools, MCPs, skills, and subagents are the primitives that fill this container, 
 **Definition:** A tool is a named capability exposed to the model through a description and parameter schema; the model emits a structured call matching that schema, and the harness executes the underlying opaque code before returning the result as context.
 
 > **Examples:**
+>
 > - `read_file`, `write_file`, `execute_shell`, `read_web`, `search_code`, and `mcp_read_jira_task`.
 
 - **Initialization:** The tool's name, description, and schema are loaded into the system prompt at the start of the session. Some harnesses with large tool inventories route schemas into context based on relevance rather than loading them all at session start; the payload itself remains an opaque contract either way.
@@ -100,6 +104,7 @@ tool {
 **Definition:** A skill is a bundle of procedural knowledge, usually instructions plus supporting files, whose name and description sit in the system prompt while its full transparent body enters the context window only when read or invoked.
 
 > **Examples:**
+>
 > - PDF, DOCX, XLSX, and PPTX document-processing skills; code-review runbooks; release or deployment runbooks; incident-response playbooks; and organization-specific style-guide skills.
 
 Where a tool exposes a *capability*, a skill delivers *instructions* for accomplishing something, often by orchestrating one or more tool calls along the way.
@@ -131,6 +136,7 @@ skill {
 **Definition:** MCP is a standardized protocol boundary that lets a harness connect to external servers offering tools, resources, or prompts; it changes where capabilities come from and how they are governed, but anything delivered over it still resolves into a tool or context before reaching the model.
 
 > **Examples:**
+>
 > - GitHub MCP server, filesystem MCP server, Playwright MCP server, PostgreSQL MCP server, Atlassian/Jira MCP server, and Terraform MCP server.
 
 MCP is therefore not a new kind of model capability. Like the other primitives in this taxonomy, it exists in the harness layer: it extends the harness's perimeter by moving authentication, portability, vendor coupling, permissions, and service ownership out of the local runtime and into a protocol relationship with another system.
@@ -151,6 +157,7 @@ In practice, most harnesses fully surface MCP tools. Support for resources and p
 **Definition:** A subagent is a secondary agentic loop invoked by a parent with its own fresh context window, system prompt, and usually narrower toolset; only its final output returns to the parent, trading higher token cost for context isolation and capability scoping.
 
 > **Examples:**
+>
 > - Research, code-review, test-failure triage, security-review, documentation, migration-planning, and dependency-upgrade subagents spawned by a parent coding agent.
 
 The core benefit is **context and toolset isolation**. Long exploratory tasks can spend tokens in the subagent's separate loop without bloating the parent's context window.
