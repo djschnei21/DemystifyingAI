@@ -285,6 +285,36 @@
     line-height: 1.6;
   }
 
+  .examples-card {
+    margin: 0 0 1.9rem;
+    padding: 1.15rem 1.35rem 1.2rem;
+    background: rgba(176, 88, 74, 0.08);
+    border: 1px solid var(--rule-soft);
+  }
+  .examples-card .examples-label {
+    display: block;
+    margin-bottom: 0.6rem;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 0.66rem;
+    font-style: italic;
+    font-feature-settings: "smcp" 1, "lnum" 1;
+    letter-spacing: 0.2em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .examples-card ul {
+    margin: 0;
+  }
+  .examples-card li {
+    margin-bottom: 0.55rem;
+    font-size: 0.96rem;
+    line-height: 1.55;
+  }
+  .examples-card li:last-child {
+    margin-bottom: 0;
+  }
+
   /* Drop cap on first paragraph of What This Document Is */
   #what-this-is > p:first-of-type::first-letter {
     font-family: var(--font-display);
@@ -654,6 +684,36 @@
     return `<p>${inlineMarkdown(value)}</p>`;
   };
 
+  const renderLabeledQuote = (quoteLines) => {
+    const label = quoteLines[0].match(/^\*\*([^*]+):\*\*\s*(.*)$/);
+    if (!label) {
+      return `<blockquote>${inlineMarkdown(quoteLines.join(' '))}</blockquote>`;
+    }
+
+    const labelText = label[1];
+    const firstBodyLine = label[2].trim();
+    const bodyLines = firstBodyLine ? [firstBodyLine, ...quoteLines.slice(1)] : quoteLines.slice(1);
+
+    if (labelText.toLowerCase() === 'examples') {
+      const items = bodyLines
+        .filter((line) => /^-\s+/.test(line))
+        .map((line) => line.replace(/^-\s+/, ''));
+
+      const body = items.length
+        ? `<ul>${items.map((item) => `<li>${inlineMarkdown(item)}</li>`).join('')}</ul>`
+        : `<p>${inlineMarkdown(bodyLines.join(' '))}</p>`;
+
+      return `
+        <div class="examples-card">
+          <span class="examples-label">Examples</span>
+          ${body}
+        </div>
+      `;
+    }
+
+    return `<div class="callout"><span class="label">${inlineMarkdown(labelText)}</span>${inlineMarkdown(bodyLines.join(' '))}</div>`;
+  };
+
   const renderBlocks = (markdown) => {
     const lines = markdown.split(/\r?\n/);
     const toc = [];
@@ -713,13 +773,7 @@
           quoteLines.push(lines[index].replace(/^>\s?/, ''));
           index += 1;
         }
-        const quote = quoteLines.join(' ');
-        const callout = quote.match(/^\*\*([^*]+):\*\*\s*(.+)$/);
-        if (callout) {
-          html.push(`<div class="callout"><span class="label">${inlineMarkdown(callout[1])}</span>${inlineMarkdown(callout[2])}</div>`);
-        } else {
-          html.push(`<blockquote>${inlineMarkdown(quote)}</blockquote>`);
-        }
+        html.push(renderLabeledQuote(quoteLines));
         continue;
       }
 
