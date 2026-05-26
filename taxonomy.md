@@ -14,46 +14,43 @@ It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CL
 
 ## [I · Foundations] The Model {#model}
 
-An LLM is a stateless engine that does one thing: it reads a sequence of tokens and predicts the next sequence of tokens. It retains no memory between calls, executes no code, and possesses no tools, skills, agents, or goals of its own.
+**Definition:** A model is a stateless token-prediction engine that reads tokens in and emits tokens out, with no memory, code execution, or capabilities of its own between calls.
 
-When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are describing harness behavior around the model, not properties inside the model. The model only receives tokens and emits tokens. Everything else in this document exists because the harness decides what tokens to send, how to interpret the tokens that come back, and what to do before the next call.
+When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are describing harness behavior around the model, not properties inside the model. Everything else in this document exists because the harness decides what tokens to send, how to interpret the tokens that come back, and what to do before the next call.
 
 ## [II · Foundations] The Context Window {#context-window}
 
-The context window is the total set of tokens sent to the model in a single request. It is the model's entire working state for that inference. Anything not present in the context window does not exist to the model; anything present consumes finite token budget and competes for attention.
+**Definition:** The context window is the complete set of tokens sent to the model in a single request, constituting its entire working state for that inference; anything outside it does not exist to the model, and everything inside competes for finite space.
 
 This is why agentic architecture is largely context architecture. A system prompt, a tool schema, a file attachment, a skill body, a tool result, or a subagent summary becomes operational only when the harness places it into a model request. The mechanical question is always when something enters context, how much space it consumes, and what role it plays in the next inference.
 
 ## [III · Foundations] The Harness {#harness}
 
-Because the model cannot act on its own, it requires a runtime environment. This is the harness (sometimes called the host).
+**Definition:** The harness is the runtime that wraps the model: it sends tokens in, parses tokens out, executes any requested actions in its own environment, and decides what enters the context window for the next call.
 
-Whether it is a coding assistant in your IDE, a chat interface, or a custom Python script calling an API, the harness is responsible for:
+Whether it is a coding assistant in your IDE, a chat interface, or a custom Python script calling an API, the harness owns the state and side effects the model lacks. The model can request execution only by emitting tokens; the harness decides whether that request maps to an available capability, runs the action if allowed, and formats the result for the next inference.
 
-- Feeding text to the model.
-- Parsing the model's output.
-- Executing any code or actions the model requests.
-- Feeding the results back into the model's context window.
-
-Every construct in this document is fundamentally a design pattern dictating how the harness manages the context window and routes execution.
+Every construct in this document is fundamentally a design pattern dictating how the harness manages context and routes execution.
 
 ## [IV · Foundations] The Agentic Loop {#loop}
 
-A single model inference produces one chunk of text. To accomplish complex tasks, such as looking up documentation, calculating a value, or mutating state, the system must iterate. The agentic loop is how the harness iterates.
+**Definition:** The agentic loop is the iterative cycle in which a harness repeatedly sends context to the model, executes the actions the model requests, appends the results back into context, and calls the model again until no further actions are requested.
+
+A single inference can only produce an output. To accomplish complex tasks, such as looking up documentation, calculating a value, or mutating state, the harness must turn that output into the next input after any external work completes.
 
 1. **Inference:** The harness sends an atomic API request to the model with the current context, and receives a generated text output in response.
 2. **Parsing:** The harness parses the output for any requested actions (like a formatted JSON tool call).
 3. **Execution:** The harness executes the requested external actions in its own runtime environment, between model requests.
 4. **Context Update:** The harness appends the execution results to the context window. Because the model's token capacity is finite, the harness is mechanically responsible for bounded state management, ensuring the accumulated payload remains within limits before the next inference.
-5. **Recurse:** The harness sends a new request to the model with the extended context. This repeats until the model produces an output with no further action requests.
+5. **Recurse:** The harness sends a new request to the model with the extended context.
 
 The *agent* in *agentic* is simply this loop. Strip it away, and you have a standard chatbot. Add it, and you have a system capable of chaining actions together to achieve a goal.
 
 ## [V · Foundations] Agents {#agents}
 
-An agent is not a peer to tools or skills; it is the container.
+**Definition:** An agent is a configured agentic loop defined by a system prompt, a toolset, and a skill set; it is the container that drives the repeated cycle of calling a model and executing what the model asks for.
 
-Mechanically, an agent is a configured agentic loop defined by three things:
+An agent is not a peer to tools or skills; it is the container that gives those primitives a specific operating shape. Mechanically, that configuration is defined by three things:
 
 1. **A System Prompt:** Defining the model's role, purpose, and behavioral guidance.
 2. **A Toolset:** The specific capabilities exposed to the loop, including the permissions and access boundaries enforced by the harness.
@@ -65,9 +62,9 @@ Tools, MCPs, skills, and subagents are the primitives that fill this container, 
 
 ## [VI · Primitive] Tools {#tools}
 
-A tool is the smallest functional construct. It consists of a description and a parameter schema.
+**Definition:** A tool is a named capability exposed to the model through a description and parameter schema; the model emits a structured call matching that schema, and the harness executes the underlying opaque code before returning the result as context.
 
-- **Initialization:** The schema is loaded into the system prompt at the start of the session. Some harnesses with large tool inventories route schemas into context based on relevance rather than loading them all at session start; the payload itself remains opaque schema either way.
+- **Initialization:** The tool's name, description, and schema are loaded into the system prompt at the start of the session. Some harnesses with large tool inventories route schemas into context based on relevance rather than loading them all at session start; the payload itself remains an opaque contract either way.
 - **Execution:** When the model emits a tool call matching the schema, the harness intercepts the request, runs the underlying code in its own runtime environment, and appends the return value as text to the context window before issuing the next model request. The model itself never executes code; it only requests execution.
 - **Visibility:** The implementation is opaque to the model. The model only sees the schema going in and the text result coming back; it never sees the underlying code.
 
@@ -88,11 +85,13 @@ tool {
 
 ## [VII · Primitive] Skills {#skills}
 
-Skills package procedural knowledge (runbooks, templates, conventions, and the supporting files needed to execute them) and inject that knowledge into the context window on demand. Where a tool exposes a *capability*, a skill delivers *instructions* on how to accomplish something, often by orchestrating one or more tool calls along the way.
+**Definition:** A skill is a bundle of procedural knowledge, usually instructions plus supporting files, whose name and description sit in the system prompt while its full transparent body enters the context window only when read or invoked.
+
+Where a tool exposes a *capability*, a skill delivers *instructions* for accomplishing something, often by orchestrating one or more tool calls along the way.
 
 Two mechanical properties distinguish them from tools:
 
-- **Lazy Loading:** Only the skill's name and a brief description sit in the system prompt. The full body (manifest, instructions, supporting files) is only injected into the context window when the model explicitly decides to read it.
+- **Lazy Loading:** Only the skill's name and a brief description sit in the system prompt. The full body (manifest, instructions, supporting files) is only injected into the context window when the model explicitly decides to read or invoke it.
 - **Transparent Payload:** A skill is a directory containing a manifest and supporting files (scripts, templates, prose). Unlike a tool, which hides its code, a skill allows the model to open and read its bundled contents *before* invoking them (usually via a generic execution tool provided by the harness).
 
 Crucially, skills compose with tools rather than replacing them. A skill's instructions typically direct the model to invoke specific tools (local or MCP-delivered) in a particular sequence, with branching logic the model interprets at read time. The relationship is hierarchical: skills can orchestrate tools; tools cannot contain skills.
@@ -114,14 +113,16 @@ skill {
 
 ## [VIII · The Harness Extended] MCP {#mcp}
 
-MCP (Model Context Protocol) is not a new primitive. It is a standardized protocol boundary between the harness and external capability servers.
+**Definition:** MCP is a standardized protocol boundary that lets a harness connect to external servers offering tools, resources, or prompts; it changes where capabilities come from and how they are governed, but anything delivered over it still resolves into a tool or context before reaching the model.
 
-Today, MCP exposed tools are the most common use case. However, the protocol is broader than tool delivery. An MCP server can expose tools, resources, and prompts; the harness can expose capabilities back to the server, such as LLM inference, workspace scope, and user input collection. But none of these introduce new mechanics inside the model. They resolve into patterns this document has already described:
+MCP is therefore not a new model-side primitive. It extends the harness's perimeter: authentication, portability, vendor coupling, permissions, and service ownership move out of the local runtime and into a protocol relationship with another system.
+
+Today, MCP-exposed tools are the most common use case, but the protocol is broader than tool delivery. An MCP server can expose tools, resources, and prompts; the harness can expose capabilities back to the server, such as LLM inference, workspace scope, and user input collection. Once registered or injected by the harness, these resolve into patterns this document has already described:
 
 - An MCP tool, once registered by the harness, is a tool: schema enters context, implementation remains opaque, result returns as context.
 - An MCP resource or prompt, once injected by the harness, is context: tokens added to the next model call, no different in kind from a local file, a system prompt fragment, or a skill body.
 
-What MCP changes is the source and governance boundary. Authentication, portability, vendor coupling, permissions, and service ownership move out of the local harness and into a protocol relationship with another system. What MCP does not change is the harness's responsibility: deciding what to expose, what to execute, what to inject, and what reaches the model.
+What MCP does not change is the harness's responsibility: deciding what to expose, what to execute, what to inject, and what reaches the model.
 
 In practice, most harnesses fully surface MCP tools. Support for resources and prompts is uneven. Some expose them as attachable context and slash commands; others ignore them entirely. That variance is the point: the specification may define what can cross the boundary, but the harness decides what actually becomes available in the loop.
 
@@ -129,9 +130,11 @@ In practice, most harnesses fully surface MCP tools. Support for resources and p
 
 ## [IX · Primitive] Subagents {#subagents}
 
-Long exploratory tasks eventually bloat the context window, leaving the model with no token space to *think*. Subagents solve this through **context and toolset isolation**.
+**Definition:** A subagent is a secondary agentic loop invoked by a parent with its own fresh context window, system prompt, and usually narrower toolset; only its final output returns to the parent, trading higher token cost for context isolation and capability scoping.
 
-When a parent agent invokes a subagent, the harness spins up a secondary agentic loop with its own blank context window, system prompt, and toolset. That toolset can be narrower than, or entirely different from, the parent's: useful when a planner subagent should not have write access, or a research subagent should be restricted to read-only operations. The parent's loop pauses. When the subagent finishes, only its final output (a summary or artifact) is returned to the parent's context window. Subagents trade intermediate detail for context preservation and capability scoping.
+The core benefit is **context and toolset isolation**. Long exploratory tasks can spend tokens in the subagent's separate loop without bloating the parent's context window.
+
+When a parent invokes a subagent, the parent loop pauses while the secondary loop performs bounded work. The child may have narrower or different tools: useful when a planner should not have write access, or a research worker should be restricted to read-only operations. When it finishes, the parent receives a summary or artifact rather than the child's full intermediate history.
 
 This isolation comes at a measurable token cost. Anthropic's June 2025 multi-agent research system report found that multi-agent workflows consume roughly 15× more tokens than equivalent chat interactions, with token usage alone explaining ~80% of performance variance on research evaluations. For coding workflows specifically, Claude Code's documentation cites ~7× token consumption for agent teams over single-thread sessions. Despite the higher total spend, the value is keeping the parent's context window clean while expensive work happens elsewhere, and enabling parallel exploration that a single loop cannot achieve. The corollary is that for trivial or tightly-coupled work, the startup cost is not worth paying; stay on the main thread.
 
