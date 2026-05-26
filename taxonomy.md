@@ -115,7 +115,7 @@ skill {
 
 **Definition:** MCP is a standardized protocol boundary that lets a harness connect to external servers offering tools, resources, or prompts; it changes where capabilities come from and how they are governed, but anything delivered over it still resolves into a tool or context before reaching the model.
 
-MCP is therefore not a new model-side primitive. It extends the harness's perimeter: authentication, portability, vendor coupling, permissions, and service ownership move out of the local runtime and into a protocol relationship with another system.
+MCP is therefore not a new kind of model capability. Like the other primitives in this taxonomy, it exists in the harness layer: it extends the harness's perimeter by moving authentication, portability, vendor coupling, permissions, and service ownership out of the local runtime and into a protocol relationship with another system.
 
 Today, MCP-exposed tools are the most common use case, but the protocol is broader than tool delivery. An MCP server can expose tools, resources, and prompts; the harness can expose capabilities back to the server, such as LLM inference, workspace scope, and user input collection. Once registered or injected by the harness, these resolve into patterns this document has already described:
 
