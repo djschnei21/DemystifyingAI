@@ -499,7 +499,8 @@
   <div class="toc-label">Contents</div>
   <ol>
     <li><a href="#what-this-is" data-section="what-this-is">What This Is</a></li>
-    <li><a href="#foundation" data-section="foundation">The Model</a></li>
+    <li><a href="#model" data-section="model">The Model</a></li>
+    <li><a href="#context-window" data-section="context-window">The Context Window</a></li>
     <li><a href="#harness" data-section="harness">The Harness</a></li>
     <li><a href="#loop" data-section="loop">The Agentic Loop</a></li>
     <li><a href="#agents" data-section="agents">Agents</a></li>
@@ -521,16 +522,22 @@
   </header>
 
   <section id="what-this-is">
-    <h2><span class="num">I &middot; Preamble</span>What This Document Is</h2>
+    <h2><span class="num">Preamble</span>What This Document Is</h2>
     <p>Anthropomorphic metaphors have their place in how we talk about agentic systems. Calling an agent a <em>persona</em>, a skill a <em>runbook</em>, or a subagent a <em>teammate</em> can speed up early design conversations. But for engineers without a working intuition for these systems, the same vocabulary can feel imprecise or worse, inaccessible. Metaphors must yield to the mechanical and architectural realities of how these primitives actually work; the mechanics are the foundation, and metaphors sit on top of them.</p>
     <p>This document is what you get when you commit to that view. It is a mechanical reference for the primitives that make up modern agentic systems: harness, agentic loop, agent, tool, MCP, skill, and subagent. The organizing lens is simple: each primitive is defined by how it interacts with the model's context window. From there, the architectural tradeoffs that follow become surfaceable rather than speculative.</p>
     <p>It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CLI, OpenCode, etc.), or an API reference. The goal is a shared mental model that any team member can use to evaluate, design, or critique an agentic system without getting trapped in vendor-specific metaphor.</p>
   </section>
 
-  <section id="foundation">
-    <h2><span class="num">II &middot; Foundations</span>The Model</h2>
-    <p>An LLM is a stateless engine that does one thing: it reads a sequence of tokens (the model's atomic units of text) and predicts the next sequence of tokens. The <strong>context window</strong> is just the totality of tokens included in a given request; the model retains nothing between calls.</p>
-    <p>When we discuss giving a model a <em>skill</em>, a <em>tool</em>, or a <em>subagent</em>, none of those concepts exist <em>within the model itself</em>. They are simply architectural patterns for arranging text within the model's input context.</p>
+  <section id="model">
+    <h2><span class="num">I &middot; Foundations</span>The Model</h2>
+    <p>An LLM is a stateless engine that does one thing: it reads a sequence of tokens and predicts the next sequence of tokens. It retains no memory between calls, executes no code, and possesses no tools, skills, agents, or goals of its own.</p>
+    <p>When we say a model <em>has</em> a tool, <em>uses</em> a skill, or <em>acts</em> as an agent, we are describing harness behavior around the model, not properties inside the model. The model only receives tokens and emits tokens. Everything else in this document exists because the harness decides what tokens to send, how to interpret the tokens that come back, and what to do before the next call.</p>
+  </section>
+
+  <section id="context-window">
+    <h2><span class="num">II &middot; Foundations</span>The Context Window</h2>
+    <p>The context window is the total set of tokens sent to the model in a single request. It is the model's entire working state for that inference. Anything not present in the context window does not exist to the model; anything present consumes finite token budget and competes for attention.</p>
+    <p>This is why agentic architecture is largely context architecture. A system prompt, a tool schema, a file attachment, a skill body, a tool result, or a subagent summary becomes operational only when the harness places it into a model request. The mechanical question is always when something enters context, how much space it consumes, and what role it plays in the next inference.</p>
   </section>
 
   <section id="harness">
