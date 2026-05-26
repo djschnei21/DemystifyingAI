@@ -18,7 +18,7 @@ It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CL
 
 > **Examples:**
 >
-> - GPT-5.5, Claude Opus 4.7, Gemini 2.5 Pro, Llama 4 Maverick, and other named model endpoints.
+> - GPT-5.5, Claude Opus 4.7, Gemini 3.1 Pro, Llama 4 Maverick, and other named model endpoints.
 
 When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are describing harness behavior around the model, not properties inside the model. Everything else in this document exists because the harness decides what tokens to send, how to interpret the tokens that come back, and what to do before the next call.
 
@@ -50,13 +50,13 @@ A single inference can only produce an output. To accomplish complex tasks, such
 2. **Parsing:** The harness parses the output for any requested actions (like a formatted JSON tool call).
 3. **Execution:** The harness executes the requested external actions in its own runtime environment, between model requests.
 4. **Context Update:** The harness appends the execution results to the context window. Because the model's token capacity is finite, the harness is mechanically responsible for bounded state management, ensuring the accumulated payload remains within limits before the next inference.
-5. **Recurse:** The harness sends a new request to the model with the extended context.
+5. **Recurse:** The harness sends a new request to the model with the extended context. This repeats until the model produces an output with no further action requests.
 
 The *agent* in *agentic* is simply this loop. Strip it away, and you have a standard chatbot. Add it, and you have a system capable of chaining actions together to achieve a goal.
 
 ## [V · Foundations] Agents {#agents}
 
-**Definition:** An agent is a configured agentic loop defined by a system prompt, a toolset, and a skill set; it is the container that drives the repeated cycle of calling a model and executing what the model asks for.
+**Definition:** An agent is a configured agentic loop defined by a system prompt, a toolset, and a skill set; it is the container that the other primitives fill.
 
 > **Examples:**
 >
@@ -80,7 +80,7 @@ Tools, MCPs, skills, and subagents are the primitives that fill this container, 
 >
 > - `read_file`, `write_file`, `execute_shell`, `read_web`, `search_code`, and `mcp-atlassian-jira_get_issue`.
 
-- **Initialization:** The tool's name, description, and schema are loaded into the system prompt at the start of the session. Some harnesses with large tool inventories route schemas into context based on relevance rather than loading them all at session start; the payload itself remains an opaque contract either way.
+- **Initialization:** The tool's name, description, and schema are loaded into the system prompt at the start of the session. Some harnesses with large tool inventories route schemas into context based on relevance rather than loading them all at session start (for example, Claude Code defers MCP tool definitions by default, initially exposing only tool names); the payload itself remains an opaque contract either way.
 - **Execution:** When the model emits a tool call matching the schema, the harness intercepts the request, runs the underlying code in its own runtime environment, and appends the return value as text to the context window before issuing the next model request. The model itself never executes code; it only requests execution.
 - **Visibility:** The implementation is opaque to the model. The model only sees the schema going in and the text result coming back; it never sees the underlying code.
 
@@ -105,7 +105,7 @@ tool {
 
 > **Examples:**
 >
-> - PDF, DOCX, XLSX, and PPTX document-processing skills; code-review runbooks; release or deployment runbooks; incident-response playbooks; and organization-specific style-guide skills.
+> - Code-review runbooks; release or deployment runbooks; incident-response playbooks; organization-specific style-guide skills; and Anthropic's shipped document-processing skills for PDF, DOCX, XLSX, and PPTX.
 
 Where a tool exposes a *capability*, a skill delivers *instructions* for accomplishing something, often by orchestrating one or more tool calls along the way.
 
@@ -164,7 +164,7 @@ The core benefit is **context and toolset isolation**. Long exploratory tasks ca
 
 When a parent invokes a subagent, the parent loop pauses while the secondary loop performs bounded work. The child may have narrower or different tools: useful when a planner should not have write access, or a research worker should be restricted to read-only operations. When it finishes, the parent receives a summary or artifact rather than the child's full intermediate history.
 
-This isolation comes at a measurable token cost. Anthropic's June 2025 multi-agent research system report found that multi-agent workflows consume roughly 15× more tokens than equivalent chat interactions, with token usage alone explaining ~80% of performance variance on research evaluations. For coding workflows specifically, Claude Code's documentation cites ~7× token consumption for agent teams over single-thread sessions. Despite the higher total spend, the value is keeping the parent's context window clean while expensive work happens elsewhere, and enabling parallel exploration that a single loop cannot achieve. The corollary is that for trivial or tightly-coupled work, the startup cost is not worth paying; stay on the main thread.
+This isolation comes at a measurable token cost. Anthropic's June 2025 multi-agent research system report found that multi-agent workflows consume roughly 15× more tokens than equivalent chat interactions, with token usage alone explaining ~80% of performance variance on research evaluations. For coding workflows specifically, Claude Code's documentation cites ~7× token consumption for agent teams over standard sessions when teammates run in plan mode. Despite the higher total spend, the value is keeping the parent's context window clean while expensive work happens elsewhere, and enabling parallel exploration that a single loop cannot achieve. The corollary is that for trivial or tightly-coupled work, the startup cost is not worth paying; stay on the main thread.
 
 ```text
 # PSEUDOCODE - illustrative only; actual structure varies by harness
