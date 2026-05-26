@@ -596,14 +596,17 @@
 
   <section id="mcp">
     <h2><span class="num">VII &middot; A Primitive Extended</span>MCP</h2>
-    <p>MCP (Model Context Protocol) is an operational deployment detail, not a new primitive. It simply means a tool is hosted on a remote server and exposed via a standard protocol rather than hardcoded into the local harness.</p>
+    <p>MCP (Model Context Protocol) is not a new primitive. It is a standardized protocol boundary between the harness and external capability servers.</p>
+    <p>The protocol is broader than tool delivery. An MCP server can expose tools, resources, and prompts; the harness can expose capabilities back to the server, such as LLM inference, workspace scope, and user input collection. But none of these introduce new mechanics inside the model. They resolve into patterns this document has already described:</p>
     <ul>
-      <li><strong>To the model:</strong> Nothing changes. The schema loads at the start, the result lands in the context window, and the code is opaque.</li>
-      <li><strong>To the architect:</strong> It changes authentication, vendor lock-in, and service boundaries.</li>
+      <li>An MCP tool, once registered by the harness, is a tool: schema enters context, implementation remains opaque, result returns as context.</li>
+      <li>An MCP resource or prompt, once injected by the harness, is context: tokens added to the next model call, no different in kind from a local file, a system prompt fragment, or a skill body.</li>
     </ul>
+    <p>What MCP changes is the source and governance boundary. Authentication, portability, vendor coupling, permissions, and service ownership move out of the local harness and into a protocol relationship with another system. What MCP does not change is the harness's responsibility: deciding what to expose, what to execute, what to inject, and what reaches the model.</p>
+    <p>In practice, most harnesses fully surface MCP tools. Support for resources and prompts is uneven. Some expose them as attachable context and slash commands; others ignore them entirely. That variance is the point: the specification may define what can cross the boundary, but the harness decides what actually becomes available in the loop.</p>
     <div class="callout">
       <span class="label">Key Takeaway</span>
-      Where a tool comes from (MCP) is entirely separate from how the model uses it (Tool).
+      MCP standardizes the boundary, not the primitive. What arrives over MCP still becomes a tool, context, or harness-mediated request before it reaches the model.
     </div>
   </section>
 
