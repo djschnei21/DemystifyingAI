@@ -78,7 +78,7 @@ Tools, MCPs, skills, and subagents are the primitives that fill this container, 
 
 > **Examples:**
 >
-> - `read_file`, `write_file`, `execute_shell`, `read_web`, `search_code`, and `mcp_read_jira_task`.
+> - `read_file`, `write_file`, `execute_shell`, `read_web`, `search_code`, and `mcp-atlassian-jira_get_issue`.
 
 - **Initialization:** The tool's name, description, and schema are loaded into the system prompt at the start of the session. Some harnesses with large tool inventories route schemas into context based on relevance rather than loading them all at session start; the payload itself remains an opaque contract either way.
 - **Execution:** When the model emits a tool call matching the schema, the harness intercepts the request, runs the underlying code in its own runtime environment, and appends the return value as text to the context window before issuing the next model request. The model itself never executes code; it only requests execution.
