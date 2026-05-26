@@ -115,6 +115,13 @@
     font-style: italic;
     font-weight: 400;
   }
+  .toc li.toc-preamble {
+    counter-increment: none;
+    padding-left: 0;
+  }
+  .toc li.toc-preamble::before {
+    display: none;
+  }
   .toc a {
     color: var(--text-muted);
     text-decoration: none;
@@ -498,7 +505,7 @@
 <nav class="toc" aria-label="Table of contents">
   <div class="toc-label">Contents</div>
   <ol>
-    <li><a href="#what-this-is" data-section="what-this-is">What This Is</a></li>
+    <li class="toc-preamble"><a href="#what-this-is" data-section="what-this-is">What This Is</a></li>
     <li><a href="#model" data-section="model">The Model</a></li>
     <li><a href="#context-window" data-section="context-window">The Context Window</a></li>
     <li><a href="#harness" data-section="harness">The Harness</a></li>
