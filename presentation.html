@@ -699,80 +699,19 @@
     }
 
     .agent-loop-diagram {
+      margin-top: 0.58em;
+      padding: 0.9em;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 50% 47%, rgba(184, 148, 255, 0.14), rgba(184, 148, 255, 0.03) 48%, transparent 72%),
+        linear-gradient(180deg, rgba(18, 23, 33, 0.7), rgba(12, 18, 28, 0.45));
+    }
+
+    .loop-ring {
       position: relative;
-      display: grid;
-      grid-template-columns: 1fr 1.15fr 1fr;
-      grid-template-rows: auto auto auto;
-      gap: 0.85em 1.05em;
-      margin-top: 0.55em;
-      min-height: 16.6em;
-    }
-
-    .loop-node {
-      background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 0.72em 0.82em;
-      position: relative;
-      z-index: 2;
-    }
-
-    .loop-node::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      border-radius: 14px 14px 0 0;
-      opacity: 0.8;
-    }
-
-    .loop-node.harness {
-      grid-column: 2;
-      grid-row: 2;
-      min-height: 7.2em;
-      border-color: rgba(184, 148, 255, 0.35);
-      box-shadow: 0 0 36px rgba(184, 148, 255, 0.08);
-    }
-    .loop-node.harness::before { background: linear-gradient(90deg, var(--accent-3), var(--accent-2)); }
-    .loop-node.user { grid-column: 1; grid-row: 2; align-self: center; }
-    .loop-node.model { grid-column: 2; grid-row: 1; border-color: rgba(255, 184, 77, 0.35); }
-    .loop-node.gate { grid-column: 3; grid-row: 2; align-self: center; }
-    .loop-node.gate::before { background: linear-gradient(90deg, var(--accent-2), var(--accent-4)); }
-    .loop-node.workspace { grid-column: 2; grid-row: 3; border-color: rgba(110, 231, 163, 0.35); }
-    .loop-node.workspace::before { background: linear-gradient(90deg, var(--accent-4), var(--accent-2)); }
-
-    .loop-node h4 {
-      margin: 0 0 0.5em;
-      font-size: 0.62em;
-      letter-spacing: 0.12em;
-    }
-
-    .loop-node p {
-      font-size: 0.61em;
-      line-height: 1.3;
-      margin-bottom: 0.35em;
-    }
-
-    .loop-node .mono,
-    .loop-label .mono {
-      display: inline-block;
-      font-size: 0.8em;
-      color: var(--accent);
-      background: rgba(255, 184, 77, 0.1);
-      border-radius: 5px;
-      padding: 0.08em 0.32em;
-    }
-
-    .loop-node .node-title {
-      font-family: 'Fraunces', serif;
-      color: var(--fg-0);
-      font-size: 1.08em;
-      line-height: 1.12;
-      margin-bottom: 0.38em;
-      font-weight: 700;
+      width: 100%;
+      min-height: 18.4em;
     }
 
     .loop-svg {
@@ -789,35 +728,180 @@
       stroke-width: 4;
       stroke-linecap: round;
       stroke-linejoin: round;
-      opacity: 0.88;
+      opacity: 0.92;
     }
 
+    .loop-seed { stroke: var(--fg-3); stroke-width: 3; opacity: 0.72; }
     .loop-request { stroke: var(--accent); }
-    .loop-response { stroke: var(--accent-3); }
+    .loop-propose { stroke: var(--accent-3); }
+    .loop-gate { stroke: #9fc8ff; }
     .loop-execute { stroke: var(--accent-2); }
-    .loop-observe { stroke: var(--accent-4); }
-    .loop-seed { stroke: var(--fg-3); stroke-width: 3; opacity: 0.7; }
+    .loop-observe { stroke: var(--accent-4); stroke-width: 4.5; }
 
-    .loop-label {
+    .loop-core {
       position: absolute;
+      left: 50%;
+      top: 49%;
+      transform: translate(-50%, -50%);
+      width: 23em;
+      text-align: center;
       z-index: 3;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.4em;
-      line-height: 1.25;
-      color: var(--fg-0);
-      background: rgba(21, 27, 35, 0.9);
-      border: 1px solid var(--border-strong);
-      border-radius: 14px;
-      padding: 0.45em 0.65em;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.22);
-      max-width: 17em;
+      border-radius: 18px;
+      border: 1px solid rgba(184, 148, 255, 0.45);
+      background: linear-gradient(180deg, rgba(33, 39, 53, 0.98), rgba(24, 30, 42, 0.95));
+      box-shadow: 0 0 48px rgba(184, 148, 255, 0.14);
+      padding: 0.8em 1em;
     }
 
-    .label-seed { left: 22%; top: 47%; }
-    .label-request { left: 43%; top: 15%; color: var(--accent); }
-    .label-response { right: 21%; top: 26%; color: var(--accent-3); }
-    .label-execute { right: 22%; bottom: 26%; color: var(--accent-2); }
-    .label-observe { left: 42%; bottom: 13%; color: var(--accent-4); }
+    .loop-core h4 {
+      margin: 0;
+      font-size: 0.62em;
+      letter-spacing: 0.13em;
+      color: var(--accent-3);
+    }
+
+    .loop-core .node-title {
+      margin: 0.18em 0 0.16em;
+      font-family: 'Fraunces', serif;
+      font-size: 1.14em;
+      line-height: 1.08;
+      color: var(--fg-0);
+      font-weight: 700;
+    }
+
+    .loop-core p {
+      margin: 0;
+      font-size: 0.61em;
+      line-height: 1.28;
+      color: var(--fg-1);
+    }
+
+    .loop-stage {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      width: 15.4em;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+      padding: 0.62em 0.76em;
+    }
+
+    .loop-stage::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      border-radius: 14px 14px 0 0;
+      opacity: 0.86;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    }
+
+    .loop-stage h4 {
+      margin: 0;
+      font-size: 0.58em;
+      letter-spacing: 0.12em;
+      color: var(--fg-2);
+    }
+
+    .loop-stage .node-title {
+      margin: 0.16em 0 0.18em;
+      font-family: 'Fraunces', serif;
+      font-size: 1.02em;
+      line-height: 1.08;
+      color: var(--fg-0);
+      font-weight: 700;
+    }
+
+    .loop-stage p {
+      margin: 0;
+      font-size: 0.58em;
+      line-height: 1.25;
+      color: var(--fg-1);
+    }
+
+    .loop-stage .mono {
+      display: inline-block;
+      font-size: 0.88em;
+      color: var(--accent);
+      background: rgba(255, 184, 77, 0.1);
+      border-radius: 5px;
+      padding: 0.06em 0.28em;
+    }
+
+    .stage-task {
+      left: 15%;
+      top: 51%;
+      border-color: rgba(126, 140, 165, 0.45);
+    }
+
+    .stage-request {
+      left: 29%;
+      top: 15%;
+      border-color: rgba(255, 184, 77, 0.42);
+    }
+    .stage-request::before { background: linear-gradient(90deg, var(--accent), #ffd28b); }
+
+    .stage-model {
+      left: 71%;
+      top: 15%;
+      border-color: rgba(184, 148, 255, 0.44);
+    }
+    .stage-model::before { background: linear-gradient(90deg, var(--accent-3), #d8c3ff); }
+
+    .stage-gate {
+      left: 85%;
+      top: 51%;
+      border-color: rgba(159, 200, 255, 0.45);
+    }
+    .stage-gate::before { background: linear-gradient(90deg, #9fc8ff, #7eb4ff); }
+
+    .stage-workspace {
+      left: 50%;
+      top: 88%;
+      border-color: rgba(110, 231, 163, 0.45);
+    }
+    .stage-workspace::before { background: linear-gradient(90deg, var(--accent-2), var(--accent-4)); }
+
+    .loop-step-chip {
+      position: absolute;
+      z-index: 4;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.44em;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      color: var(--fg-0);
+      border-radius: 999px;
+      border: 1px solid var(--border-strong);
+      background: rgba(21, 27, 35, 0.92);
+      padding: 0.28em 0.46em;
+    }
+
+    .chip-2 { left: 46%; top: 6%; color: var(--accent); }
+    .chip-3 { right: 14%; top: 25%; color: var(--accent-3); }
+    .chip-4 { right: 19%; bottom: 19%; color: #9fc8ff; }
+    .chip-5 { left: 46%; bottom: 3%; color: var(--accent-2); }
+    .chip-6 { left: 17%; top: 24%; color: var(--accent-4); }
+
+    @media (max-width: 1080px) {
+      .loop-ring {
+        min-height: 20em;
+      }
+
+      .loop-core {
+        width: 20.4em;
+      }
+
+      .loop-stage {
+        width: 14em;
+      }
+
+      .stage-task { left: 16%; }
+      .stage-gate { left: 84%; }
+      .stage-workspace { top: 86%; }
+    }
 
     .loop-takeaway {
       margin-top: 0.48em;
@@ -949,7 +1033,8 @@
           <span class="slide-title">Compressed model - end to end</span>
           <h2>One prompt becomes a loop.</h2>
           <div class="agent-loop-diagram">
-            <svg class="loop-svg" viewBox="0 0 1000 560" aria-hidden="true">
+            <div class="loop-ring">
+            <svg class="loop-svg" viewBox="0 0 1000 640" aria-hidden="true">
               <defs>
                 <marker id="arrow-amber" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10" fill="none" stroke="#ffb84d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></marker>
                 <marker id="arrow-purple" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10" fill="none" stroke="#b894ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></marker>
@@ -957,51 +1042,58 @@
                 <marker id="arrow-green" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10" fill="none" stroke="#6ee7a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></marker>
                 <marker id="arrow-gray" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth"><path d="M2,2 L10,6 L2,10" fill="none" stroke="#5a6678" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" /></marker>
               </defs>
-              <path class="loop-path loop-seed fragment" data-fragment-index="1" d="M185 285 C260 285 290 285 355 285" marker-end="url(#arrow-gray)" />
-              <path class="loop-path loop-request fragment" data-fragment-index="2" d="M500 235 C500 170 500 132 500 94" marker-end="url(#arrow-amber)" />
-              <path class="loop-path loop-response fragment" data-fragment-index="3" d="M585 102 C760 120 825 180 815 260" marker-end="url(#arrow-purple)" />
-              <path class="loop-path loop-execute fragment" data-fragment-index="6" d="M815 320 C815 410 710 462 590 462" marker-end="url(#arrow-blue)" />
-              <path class="loop-path loop-observe fragment" data-fragment-index="7" d="M442 462 C320 430 292 340 365 302" marker-end="url(#arrow-green)" />
+              <path class="loop-path loop-seed fragment" data-fragment-index="1" d="M166 332 C210 305 245 246 272 164" marker-end="url(#arrow-gray)" />
+              <path class="loop-path loop-request fragment" data-fragment-index="2" d="M356 120 C488 82 606 82 742 120" marker-end="url(#arrow-amber)" />
+              <path class="loop-path loop-propose fragment" data-fragment-index="3" d="M804 152 C892 224 900 302 856 360" marker-end="url(#arrow-purple)" />
+              <path class="loop-path loop-gate fragment" data-fragment-index="4" d="M836 390 C770 510 640 574 520 572" marker-end="url(#arrow-blue)" />
+              <path class="loop-path loop-execute fragment" data-fragment-index="5" d="M475 572 C345 564 228 488 190 382" marker-end="url(#arrow-blue)" />
+              <path class="loop-path loop-observe fragment" data-fragment-index="6" d="M178 342 C128 238 158 138 262 110" marker-end="url(#arrow-green)" />
             </svg>
 
-            <div class="loop-node user fragment" data-fragment-index="1">
-              <h4>User prompt</h4>
-              <div class="node-title">Fix auth</div>
-              <p><span class="mono">Fix the failing auth test</span></p>
-            </div>
-
-            <div class="loop-node model fragment" data-fragment-index="2">
-              <h4>Model API</h4>
-              <div class="node-title">Stateless call</div>
-              <p>Receives one request. Returns text or a tool-call proposal.</p>
-            </div>
-
-            <div class="loop-node harness">
+            <div class="loop-core">
               <h4>Agent harness</h4>
-              <div class="node-title">Build · gate · record · loop</div>
-              <p>Owns context, history, tool schemas, skill loading, permissions, and stopping conditions.</p>
+              <div class="node-title">Build request · gate actions · record state</div>
+              <p>The runtime controls what enters context and what can touch the real world.</p>
             </div>
 
-            <div class="loop-node gate fragment" data-fragment-index="4">
-              <h4>Skill + tool gate</h4>
-              <div class="node-title">Context vs side effect</div>
-              <p><span class="mono">python-debugging/SKILL.md</span> goes into the next request.</p>
-              <p><span class="mono">run_bash("pytest ...")</span> needs validation.</p>
+            <div class="loop-stage stage-task fragment" data-fragment-index="1">
+              <h4>Step 1</h4>
+              <div class="node-title">Seed task</div>
+              <p><span class="mono">Fix failing auth test</span><br/>Goal enters the loop.</p>
             </div>
 
-            <div class="loop-node workspace fragment" data-fragment-index="6">
-              <h4>Workspace</h4>
-              <div class="node-title">Real world</div>
-              <p>Files, shell, tests, APIs. Produces observations: stdout, stderr, diffs, errors.</p>
+            <div class="loop-stage stage-request fragment" data-fragment-index="2">
+              <h4>Step 2</h4>
+              <div class="node-title">Build request</div>
+              <p>System + task + selected context<br/>+ available tools.</p>
             </div>
 
-            <div class="loop-label label-seed fragment" data-fragment-index="1">task enters harness</div>
-            <div class="loop-label label-request fragment" data-fragment-index="2">Request #1<br/>system + user + context + tools</div>
-            <div class="loop-label label-response fragment" data-fragment-index="3">Response<br/><span class="mono">load_skill</span> / <span class="mono">tool_call</span></div>
-            <div class="loop-label label-execute fragment" data-fragment-index="6">allowed side effect</div>
-            <div class="loop-label label-observe fragment" data-fragment-index="7">observation appended;<br/>next request built</div>
+            <div class="loop-stage stage-model fragment" data-fragment-index="3">
+              <h4>Step 3</h4>
+              <div class="node-title">Model proposes</div>
+              <p>Return text, <span class="mono">load_skill</span>, or<br/><span class="mono">tool_call</span> arguments.</p>
+            </div>
+
+            <div class="loop-stage stage-gate fragment" data-fragment-index="4">
+              <h4>Step 4</h4>
+              <div class="node-title">Gate action</div>
+              <p>Context edits are accepted directly.<br/>Side effects require validation.</p>
+            </div>
+
+            <div class="loop-stage stage-workspace fragment" data-fragment-index="5">
+              <h4>Step 5</h4>
+              <div class="node-title">Execute in workspace</div>
+              <p>Files, shell, tests, and APIs run.<br/>Output becomes ground truth.</p>
+            </div>
+
+            <div class="loop-step-chip chip-2 fragment" data-fragment-index="2">request</div>
+            <div class="loop-step-chip chip-3 fragment" data-fragment-index="3">propose</div>
+            <div class="loop-step-chip chip-4 fragment" data-fragment-index="4">gate</div>
+            <div class="loop-step-chip chip-5 fragment" data-fragment-index="5">execute</div>
+            <div class="loop-step-chip chip-6 fragment" data-fragment-index="6">observe + loop</div>
+            </div>
           </div>
-          <div class="loop-takeaway fragment" data-fragment-index="8">
+          <div class="loop-takeaway fragment" data-fragment-index="7">
             <div class="takeaway"><strong>Skill loading changes the next request.</strong><br/>It adds procedure and examples, not side effects.</div>
             <div class="takeaway"><strong>Tool execution changes the world.</strong><br/>The harness validates, executes, records the result, and loops.</div>
           </div>
