@@ -578,8 +578,8 @@
     <p>An agent is not a peer to tools or skills; it is the container.</p>
     <p>Mechanically, an agent is a configured agentic loop defined by three things:</p>
     <ol>
-      <li><strong>A System Prompt:</strong> Defining the model's purpose and behavioral constraints.</li>
-      <li><strong>A Toolset:</strong> The specific capabilities exposed to the loop.</li>
+      <li><strong>A System Prompt:</strong> Defining the model's role, purpose, and behavioral guidance.</li>
+      <li><strong>A Toolset:</strong> The specific capabilities exposed to the loop, including the permissions and access boundaries enforced by the harness.</li>
       <li><strong>A Skill Set:</strong> The procedural knowledge available for the model to read in on demand.</li>
     </ol>
     <p>Most harnesses ship with one or more <strong>built-in agents</strong>: predefined system prompts and toolsets exposed as <em>modes</em> (e.g., Planner, Coder, Researcher). Some harnesses also support <strong>user-defined agents</strong>, allowing operators to register their own system prompts and curate which tools, MCPs, and skills are available within that agent's loop. The capability to bring your own agent is not universal; it is a deliberate harness feature, and its absence can be a meaningful constraint when evaluating a platform.</p>
