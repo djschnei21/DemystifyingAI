@@ -258,6 +258,33 @@
   /* Normalize inter-section spacing regardless of what element ends the section */
   section > *:last-child { margin-bottom: 0; }
 
+  .definition-card {
+    margin: 0 0 1.8rem;
+    padding: 1.15rem 1.35rem 1.25rem;
+    background: var(--bg-deep);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--accent);
+  }
+  .definition-card .definition-label {
+    display: block;
+    margin-bottom: 0.45rem;
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-size: 0.66rem;
+    font-style: normal;
+    font-feature-settings: "smcp" 1, "lnum" 1;
+    letter-spacing: 0.2em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .definition-card p {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.02rem;
+    font-style: italic;
+    line-height: 1.6;
+  }
+
   /* Drop cap on first paragraph of What This Document Is */
   #what-this-is > p:first-of-type::first-letter {
     font-family: var(--font-display);
@@ -613,6 +640,20 @@
     };
   };
 
+  const renderParagraph = (value) => {
+    const definition = value.match(/^\*\*Definition:\*\*\s+(.+)$/);
+    if (definition) {
+      return `
+        <div class="definition-card">
+          <span class="definition-label">Definition</span>
+          <p>${inlineMarkdown(definition[1])}</p>
+        </div>
+      `;
+    }
+
+    return `<p>${inlineMarkdown(value)}</p>`;
+  };
+
   const renderBlocks = (markdown) => {
     const lines = markdown.split(/\r?\n/);
     const toc = [];
@@ -716,7 +757,7 @@
         paragraph.push(lines[index].trim());
         index += 1;
       }
-      html.push(`<p>${inlineMarkdown(paragraph.join(' '))}</p>`);
+      html.push(renderParagraph(paragraph.join(' ')));
     }
 
     closeSection();
