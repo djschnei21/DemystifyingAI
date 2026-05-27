@@ -73,13 +73,11 @@ The loop is what makes a harness agentic. Strip it away, and you have a standard
 
 ## [VII · Analytical Lens] The Three Axes {#axes}
 
-Before comparing agents, tools, skills, and subagents, it helps to use the same mechanical questions for each one:
+Before comparing agents, tools, skills, and subagents, it's crucial to keep each of the following mechanical questions in mind:
 
 1. **Initialization:** When does its model-visible payload enter the context window?
 2. **Execution Context:** Where does the work happen?
 3. **Payload:** What is exposed to the model?
-
-The point is not to classify by name, but to compare by mechanics: when something becomes available, where the work happens, and what the model can see.
 
 | Construct | Initialization | Execution Context | Payload |
 | --- | --- | --- | --- |
