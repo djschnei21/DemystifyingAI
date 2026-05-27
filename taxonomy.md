@@ -32,7 +32,7 @@ When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are 
 
 ## [IV · Foundations] The Context Window {#context-window}
 
-**Definition:** The context window is the complete set of tokens the model has available for a request after that request has been tokenized, constituting its entire working state for that inference; anything outside the context window does not exist to the model, and everything inside competes for finite attention and space.
+**Definition:** The context window is the set of tokens the model can use during a single inference. Anything outside the contextwindow does not exist to the model; everything inside competes for finite attention and space.
 
 This is why agentic architecture is largely context architecture. A system prompt, a tool schema, a file attachment, a skill body, a tool result, or a subagent summary can affect the next inference only if the harness includes it in the next model request. The mechanical question is always when something enters context, how much space it consumes, and what role it plays in the next model request.
 
