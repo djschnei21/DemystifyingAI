@@ -14,49 +14,49 @@ It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CL
 
 ## [I · Foundations] Tokens {#tokens}
 
-**Definition:** A token is a chunk of text used as a unit of input and output. Tokens are not necessarily words; they may be words, parts of words, punctuation, whitespace, or other text fragments.
+**Definition:** A token is a model-side chunk of text used as a unit for processing, prediction, counting, and billing. Tokens are not necessarily words; they may be words, parts of words, punctuation, whitespace, or other text fragments.
 
 ## [II · Foundations] The Model {#model}
 
-**Definition:** A model is a stateless service that receives tokens and returns predicted tokens. It does not remember previous requests, execute code, inspect your environment, or take action; it only returns text.
+**Definition:** A model is a stateless service that receives text, processes it as tokens, and returns predicted text. It does not remember previous requests, execute code, inspect your environment, or take action; it only returns text.
 
 > **Examples:**
 >
 > - GPT-5.5, Claude Opus 4.7, Gemini 3.1 Pro, Llama 4 Maverick, and other named model endpoints.
 
-When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are describing harness behavior around the model, not properties inside the model. Everything else in this document exists because the harness decides what tokens to send, how to interpret the tokens that come back, and what to do before the next model request.
+When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are describing harness behavior around the model, not properties inside the model. Everything else in this document exists because the harness decides what text and context to send, how to interpret the text that comes back, and what to do before the next model request.
 
 ## [III · Foundations] Inference {#inference}
 
-**Definition:** An inference is a single operation in which a model receives tokens and returns predicted tokens. It is what the model does when a request reaches its API: tokens in, predicted tokens out.
+**Definition:** An inference is a single model-side operation in which input text is processed as tokens and returned as predicted text. It is what the model does when a request reaches its API: text in, tokenization and prediction inside, text out.
 
 ## [IV · Foundations] The Context Window {#context-window}
 
-**Definition:** The context window is the complete set of tokens sent to the model in a request, constituting its entire working state for that inference; anything outside the context window does not exist to the model, and everything inside competes for finite attention and space.
+**Definition:** The context window is the complete set of tokens the model has available for a request after that request has been tokenized, constituting its entire working state for that inference; anything outside the context window does not exist to the model, and everything inside competes for finite attention and space.
 
 This is why agentic architecture is largely context architecture. A system prompt, a tool schema, a file attachment, a skill body, a tool result, or a subagent summary becomes operational only when the harness places it into the model request happening now. The mechanical question is always when something enters context, how much space it consumes, and what role it plays in the next inference.
 
 ## [V · Foundations] The Harness {#harness}
 
-**Definition:** The harness is the runtime or application responsible for operating the model: it constructs each request, sends tokens to the model, parses tokens returned by the model, executes any requested actions in its own environment, and decides what populates the context window for the next model request.
+**Definition:** The harness is the runtime or application responsible for operating the model: it constructs each request, sends text and context to the model, parses text returned by the model, executes any requested actions in its own environment, and decides what populates the context window for the next model request.
 
 > **Examples:**
 >
 > - Claude Code, GitHub Copilot CLI, Cursor, Aider, Cline, OpenHands, and custom LangChain or LangGraph applications.
 
-Whether it is a coding assistant in your IDE, a chat interface, or a custom Python script calling an API, the harness owns the state and side effects the model lacks. The model can request execution only by emitting tokens; the harness decides whether that request maps to an available capability, runs the action if allowed, and places the result in the context window for the next model request.
+Whether it is a coding assistant in your IDE, a chat interface, or a custom Python script calling an API, the harness owns the state and side effects the model lacks. The model can request execution only by returning text the harness can parse; the harness decides whether that request maps to an available capability, runs the action if allowed, and places the result in the context window for the next model request.
 
 Every construct in this document is fundamentally a design pattern dictating how the harness manages context and takes action; not the model, because it cannot.
 
 ## [VI · Foundations] The Agentic Loop {#loop}
 
-**Definition:** The agentic loop is the cycle a harness runs for every prompt: it sends a model request, parses the returned tokens for requested actions, executes any allowed actions, places results back into context, and repeats until no further actions are requested.
+**Definition:** The agentic loop is the cycle a harness runs for every prompt: it sends a model request, parses the returned text for requested actions, executes any allowed actions, places results back into context, and repeats until no further actions are requested.
 
 A single inference can only produce an output. For a simple prompt, the loop may complete after one model request. For a prompt that requires external work, such as looking up documentation, calculating a value, or editing a file, the harness performs that work and places the result into context for another model request.
 
-1. **Model Request:** The harness sends the current context window to the model.
-2. **Inference:** The model receives the tokens and returns predicted tokens.
-3. **Parsing:** The harness parses the returned tokens for requested actions, such as a formatted JSON tool call.
+1. **Model Request:** The harness sends a model request containing the current context.
+2. **Inference:** The model processes the request as tokens and returns predicted text.
+3. **Parsing:** The harness parses the returned text for requested actions, such as a formatted JSON tool call.
 4. **Execution:** If an allowed action was requested, the harness executes it in its own runtime environment, outside the model.
 5. **Context Update:** If execution occurred, the harness places the result in the context window for the next model request.
 6. **Repeat or Stop:** If further action is needed, the harness sends another model request with the updated context. If no action is requested, the loop ends with the model's output.
@@ -136,7 +136,7 @@ tool {
 
 Where a tool exposes an operation the harness can execute, a skill exposes instructions the model can follow, often by orchestrating one or more tool calls along the way.
 
-Mechanically, skill invocation resembles tool invocation at the model boundary: the model sees a name and description, then emits tokens the harness parses as a request to load that skill. The difference is the harness response. A tool request executes opaque code and returns a result; a skill request reads transparent procedural content into the context window.
+Mechanically, skill invocation resembles tool invocation at the model boundary: the model sees a name and description, then returns text the harness parses as a request to load that skill. The difference is the harness response. A tool request executes opaque code and returns a result; a skill request reads transparent procedural content into the context window.
 
 Two mechanical properties distinguish them from tools:
 
@@ -201,7 +201,7 @@ MCP is therefore not a new kind of model capability. Like the other primitives i
 Today, MCP-exposed tools are the most common use case, but the protocol is broader than tool delivery. An MCP server can expose tools, resources, and prompts; the harness can expose capabilities back to the server, such as LLM inference, workspace scope, and user input collection. Once registered or injected by the harness, these resolve into patterns this document has already described:
 
 - An MCP tool, once registered by the harness, is a tool: schema enters context, implementation remains opaque, result returns as context.
-- An MCP resource or prompt, once injected by the harness, is context: tokens added to the next model request, no different in kind from a local file, a system prompt fragment, or a skill body.
+- An MCP resource or prompt, once injected by the harness, is context: content added to the next model request, no different in kind from a local file, a system prompt fragment, or a skill body.
 
 What MCP does not change is the harness's responsibility: deciding what to expose, what to execute, what to inject, and what reaches the model.
 
