@@ -19,6 +19,9 @@
     --rule: #DDD5C8;
     --rule-soft: #EAE4D8;
     --code-bg: #F2ECE0;
+    --pre-bg: #221E19;
+    --pre-text: #F8F1E8;
+    --pre-muted: #B8AEA1;
 
     --font-display: 'Fraunces', Georgia, serif;
     --font-body: 'Source Serif 4', Georgia, serif;
@@ -420,22 +423,45 @@
 
   /* Code blocks */
   pre {
-    background: var(--code-bg);
-    border-left: 2px solid var(--accent);
-    padding: 1.3rem 1.5rem;
-    margin: 2rem 0;
+    background: var(--pre-bg);
+    border: 1px solid rgba(28, 26, 23, 0.18);
+    border-top: 3px solid var(--accent);
+    padding: 2.55rem 1.5rem 1.35rem;
+    margin: 2.2rem 0;
     overflow-x: auto;
     font-family: var(--font-mono);
     font-size: 0.82rem;
     line-height: 1.7;
-    color: var(--text);
-    border-radius: 0;
+    color: var(--pre-text);
+    border-radius: 3px;
     position: relative;
+    box-shadow: 0 0.7rem 1.8rem rgba(28, 26, 23, 0.08);
+  }
+  pre::before {
+    content: "Pseudocode";
+    position: absolute;
+    top: 0.85rem;
+    left: 1.5rem;
+    color: var(--pre-muted);
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    line-height: 1;
+    text-transform: uppercase;
   }
   pre .comment { color: var(--text-muted); font-style: italic; }
   pre .placeholder { color: var(--accent); }
   pre .keyword { color: var(--text); font-weight: 500; }
   pre .string { color: var(--accent-soft); }
+  pre code {
+    display: block;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font-size: inherit;
+    border-radius: 0;
+  }
 
   code {
     font-family: var(--font-mono);
@@ -590,7 +616,14 @@
     body { background: white; }
     body::before { display: none; }
     .toc { display: none; }
-    pre { border-left-color: #888; }
+    pre {
+      background: #f4f4f4;
+      border-color: #888;
+      color: #111;
+      box-shadow: none;
+    }
+    pre::before { color: #666; }
+    pre code { color: inherit; }
   }
 </style>
 </head>
