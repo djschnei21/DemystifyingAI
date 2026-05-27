@@ -151,16 +151,14 @@
     color: var(--text-muted);
     text-decoration: none;
     transition: color 0.2s ease;
+    border-bottom: 0;
   }
-  .toc a:hover { color: var(--accent); }
+  .toc a:hover {
+    color: var(--accent);
+    border-bottom: 0;
+  }
   .toc a.active {
     color: var(--text);
-  }
-  .toc-text {
-    border-bottom: 1px solid transparent;
-  }
-  .toc a.active .toc-text {
-    border-bottom-color: var(--accent);
   }
 
   @media (min-width: 1180px) {
