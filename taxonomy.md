@@ -18,6 +18,8 @@ It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CL
 
 ![Text to tokens](diagrams/tokens.png)
 
+Tokens matter because they are the unit the model actually processes. The harness may send ordinary text, but the model receives that text after tokenization. This is why a context window is measured in tokens rather than words, why two strings with similar word counts can consume different amounts of model capacity, and why providers usually price model requests by input and output tokens.
+
 ## [II · Foundations] The Model {#model}
 
 **Definition:** A model is a stateless service that receives text, processes it as tokens, and returns predicted text. It does not remember previous requests, execute code, inspect your environment, or take action; it only returns text.
