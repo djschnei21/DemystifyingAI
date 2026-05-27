@@ -88,13 +88,13 @@ Before comparing agents, tools, skills, and subagents, it's crucial to keep each
 | Agent | On session start or agent selection | Configured loop | System prompt, toolset, skill set, permissions |
 | Tool | Session initialization | Current context | Schema only (opaque code) |
 | Skill | On skill request | Current context | Manifest, scripts, files (transparent) |
-| Subagent | On parent delegation | Separate context | Isolated prompt & toolset |
+| Subagent | When a parent agent invokes it | Separate context | Isolated prompt & toolset |
 
 Note that this table flattens constructs onto comparable axes but does not capture composition: agents contain tools and skills, skills routinely invoke tools, including MCP-delivered tools, and subagents are themselves agents configured with their own tools and skills.
 
 ## [VIII · Agentic Construct] Agents {#agents}
 
-**Definition:** An agent is the container construct: a configured agentic loop defined by a system prompt, a toolset, a skill set, and permissions. It determines which instructions, capabilities, procedural knowledge, and delegation paths are available for a task.
+**Definition:** An agent is the container construct: a configured agentic loop defined by a system prompt, a toolset, a skill set, permissions, and any subagents it may invoke. It determines which instructions, capabilities, and procedural knowledge are available for a task.
 
 > **Examples:**
 >
@@ -105,9 +105,25 @@ An agent is not a peer to tools or skills in the sense of doing the same kind of
 1. **A System Prompt:** Defining the model's role, purpose, and behavioral guidance.
 2. **A Toolset:** The specific capabilities exposed to the loop, including the permissions and access boundaries enforced by the harness.
 3. **A Skill Set:** The procedural knowledge available for the model to read in on demand.
-4. **Permissions and Delegation Paths:** The boundaries that determine what the agent may execute directly and when it may hand work to another loop.
+4. **Permissions and Subagent Access:** The boundaries that determine what the agent may execute directly and which separate loops, if any, it may ask the harness to start.
 
 Most harnesses ship with one or more **built-in agents**: predefined system prompts and toolsets exposed as *modes* (e.g., Planner, Coder, Researcher). Some harnesses also support **user-defined agents**, allowing operators to register their own system prompts and curate which tools, skills, MCP connections, and subagents are available within that agent's loop. The capability to bring your own agent is not universal; it is a deliberate harness feature, and its absence can be a meaningful constraint when evaluating a harness.
+
+```text
+# PSEUDOCODE - illustrative only; actual structure varies by harness
+agent {
+  name:          "migration-planner"
+  description:   "Plan complex migrations before implementation."
+  system_prompt: "You are a planning agent. Break the requested migration
+                  into safe phases, identify risks, and return an
+                  implementation plan before code changes."
+  model:         "opus"   # optional; may inherit from the session
+  tools:         [read_file, grep, search_docs]
+  skills:        [architecture-review, migration-playbook]
+  subagents:     [code-reviewer, test-failure-triage]
+  permissions:   read_only
+}
+```
 
 ## [IX · Agentic Construct] Tools {#tools}
 
@@ -192,8 +208,10 @@ subagent {
   system_prompt: "You are a senior reviewer. Focus on correctness,
                   security, and style. Cite line numbers and propose
                   concrete diffs when possible."
-  tools:         [read_file, grep, run_tests]   # narrower than parent
   model:         "sonnet"   # cheaper than parent's opus
+  tools:         [read_file, grep, run_tests]   # narrower than parent
+  skills:        [review-checklist, secure-coding-guidelines]
+  subagents:     []   # often omitted; many harnesses do not allow nesting
   permissions:   read_only
 }
 ```
@@ -226,5 +244,5 @@ By evaluating these constructs mechanically rather than metaphorically, several 
 - **The harness and loop are the operating frame.** Agents, tools, skills, and subagents are useful only because a harness can run an agentic loop: construct model requests, parse requested actions, execute allowed work, and place results back into context.
 - **MCP is not an agentic construct.** MCP is a delivery boundary. You can have a local tool, an MCP-delivered tool, or a skill that instructs the model to use an MCP-delivered tool.
 - **Skills and tools compose rather than compete.** A tool exposes an operation the harness can execute. A skill exposes procedural knowledge the model can follow, often by invoking one or more tools. The reverse does not hold: tools have no mechanism to contain or invoke skills.
-- **Subagents trade isolation for coordination cost.** A subagent provides a fresh context window and scoped toolset, but introduces delegation, summarization, and token overhead. It is useful when that isolation is worth more than the added cost.
+- **Subagents trade isolation for coordination cost.** A subagent provides a fresh context window and scoped toolset, but introduces startup, summarization, and token overhead. It is useful when that isolation is worth more than the added cost.
 - **Construct selection is an architectural decision.** Personas, runbooks, and teammates can be useful metaphors while sketching a system, but they do not define implementation boundaries. The mechanical questions are what the model can see, what the harness can execute, and what happens to context between model requests.
