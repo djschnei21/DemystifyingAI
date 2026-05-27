@@ -102,18 +102,19 @@
     padding: 0;
     margin: 0;
   }
-  #toc-list {
-    counter-reset: toc;
+  .toc li::before {
+    display: none;
   }
   .toc li.toc-entry {
-    counter-increment: toc;
     margin: 0.6rem 0;
     position: relative;
     padding-left: 2.8rem;
     line-height: 1.4;
   }
-  .toc li.toc-entry::before {
-    content: counter(toc, upper-roman) ".";
+  .toc li.toc-meta-entry {
+    padding-left: 0;
+  }
+  .toc-num {
     position: absolute;
     left: 0;
     width: 2.2rem;
@@ -124,11 +125,7 @@
     font-weight: 400;
   }
   .toc li.toc-preamble {
-    counter-increment: none;
     padding-left: 0;
-  }
-  .toc li.toc-preamble::before {
-    display: none;
   }
   .toc li.toc-group {
     margin: 1rem 0 0.8rem;
@@ -849,6 +846,7 @@
       return group === 'Primitive' ? 'Primitives' : group;
     };
     const tocTitle = (entry) => inlineMarkdown(entry.title.replace(/^What This Document Is$/, 'What This Is'));
+    const numberedTocGroups = new Set(['Foundations', 'Primitives']);
     const groupedToc = [];
 
     rendered.toc.forEach((entry) => {
@@ -859,7 +857,10 @@
 
       const group = tocGroupLabel(entry);
       const last = groupedToc[groupedToc.length - 1];
-      const item = `<li class="toc-entry"><a href="#${entry.id}" data-section="${entry.id}">${tocTitle(entry)}</a></li>`;
+      const isNumbered = numberedTocGroups.has(group);
+      const number = isNumbered ? `<span class="toc-num">${escapeHtml(entry.label.split('·')[0].trim())}.</span>` : '';
+      const className = isNumbered ? 'toc-entry' : 'toc-entry toc-meta-entry';
+      const item = `<li class="${className}">${number}<a href="#${entry.id}" data-section="${entry.id}">${tocTitle(entry)}</a></li>`;
 
       if (last?.group === group) {
         last.items.push(item);
