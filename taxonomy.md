@@ -71,7 +71,7 @@ Before comparing agents, tools, skills, and subagents, it helps to use the same 
 2. **Execution Context:** Where does the work happen?
 3. **Payload:** What is exposed to the model?
 
-These axes are not constructs themselves. They are the analytical lens for comparing agentic constructs: when each one becomes available, where execution happens, and what payload the model can see.
+The point is not to classify by name, but to compare by mechanics: when something becomes available, where the work happens, and what the model can see.
 
 | Construct | Initialization | Execution Context | Payload |
 | --- | --- | --- | --- |
