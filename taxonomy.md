@@ -8,7 +8,7 @@ footer: Customer Design Labs • 2026
 
 Anthropomorphic metaphors have their place in how we talk about agentic systems. Calling an agent a *persona*, a skill a *runbook*, or a subagent a *teammate* can speed up early design conversations. But for engineers without a working intuition for these systems, the same vocabulary can feel imprecise or worse, inaccessible. Metaphors must yield to the mechanical and architectural realities of how these primitives actually work; the mechanics are the foundation, and metaphors sit on top of them.
 
-This document is what you get when you commit to that view. It is a mechanical explanation of the components that make up modernagentic systems, from the model request boundary to the harness patterns built around it. The organizing claim is simple: agenticarchitecture is context architecture. Once you ask what the model can see, what the harness can execute, and what happens to context between model requests, the tradeoffs become surfaceable rather than speculative.
+This document is what you get when you commit to that view. It is a mechanical explanation of the components that make up modernagentic systems, from the model request boundary to the harness patterns built around it. The organizing claim is simple: agentic architecture is context architecture. Once you ask what the model can see, what the harness can execute, and what happens to context between model requests, the tradeoffs become surfaceable rather than speculative.
 
 It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CLI, OpenCode, etc.), or an API reference. The goal is a shared mental model that any team member can use to evaluate, design, or critique an agentic system without getting trapped in vendor-specific metaphor.
 
