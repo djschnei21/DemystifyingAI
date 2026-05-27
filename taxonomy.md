@@ -103,7 +103,7 @@ An agent is not a peer to tools or skills in the sense of doing the same kind of
 3. **A Skill Set:** The procedural knowledge available for the model to read in on demand.
 4. **Permissions and Delegation Paths:** The boundaries that determine what the agent may execute directly and when it may hand work to another loop.
 
-Most harnesses ship with one or more **built-in agents**: predefined system prompts and toolsets exposed as *modes* (e.g., Planner, Coder, Researcher). Some harnesses also support **user-defined agents**, allowing operators to register their own system prompts and curate which tools, skills, MCP connections, and subagents are available within that agent's loop. The capability to bring your own agent is not universal; it is a deliberate harness feature, and its absence can be a meaningful constraint when evaluating a platform.
+Most harnesses ship with one or more **built-in agents**: predefined system prompts and toolsets exposed as *modes* (e.g., Planner, Coder, Researcher). Some harnesses also support **user-defined agents**, allowing operators to register their own system prompts and curate which tools, skills, MCP connections, and subagents are available within that agent's loop. The capability to bring your own agent is not universal; it is a deliberate harness feature, and its absence can be a meaningful constraint when evaluating a harness.
 
 ## [IX · Agentic Construct] Tools {#tools}
 
