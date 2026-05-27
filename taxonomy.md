@@ -107,7 +107,7 @@ Most harnesses ship with one or more **built-in agents**: predefined system prom
 
 ## [IX · Agentic Construct] Tools {#tools}
 
-**Definition:** A tool is a named operation made available to the model through a description and parameter schema. When the model returns a structured tool call matching that schema, the harness executes the underlying code outside the model and places the result in the context window for the next model request.
+**Definition:** A tool is a named operation made available to the model through a description and parameter schema. When the model returns a structured tool call matching that schema, the harness executes the underlying code within its own environment and places the result in the context window for the next model request.
 
 > **Examples:**
 >
