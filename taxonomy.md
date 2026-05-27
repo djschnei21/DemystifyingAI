@@ -16,6 +16,8 @@ It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CL
 
 **Definition:** A token is a model-side chunk of text used as a unit for processing, prediction, counting, and billing. Tokens are not necessarily words; they may be words, parts of words, punctuation, whitespace, or other text fragments.
 
+![Text to tokens](diagrams/tokens.png)
+
 ## [II · Foundations] The Model {#model}
 
 **Definition:** A model is a stateless service that receives text, processes it as tokens, and returns predicted text. It does not remember previous requests, execute code, inspect your environment, or take action; it only returns text.
