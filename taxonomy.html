@@ -843,10 +843,10 @@
     const tocGroupLabel = (entry) => {
       if (entry.label.toLowerCase() === 'preamble') return '';
       const group = entry.label.split('·')[1]?.trim() || '';
-      return group === 'Primitive' ? 'Primitives' : group;
+      return group === 'Agentic Construct' ? 'Agentic Constructs' : group;
     };
     const tocTitle = (entry) => inlineMarkdown(entry.title.replace(/^What This Document Is$/, 'What This Is'));
-    const numberedTocGroups = new Set(['Foundations', 'Primitives']);
+    const numberedTocGroups = new Set(['Foundations', 'Agentic Constructs']);
     const groupedToc = [];
 
     rendered.toc.forEach((entry) => {
