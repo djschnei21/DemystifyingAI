@@ -20,6 +20,8 @@ It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CL
 
 **Definition:** A model is a stateless service that receives text, processes it as tokens, and returns predicted text. It does not remember previous requests, execute code, inspect your environment, or take action; it only returns text.
 
+![Tokens in, the model, tokens out](diagrams/model.png)
+
 > **Examples:**
 >
 > - GPT-5.5, Claude Opus 4.7, Gemini 3.1 Pro, Llama 4 Maverick, and other named model endpoints.
@@ -34,11 +36,15 @@ When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are 
 
 **Definition:** The context window is the set of tokens the model can use during a single inference. Anything outside the context window does not exist to the model; everything inside competes for finite attention and space.
 
+![The context window contains the system prompt, tool schemas, skill descriptions, user request, and remaining free space](diagrams/contextwindow.png)
+
 This is why agentic architecture is largely context architecture. A system prompt, a tool schema, a file attachment, a skill body, a tool result, or a subagent summary can affect the next inference only if the harness includes it in the next model request. The mechanical question is always when something enters context, how much space it consumes, and what role it plays in the next model request.
 
 ## [V · Foundations] The Harness {#harness}
 
 **Definition:** The harness is the runtime or application responsible for operating the model: it constructs each model request, sends it to the model, parses text returned by the model, executes any requested actions in its own environment, and decides what populates the context window for the next model request.
+
+![The harness runs in the environment and mediates requests to and from the model API](diagrams/harness.png)
 
 > **Examples:**
 >
@@ -55,7 +61,7 @@ Every construct in this document is fundamentally a design pattern dictating how
 A single inference can only produce an output. For a simple prompt, the loop may complete after one model request. For a prompt that requires external work, such as looking up documentation, calculating a value, or editing a file, the harness performs that work and places the result into context for another model request.
 
 1. **Model Request:** The harness sends a model request containing the current context.
-2. **Inference:** The model processes the request as tokens and returns predicted text.
+2. **Inference:** The model processes the request text (context window) and returns predicted text.
 3. **Parsing:** The harness parses the returned text for requested actions, such as a formatted JSON tool call.
 4. **Execution:** If an allowed action was requested, the harness executes it in its own runtime environment, outside the model.
 5. **Context Update:** If execution occurred, the harness places the result in the context window for the next model request.

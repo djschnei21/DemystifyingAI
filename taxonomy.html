@@ -336,6 +336,16 @@
     margin-bottom: 0;
   }
 
+  .diagram {
+    width: 100%;
+    margin: 2rem 0 2.4rem;
+  }
+  .diagram img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
   /* Drop cap on first paragraph of What This Document Is */
   #what-this-is > p:first-of-type::first-letter {
     font-family: var(--font-display);
@@ -705,6 +715,17 @@
     return `<p>${inlineMarkdown(value)}</p>`;
   };
 
+  const renderImage = (line) => {
+    const image = line.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (!image) return null;
+
+    return `
+      <figure class="diagram">
+        <img src="${escapeHtml(image[2])}" alt="${escapeHtml(image[1])}" loading="lazy">
+      </figure>
+    `;
+  };
+
   const renderLabeledQuote = (quoteLines) => {
     const label = quoteLines[0].match(/^\*\*([^*]+):\*\*\s*(.*)$/);
     if (!label) {
@@ -781,6 +802,13 @@
         continue;
       }
 
+      const image = renderImage(line.trim());
+      if (image) {
+        html.push(image);
+        index += 1;
+        continue;
+      }
+
       const table = parseTable(lines, index);
       if (table) {
         html.push(table.html);
@@ -824,6 +852,7 @@
         lines[index].trim() &&
         !parseHeading(lines[index]) &&
         !lines[index].startsWith('```') &&
+        !renderImage(lines[index].trim()) &&
         !/^>\s?/.test(lines[index]) &&
         !/^-\s+/.test(lines[index]) &&
         !/^\d+\.\s+/.test(lines[index]) &&
