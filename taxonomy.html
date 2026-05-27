@@ -856,7 +856,6 @@
       return group === 'Agentic Construct' ? 'Agentic Constructs' : group;
     };
     const tocTitle = (entry) => inlineMarkdown(entry.title.replace(/^What This Document Is$/, 'What This Is'));
-    const numberedTocGroups = new Set(['Foundations', 'Agentic Constructs']);
     const groupedToc = [];
 
     rendered.toc.forEach((entry) => {
@@ -867,10 +866,8 @@
 
       const group = tocGroupLabel(entry);
       const last = groupedToc[groupedToc.length - 1];
-      const isNumbered = numberedTocGroups.has(group);
-      const number = isNumbered ? `<span class="toc-num" aria-hidden="true">${escapeHtml(entry.label.split('·')[0].trim())}.</span>` : '';
-      const className = isNumbered ? 'toc-entry' : 'toc-entry toc-meta-entry';
-      const item = `<li class="${className}"><a href="#${entry.id}" data-section="${entry.id}">${number}<span class="toc-text">${tocTitle(entry)}</span></a></li>`;
+      const number = `<span class="toc-num" aria-hidden="true">${escapeHtml(entry.label.split('·')[0].trim())}.</span>`;
+      const item = `<li class="toc-entry"><a href="#${entry.id}" data-section="${entry.id}">${number}<span class="toc-text">${tocTitle(entry)}</span></a></li>`;
 
       if (last?.group === group) {
         last.items.push(item);
