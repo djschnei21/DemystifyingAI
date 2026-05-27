@@ -101,16 +101,18 @@
     list-style: none;
     padding: 0;
     margin: 0;
+  }
+  #toc-list {
     counter-reset: toc;
   }
-  .toc li {
+  .toc li.toc-entry {
     counter-increment: toc;
     margin: 0.6rem 0;
     position: relative;
     padding-left: 2.8rem;
     line-height: 1.4;
   }
-  .toc li::before {
+  .toc li.toc-entry::before {
     content: counter(toc, upper-roman) ".";
     position: absolute;
     left: 0;
@@ -127,6 +129,18 @@
   }
   .toc li.toc-preamble::before {
     display: none;
+  }
+  .toc li.toc-group {
+    margin: 1rem 0 0.8rem;
+    padding-left: 0;
+  }
+  .toc-group-label {
+    display: block;
+    margin: 0 0 0.45rem;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-subtle);
   }
   .toc a {
     color: var(--text-muted);
@@ -829,9 +843,34 @@
 
     const rendered = renderBlocks(body);
     document.getElementById('content').innerHTML = rendered.html;
-    document.getElementById('toc-list').innerHTML = rendered.toc.map((entry) => {
-      const className = entry.label.toLowerCase() === 'preamble' ? ' class="toc-preamble"' : '';
-      return `<li${className}><a href="#${entry.id}" data-section="${entry.id}">${inlineMarkdown(entry.title.replace(/^What This Document Is$/, 'What This Is'))}</a></li>`;
+    const tocGroupLabel = (entry) => {
+      if (entry.label.toLowerCase() === 'preamble') return '';
+      const group = entry.label.split('·')[1]?.trim() || '';
+      return group === 'Primitive' ? 'Primitives' : group;
+    };
+    const tocTitle = (entry) => inlineMarkdown(entry.title.replace(/^What This Document Is$/, 'What This Is'));
+    const groupedToc = [];
+
+    rendered.toc.forEach((entry) => {
+      if (entry.label.toLowerCase() === 'preamble') {
+        groupedToc.push(`<li class="toc-preamble"><a href="#${entry.id}" data-section="${entry.id}">${tocTitle(entry)}</a></li>`);
+        return;
+      }
+
+      const group = tocGroupLabel(entry);
+      const last = groupedToc[groupedToc.length - 1];
+      const item = `<li class="toc-entry"><a href="#${entry.id}" data-section="${entry.id}">${tocTitle(entry)}</a></li>`;
+
+      if (last?.group === group) {
+        last.items.push(item);
+      } else {
+        groupedToc.push({ group, items: [item] });
+      }
+    });
+
+    document.getElementById('toc-list').innerHTML = groupedToc.map((entry) => {
+      if (typeof entry === 'string') return entry;
+      return `<li class="toc-group"><span class="toc-group-label">${escapeHtml(entry.group)}</span><ol>${entry.items.join('')}</ol></li>`;
     }).join('');
     document.getElementById('footer').innerHTML = formatWithDots(metadata.footer || '');
 
