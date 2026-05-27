@@ -26,7 +26,7 @@ It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CL
 >
 > - GPT-5.5, Claude Opus 4.7, Gemini 3.1 Pro, Llama 4 Maverick, and other named model endpoints.
 
-When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are describing harness behavior around the model, not properties inside the model. Everything else in this document exists because the harness decides what text and context to send, how to interpret the text that comes back, and what to do before the next model request.
+When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are describing harness behavior around the model, not properties inside the model. Everything else in this document exists because the harness decides what text to send (as context), how to interpret the text that comes back, and what to do before the next model request.
 
 ## [III · Foundations] Inference {#inference}
 
