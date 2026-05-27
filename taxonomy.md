@@ -58,6 +58,8 @@ Every construct in this document is fundamentally a design pattern dictating how
 
 **Definition:** The agentic loop is the cycle a harness runs for every prompt: it sends a model request, parses the returned text for requested actions, executes any allowed actions, places results back into context, and repeats until no further actions are requested.
 
+![The agentic loop cycles from model request to inference, parsing, execution, context update, and repeat or stop](diagrams/agenticloop.png)
+
 A single inference can only produce an output. For a simple prompt, the loop may complete after one model request. For a prompt that requires external work, such as looking up documentation, calculating a value, or editing a file, the harness performs that work and places the result into context for another model request.
 
 1. **Model Request:** The harness sends a model request containing the current context.
