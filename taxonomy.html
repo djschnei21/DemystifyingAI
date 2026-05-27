@@ -79,6 +79,7 @@
     position: fixed;
     top: 4.5rem;
     left: 2rem;
+    z-index: 10;
     width: 12rem;
     font-family: var(--font-display);
     font-size: 0.78rem;
@@ -150,11 +151,15 @@
     color: var(--text-muted);
     text-decoration: none;
     transition: color 0.2s ease;
-    border-bottom: 1px solid transparent;
   }
   .toc a:hover { color: var(--accent); }
   .toc a.active {
     color: var(--text);
+  }
+  .toc-text {
+    border-bottom: 1px solid transparent;
+  }
+  .toc a.active .toc-text {
     border-bottom-color: var(--accent);
   }
 
@@ -858,7 +863,7 @@
 
     rendered.toc.forEach((entry) => {
       if (entry.label.toLowerCase() === 'preamble') {
-        groupedToc.push(`<li class="toc-preamble"><a href="#${entry.id}" data-section="${entry.id}">${tocTitle(entry)}</a></li>`);
+        groupedToc.push(`<li class="toc-preamble"><a href="#${entry.id}" data-section="${entry.id}"><span class="toc-text">${tocTitle(entry)}</span></a></li>`);
         return;
       }
 
@@ -867,7 +872,7 @@
       const isNumbered = numberedTocGroups.has(group);
       const number = isNumbered ? `<span class="toc-num" aria-hidden="true">${escapeHtml(entry.label.split('·')[0].trim())}.</span>` : '';
       const className = isNumbered ? 'toc-entry' : 'toc-entry toc-meta-entry';
-      const item = `<li class="${className}"><a href="#${entry.id}" data-section="${entry.id}">${number}${tocTitle(entry)}</a></li>`;
+      const item = `<li class="${className}"><a href="#${entry.id}" data-section="${entry.id}">${number}<span class="toc-text">${tocTitle(entry)}</span></a></li>`;
 
       if (last?.group === group) {
         last.items.push(item);
