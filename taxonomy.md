@@ -8,7 +8,7 @@ footer: Customer Design Labs • 2026
 
 Anthropomorphic metaphors have their place in how we talk about agentic systems. Calling an agent a *persona*, a skill a *runbook*, or a subagent a *teammate* can speed up early design conversations. But for engineers without a working intuition for these systems, the same vocabulary can feel imprecise or worse, inaccessible. Metaphors must yield to the mechanical and architectural realities of how these primitives actually work; the mechanics are the foundation, and metaphors sit on top of them.
 
-This document is what you get when you commit to that view. It is a mechanical explanation of the components that make up modernagentic systems, from the model request boundary to the harness patterns built around it. The organizing claim is simple: agentic architecture is context architecture. Once you ask what the model can see, what the harness can execute, and what happens to context between model requests, the tradeoffs become surfaceable rather than speculative.
+This document is what you get when you commit to that view. It is a mechanical explanation of the components that make up modern agentic systems, from the model request boundary to the harness patterns built around it. The organizing claim is simple: agentic architecture is context architecture. Once you ask what the model can see, what the harness can execute, and what happens to context between model requests, the tradeoffs become surfaceable rather than speculative.
 
 It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CLI, OpenCode, etc.), or an API reference. The goal is a shared mental model that any team member can use to evaluate, design, or critique an agentic system without getting trapped in vendor-specific metaphor.
 
@@ -61,29 +61,11 @@ A single inference can only produce an output. For a simple prompt, the loop may
 5. **Context Update:** If execution occurred, the harness places the result in the context window for the next model request.
 6. **Repeat or Stop:** If further action is needed, the harness sends another model request with the updated context. If no action is requested, the loop ends with the model's output.
 
-The *agent* in *agentic* is simply this loop. Strip it away, and you have a standard chatbot. Add it, and you have a system capable of chaining actions together to achieve a goal.
+The loop is what makes a harness agentic. Strip it away, and you have a standard chatbot. Add it, and you have a system capable of chaining actions together to achieve a goal.
 
-## [VII · Foundations] Agents {#agents}
+## [VII · Lens] The Three Axes {#axes}
 
-**Definition:** An agent is a configured agentic loop defined by a system prompt, a toolset, and a skill set; it is the container that the other primitives fill.
-
-> **Examples:**
->
-> - Planner, Builder, Researcher, Code Reviewer, QA, and Security Reviewer agents configured with different prompts, tools, skills, and permissions.
-
-An agent is not a peer to tools or skills; it is the container that determines which instructions, capabilities, and procedural knowledge are available inside a particular loop. Mechanically, that configuration is defined by three things:
-
-1. **A System Prompt:** Defining the model's role, purpose, and behavioral guidance.
-2. **A Toolset:** The specific capabilities exposed to the loop, including the permissions and access boundaries enforced by the harness.
-3. **A Skill Set:** The procedural knowledge available for the model to read in on demand.
-
-Most harnesses ship with one or more **built-in agents**: predefined system prompts and toolsets exposed as *modes* (e.g., Planner, Coder, Researcher). Some harnesses also support **user-defined agents**, allowing operators to register their own system prompts and curate which tools, MCPs, and skills are available within that agent's loop. The capability to bring your own agent is not universal; it is a deliberate harness feature, and its absence can be a meaningful constraint when evaluating a platform.
-
-Tools, MCPs, skills, and subagents are the primitives that fill this container, whether the container is built-in or user-defined.
-
-## [VIII · Lens] The Three Axes {#axes}
-
-Before comparing tools, skills, MCP, and subagents, it helps to use the same mechanical questions for each one:
+Before comparing agents, tools, skills, and subagents, it helps to use the same mechanical questions for each one:
 
 1. **Initialization:** When does its model-visible payload enter the context window?
 2. **Execution Context:** Where does the work happen?
@@ -93,11 +75,29 @@ These axes are not primitives themselves. They are the lens for comparing primit
 
 | Primitive | Initialization | Execution Context | Payload |
 | --- | --- | --- | --- |
+| Agent | On session start or agent selection | Configured loop | System prompt, toolset, skill set, permissions |
 | Tool | Session initialization | Current context | Schema only (opaque code) |
 | Skill | On skill request | Current context | Manifest, scripts, files (transparent) |
 | Subagent | On parent delegation | Separate context | Isolated prompt & toolset |
 
-Note that this table flattens primitives onto comparable axes but does not capture composition: skills routinely invoke tools, including MCP-delivered tools, and subagents are themselves agents configured with their own tools and skills.
+Note that this table flattens primitives onto comparable axes but does not capture composition: agents contain tools and skills, skills routinely invoke tools, including MCP-delivered tools, and subagents are themselves agents configured with their own tools and skills.
+
+## [VIII · Primitive] Agents {#agents}
+
+**Definition:** An agent is the container primitive: a configured agentic loop defined by a system prompt, a toolset, a skill set, and permissions. It determines which instructions, capabilities, procedural knowledge, and delegation paths are available for a task.
+
+> **Examples:**
+>
+> - Planner, Builder, Researcher, Code Reviewer, QA, and Security Reviewer agents configured with different prompts, tools, skills, and permissions.
+
+An agent is not a peer to tools or skills in the sense of doing the same kind of work. It is the primitive that composes them into a particular operating configuration. Mechanically, that configuration is defined by four things:
+
+1. **A System Prompt:** Defining the model's role, purpose, and behavioral guidance.
+2. **A Toolset:** The specific capabilities exposed to the loop, including the permissions and access boundaries enforced by the harness.
+3. **A Skill Set:** The procedural knowledge available for the model to read in on demand.
+4. **Permissions and Delegation Paths:** The boundaries that determine what the agent may execute directly and when it may hand work to another loop.
+
+Most harnesses ship with one or more **built-in agents**: predefined system prompts and toolsets exposed as *modes* (e.g., Planner, Coder, Researcher). Some harnesses also support **user-defined agents**, allowing operators to register their own system prompts and curate which tools, skills, MCP connections, and subagents are available within that agent's loop. The capability to bring your own agent is not universal; it is a deliberate harness feature, and its absence can be a meaningful constraint when evaluating a platform.
 
 ## [IX · Primitive] Tools {#tools}
 
@@ -160,28 +160,7 @@ skill {
 }
 ```
 
-## [XI · The Harness Extended] MCP {#mcp}
-
-**Definition:** MCP is a standardized protocol that lets a harness connect to external servers that expose tools, resources, or prompts. MCP does not give the model a new capability directly; the harness must register or inject what the server provides before it can appear in the context window or be requested by the model.
-
-> **Examples:**
->
-> - GitHub MCP server, filesystem MCP server, Playwright MCP server, PostgreSQL MCP server, Atlassian/Jira MCP server, and Terraform MCP server.
-
-MCP is therefore not a new kind of model capability. Like the other primitives in this taxonomy, it exists in the harness layer: it extends the harness's perimeter by moving authentication, portability, vendor coupling, permissions, and service ownership out of the local runtime and into a protocol relationship with another system.
-
-Today, MCP-exposed tools are the most common use case, but the protocol is broader than tool delivery. An MCP server can expose tools, resources, and prompts; the harness can expose capabilities back to the server, such as LLM inference, workspace scope, and user input collection. Once registered or injected by the harness, these resolve into patterns this document has already described:
-
-- An MCP tool, once registered by the harness, is a tool: schema enters context, implementation remains opaque, result returns as context.
-- An MCP resource or prompt, once injected by the harness, is context: tokens added to the next model request, no different in kind from a local file, a system prompt fragment, or a skill body.
-
-What MCP does not change is the harness's responsibility: deciding what to expose, what to execute, what to inject, and what reaches the model.
-
-In practice, most harnesses fully surface MCP tools. Support for resources and prompts is uneven. Some expose them as attachable context and slash commands; others ignore them entirely. That variance is the point: the specification may define what can cross the boundary, but the harness decides what actually becomes available in the loop.
-
-> **Key Takeaway:** MCP standardizes the boundary between a harness and external capability servers. It does not create a new model primitive; what arrives over MCP still becomes a tool, context, or harness-mediated request before it reaches the model.
-
-## [XII · Primitive] Subagents {#subagents}
+## [XI · Primitive] Subagents {#subagents}
 
 **Definition:** A subagent is a separate agentic loop started by the harness in response to a parent agent's request. It runs with its own context window, system prompt, and toolset; when it finishes, the harness places only its final output back into the parent's context window.
 
@@ -209,11 +188,32 @@ subagent {
 }
 ```
 
+## [XII · The Harness Extended] MCP {#mcp}
+
+**Definition:** MCP is a standardized protocol that lets a harness connect to external servers that expose tools, resources, or prompts. MCP does not give the model a new capability directly; the harness must register or inject what the server provides before it can appear in the context window or be requested by the model.
+
+> **Examples:**
+>
+> - GitHub MCP server, filesystem MCP server, Playwright MCP server, PostgreSQL MCP server, Atlassian/Jira MCP server, and Terraform MCP server.
+
+MCP is therefore not a new kind of model capability. Like the other primitives in this taxonomy, it exists in the harness layer: it extends the harness's perimeter by moving authentication, portability, vendor coupling, permissions, and service ownership out of the local runtime and into a protocol relationship with another system.
+
+Today, MCP-exposed tools are the most common use case, but the protocol is broader than tool delivery. An MCP server can expose tools, resources, and prompts; the harness can expose capabilities back to the server, such as LLM inference, workspace scope, and user input collection. Once registered or injected by the harness, these resolve into patterns this document has already described:
+
+- An MCP tool, once registered by the harness, is a tool: schema enters context, implementation remains opaque, result returns as context.
+- An MCP resource or prompt, once injected by the harness, is context: tokens added to the next model request, no different in kind from a local file, a system prompt fragment, or a skill body.
+
+What MCP does not change is the harness's responsibility: deciding what to expose, what to execute, what to inject, and what reaches the model.
+
+In practice, most harnesses fully surface MCP tools. Support for resources and prompts is uneven. Some expose them as attachable context and slash commands; others ignore them entirely. That variance is the point: the specification may define what can cross the boundary, but the harness decides what actually becomes available in the loop.
+
+> **Key Takeaway:** MCP standardizes the boundary between a harness and external capability servers. It does not create a new model primitive; what arrives over MCP still becomes a tool, context, or harness-mediated request before it reaches the model.
+
 ## [XIII · Synthesis] Implications {#implications}
 
 By evaluating these constructs mechanically rather than metaphorically, several architectural tradeoffs become clear:
 
-- **The harness, loop, and agent are the operating frame.** You do not choose between a tool and an agent. A tool is useful only because a harness can run an agentic loop: expose a schema, parse a request, execute code, and place the result back into context.
+- **The harness and loop are the operating frame.** Agents, tools, skills, and subagents are useful only because a harness can run an agentic loop: construct model requests, parse requested actions, execute allowed work, and place results back into context.
 - **MCP is not a primitive.** MCP is a delivery boundary. You can have a local tool, an MCP-delivered tool, or a skill that instructs the model to use an MCP-delivered tool.
 - **Skills and tools compose rather than compete.** A tool exposes an operation the harness can execute. A skill exposes procedural knowledge the model can follow, often by invoking one or more tools. The reverse does not hold: tools have no mechanism to contain or invoke skills.
 - **Subagents trade isolation for coordination cost.** A subagent provides a fresh context window and scoped toolset, but introduces delegation, summarization, and token overhead. It is useful when that isolation is worth more than the added cost.
