@@ -52,7 +52,7 @@ Every construct in this document is fundamentally a design pattern dictating how
 
 **Definition:** The agentic loop is the cycle a harness runs for every prompt: it sends a model request, parses the returned tokens for requested actions, executes any allowed actions, places results back into context, and repeats until no further actions are requested.
 
-A single inference can only produce an output. For a simple prompt, the loop may complete after one model request. For a more complex prompt, such as looking up documentation, calculating a value, or mutating state, the harness must turn that output into the next input after any external work completes.
+A single inference can only produce an output. For a simple prompt, the loop may complete after one model request. For a more complex prompt, such as looking up documentation, calculating a value, or editing a file, the harness must turn that output into the next input after any external work completes.
 
 1. **Model Request:** The harness sends the current context window to the model.
 2. **Inference:** The model receives the tokens and returns predicted tokens.
