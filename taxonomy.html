@@ -103,6 +103,7 @@
     margin: 0;
   }
   .toc li::before {
+    content: none;
     display: none;
   }
   .toc li.toc-entry {
@@ -128,8 +129,13 @@
     padding-left: 0;
   }
   .toc li.toc-group {
+    counter-increment: none;
     margin: 1rem 0 0.8rem;
     padding-left: 0;
+  }
+  .toc li.toc-group::before {
+    content: none;
+    display: none;
   }
   .toc-group-label {
     display: block;
@@ -140,6 +146,7 @@
     color: var(--text-subtle);
   }
   .toc a {
+    display: block;
     color: var(--text-muted);
     text-decoration: none;
     transition: color 0.2s ease;
@@ -858,9 +865,9 @@
       const group = tocGroupLabel(entry);
       const last = groupedToc[groupedToc.length - 1];
       const isNumbered = numberedTocGroups.has(group);
-      const number = isNumbered ? `<span class="toc-num">${escapeHtml(entry.label.split('·')[0].trim())}.</span>` : '';
+      const number = isNumbered ? `<span class="toc-num" aria-hidden="true">${escapeHtml(entry.label.split('·')[0].trim())}.</span>` : '';
       const className = isNumbered ? 'toc-entry' : 'toc-entry toc-meta-entry';
-      const item = `<li class="${className}">${number}<a href="#${entry.id}" data-section="${entry.id}">${tocTitle(entry)}</a></li>`;
+      const item = `<li class="${className}"><a href="#${entry.id}" data-section="${entry.id}">${number}${tocTitle(entry)}</a></li>`;
 
       if (last?.group === group) {
         last.items.push(item);
