@@ -110,7 +110,7 @@ An agent is not a peer to tools or skills in the sense of doing the same kind of
 Most harnesses ship with one or more **built-in agents**: predefined system prompts and toolsets exposed as *modes* (e.g., Planner, Coder, Researcher). Some harnesses also support **user-defined agents**, allowing operators to register their own system prompts and curate which tools, skills, MCP connections, and subagents are available within that agent's loop. The capability to bring your own agent is not universal; it is a deliberate harness feature, and its absence can be a meaningful constraint when evaluating a harness.
 
 ```text
-# PSEUDOCODE - illustrative only; actual structure varies by harness
+# illustrative only; actual structure varies by harness
 agent {
   name:          "migration-planner"
   description:   "Plan complex migrations before implementation."
@@ -138,7 +138,7 @@ agent {
 - **Visibility:** The implementation is opaque to the model. The model only sees the schema going in and the text result coming back; it never sees the underlying code.
 
 ```text
-# PSEUDOCODE - illustrative only; actual syntax varies by harness
+# illustrative only; actual syntax varies by harness
 tool {
   name:           "search_docs"
   description:    "Search the IBM Knowledge Center. Use when the user
@@ -172,7 +172,7 @@ Two mechanical properties distinguish them from tools:
 Crucially, skills compose with tools rather than replacing them. A skill's instructions typically direct the model to invoke specific tools (local or MCP-delivered) in a particular sequence, with branching logic the model interprets at read time. The relationship is hierarchical: skills can orchestrate tools; tools cannot contain skills.
 
 ```text
-# PSEUDOCODE - illustrative only; actual structure varies by harness
+# illustrative only; actual structure varies by harness
 skill {
   name:        "deploy-to-prod"
   description: "Production deployment runbook. Invoke before pushing
@@ -201,7 +201,7 @@ When the harness starts a subagent, the parent loop waits while the child loop w
 The token cost is material. A parent-child workflow spends tokens in both loops: the parent frames the task and absorbs the result, while the child spends context on investigation, tool use, and summarization. Anthropic's June 2025 multi-agent research system report found roughly 15× more token use than comparable single-agent baselines. The question is whether isolation, scoped permissions, or parallel exploration justify the added coordination and spend.
 
 ```text
-# PSEUDOCODE - illustrative only; actual structure varies by harness
+# illustrative only; actual structure varies by harness
 subagent {
   name:          "code-reviewer"
   description:   "Invoke for pull request review or pre-commit code audit."
