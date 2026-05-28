@@ -88,9 +88,9 @@ Before comparing agents, tools, skills, and subagents, it's crucial to keep each
 | Construct | Initialization | Agentic Loop Scope | Context Payload |
 | --- | --- | --- | --- |
 | Agent | On session start or agent selection | Defines the configured loop | System prompt, toolset, skill set, permissions |
-| Tool | Session initialization | Current loop | Schema only (opaque code) |
+| Tool | Session initialization | Current loop | Request schema only (opaque code) |
 | Skill | On skill request | Current loop | Manifest, scripts, files (transparent) |
-| Subagent | When a parent agent invokes it | Separate loop | Isolated prompt & toolset |
+| Subagent | When a parent agent invokes it | Separate loop | System prompt, toolset, skill set, permissions |
 
 Note that this table flattens constructs onto comparable axes but does not capture composition: agents contain tools and skills, skills routinely invoke tools, including MCP-delivered tools, and subagents are themselves agents configured with their own tools and skills.
 
