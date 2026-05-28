@@ -45,7 +45,7 @@ The important word is *one*. An inference is not a conversation, a workflow, or 
 
 ![The context window contains the system prompt, tool schemas, skill descriptions, user request, and remaining free space](diagrams/contextwindow.png)
 
-This is why agentic architecture is largely context architecture. A system prompt, a tool schema, a file attachment, a skill body, a tool result, or a subagent summary can affect the next inference only if the harness includes it in the next model request. The mechanical question is always when something enters context, how much space it consumes, and what role it plays in the next model request.
+This is why agentic architecture is largely context architecture. A system prompt, a tool schema, a file attachment, a skill body, a tool result, or a subagent summary can affect the next inference only if the harness includes it in the next model request. Everything in the context window is represented to the model as text, and that text consumes tokens. The question is always when something enters context, how much space it consumes, and what role it plays in the next model request.
 
 ## [V · Foundations] The Harness {#harness}
 
