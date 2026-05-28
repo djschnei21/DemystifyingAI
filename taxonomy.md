@@ -103,7 +103,8 @@ Note that this table flattens constructs onto comparable axes but does not captu
 >
 > Planner, Builder, Researcher, Code Reviewer, QA, and Security Reviewer are agent types configured with different prompts, tools, skills, and permissions.
 
-An agent is not a peer to tools or skills in the sense of doing the same kind of work. Rather, an agent composes tools, skills, instructions, and access boundaries into a particular operating configuration. That configuration is defined by four things:
+An agent is not a peer to tools or skills in the sense of doing the same kind of work. Rather, an agent composes tools, skills, instructions, and permissions into a particular operating configuration. That configuration is defined by four things:
+
 1. **System Prompt:** The instructions that define the agent's role, purpose, and behavior.
 2. **Toolset:** The operations the agent may request from the harness, along with any access limits around them.
 3. **Skill Set:** The procedural knowledge the agent may load into context when relevant.
@@ -210,7 +211,7 @@ skill {
 >
 > Research, code-review, test-failure triage, security-review, documentation, migration-planning, and dependency-upgrade subagents spawned by a parent coding agent.
 
-The core tradeoff is **context and toolset isolation**. A subagent helps when a task has a clear boundary, needs many tokens, can run independently, or should operate with narrower permissions. It hurts when the task depends tightly on the parent's surrounding context, is small, or would require an expensive summary to be useful.
+A subagent helps when the parent can hand off a clearly scoped task, such as research, review, or triage, and receive a compact result back. It can also help when the work would consume too much parent context or should run with a narrower toolset. It hurts when the task depends tightly on the parent's surrounding context, is small, or would require an expensive summary to be useful.
 
 When the harness starts a subagent, the parent loop waits while the child loop works. The parent receives a summary or artifact, not the child's full intermediate history. This keeps the parent context cleaner, but detail can be lost at the handoff.
 
