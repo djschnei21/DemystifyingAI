@@ -80,7 +80,7 @@ A simple prompt such as "Rewrite this paragraph more clearly" still runs through
 
 ## [VII · Context Architecture Lens] The Three Axes {#axes}
 
-Before comparing agents, tools, skills, and subagents, it's crucial to keep each of the following mechanical questions in mind:
+Before comparing agents, tools, skills, and subagents, it's crucial to keep each of the following questions in mind:
 
 1. **Initialization:** When does its model-visible payload enter the context window?
 2. **Agentic Loop Scope:** Which agentic loop does this construct operate within?
@@ -88,10 +88,10 @@ Before comparing agents, tools, skills, and subagents, it's crucial to keep each
 
 | Construct | Initialization | Agentic Loop Scope | Context Payload |
 | --- | --- | --- | --- |
-| Agent | On session start or agent selection | Defines the configured loop | System prompt, toolset, skill set, permissions |
+| Agent | On session start or agent selection | Defines the current loop | System prompt, toolset, skill set, permissions |
 | Tool | Session initialization | Current loop | Request schema only (opaque code) |
 | Skill | On skill request | Current loop | Manifest, scripts, files (transparent) |
-| Subagent | When a parent agent invokes it | Separate loop | System prompt, toolset, skill set, permissions |
+| Subagent | When a parent agent invokes it | Defines the child loop | System prompt, toolset, skill set, permissions |
 
 Note that this table flattens constructs onto comparable axes but does not capture composition: agents contain tools and skills, skills routinely invoke tools, including MCP-delivered tools, and subagents are themselves agents configured with their own tools and skills.
 
