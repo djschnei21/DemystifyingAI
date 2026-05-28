@@ -63,20 +63,20 @@ Every construct in this document is fundamentally a design pattern dictating how
 
 ## [VI · Foundations] The Agentic Loop {#loop}
 
-**Definition:** The agentic loop is the cycle a harness runs for every prompt: it sends a model request, receives a model response, parses that response for requested actions, runs any allowed actions, updates context, and repeats until no further actions are requested.
+**Definition:** The agentic loop is the cycle a harness runs for every prompt: it sends a model request, receives a model response, parses that response for requested actions, runs any allowed actions, updates context, and repeats until no further actions are requested. When the loop stops, the harness shows the model's final response to the user.
 
 ![The agentic loop cycles from model request to inference, model response, parse response, run actions, update context, and back to model request](diagrams/agenticloop.png)
 
-A single inference only produces a model response. For a simple prompt, parsing that response may reveal no requested actions, so the loop stops after one model request. For a prompt that requires external work, such as looking up documentation, calculating a value, or editing a file, the harness runs the requested actions, updates context with the results, and sends another model request.
+The loop is what makes a harness agentic. Strip it away, and you have a standard chatbot. Add it, and you have a system capable of chaining actions together to achieve a goal.
+
+A simple prompt such as "Rewrite this paragraph more clearly" still runs through the loop, but only once: the harness sends the request, receives the model response, finds no requested action, and shows that final response to the user. A prompt such as "Find the failing test, fix the bug, and verify the result" requires multiple passes through the loop: the model requests file reads, test runs, edits, and follow-up checks; after each action, the harness updates context and sends another model request. When no further action is requested, the harness shows the model's final response to the user.
 
 1. **Model Request:** The harness sends a model request containing the current context.
 2. **Inference:** The model processes the request text as tokens.
 3. **Model Response:** The model returns predicted text.
 4. **Parse Response:** The harness parses the model response for requested actions, such as a formatted JSON tool call.
 5. **Run Actions:** If an allowed action was requested, the harness executes it in its own runtime environment, outside the model.
-6. **Update Context:** If an action ran, the harness places the result in the context window for the next model request. If no action was requested, the loop stops with the model response as the output.
-
-The loop is what makes a harness agentic. Strip it away, and you have a standard chatbot. Add it, and you have a system capable of chaining actions together to achieve a goal.
+6. **Update Context:** If an action ran, the harness places the result in the context window for the next model request. If no action was requested, the loop stops and the harness shows the model response to the user.
 
 ## [VII · Context Architecture Lens] The Three Axes {#axes}
 
@@ -97,20 +97,21 @@ Note that this table flattens constructs onto comparable axes but does not captu
 
 ## [VIII · Agentic Construct] Agents {#agents}
 
-**Definition:** An agent is the container construct: a configured agentic loop defined by a system prompt, a toolset, a skill set, permissions, and any subagents it may invoke. It determines which instructions, capabilities, and procedural knowledge are available for a task.
+**Definition:** An agent is a named configuration that tells the harness how to run an agentic loop. It bundles a system prompt, toolset, skill set, permissions, and possibly subagents the loop may invoke.
 
 > **Examples:**
 >
 > Planner, Builder, Researcher, Code Reviewer, QA, and Security Reviewer agents configured with different prompts, tools, skills, and permissions.
 
-An agent is not a peer to tools or skills in the sense of doing the same kind of work. It is the construct that composes them into a particular operating configuration. Mechanically, that configuration is defined by four things:
-
+An agent is not a peer to tools or skills in the sense of doing the same kind of work. Rather, an agent composes tools, skills, instructions, and access boundaries into a particular operating configuration. Mechanically, that configuration is defined by four things:
 1. **System Prompt:** The instructions that define the agent's role, purpose, and behavior.
 2. **Toolset:** The operations the agent may request from the harness, along with any access limits around them.
 3. **Skill Set:** The procedural knowledge the agent may load into context when relevant.
 4. **Permissions and Subagent Access:** The rules that determine what the agent may do directly and which separate loops, if any, it may ask the harness to start.
 
 Most harnesses ship with one or more **built-in agents**: predefined system prompts and toolsets exposed as *modes* (e.g., Planner, Coder, Researcher). Some harnesses also support **user-defined agents**, allowing operators to register their own system prompts and curate which tools, skills, MCP connections, and subagents are available within that agent's loop. The capability to bring your own agent is not universal; it is a deliberate harness feature, and its absence can be a meaningful constraint when evaluating a harness.
+
+Do not confuse an agent with files such as `AGENTS.md`, `CLAUDE.md`, or similar repository instruction files. Those files are not agents; they are context sources. If a harness loads them, their contents become instructions inside the context window for an agentic loop.
 
 ```text
 # illustrative only; actual structure varies by harness
