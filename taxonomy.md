@@ -14,27 +14,29 @@ It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CL
 
 ## [I · Foundations] Tokens {#tokens}
 
-**Definition:** A token is a model-side chunk of text used as a unit for processing, prediction, counting, and billing. Tokens are not necessarily words; they may be words, parts of words, punctuation, whitespace, or other text fragments.
+**Definition:** A token is a chunk of text used as a unit for processing, prediction, counting, and billing. Tokens are not necessarily words; they may be whole words, parts of words, punctuation, whitespace, or other text fragments.
 
 ![Text to tokens](diagrams/tokens.png)
 
-Tokens matter because they are the unit the model actually processes. The harness may send ordinary text, but the model receives that text after tokenization. This is why a context window is measured in tokens rather than words, why two strings with similar word counts can consume different amounts of model capacity, and why providers usually price model requests by input and output tokens.
+Before an AI system can work with text, the text is broken into tokens. A familiar word may stay whole, while a longer word may become several pieces. Token counts therefore matter for both limits and cost. Two sentences with the same number of words can require different amounts of processing, and providers usually charge based on how many tokens are sent in and generated back.
 
 ## [II · Foundations] The Model {#model}
 
 **Definition:** A model is a stateless service that receives text, processes it as tokens, and returns predicted text. It does not remember previous requests, execute code, inspect your environment, or take action; it only returns text.
 
-![Tokens in, the model, tokens out](diagrams/model.png)
-
 > **Examples:**
 >
-> - GPT-5.5, Claude Opus 4.7, Gemini 3.1 Pro, Llama 4 Maverick, and other named model endpoints.
+> GPT-5.5, Claude Opus 4.7, Gemini 3.1 Pro, Llama 4 Maverick, and other named model endpoints.
 
 When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are describing harness behavior around the model, not properties inside the model. Everything else in this document exists because the harness decides what text to send (as context), how to interpret the text that comes back, and what to do before the next model request.
 
 ## [III · Foundations] Inference {#inference}
 
-**Definition:** An inference is a single model-side operation in which input text is processed as tokens and returned as predicted text. It is what the model does when a request reaches its API: text in, tokenization and prediction inside, text out.
+**Definition:** An inference is one pass through a model: input text is processed as tokens, and predicted text is returned.
+
+![Text input is encoded into tokens, processed by the model, decoded, and returned as text output](diagrams/inference.png)
+
+The important word is *one*. An inference is not a conversation, a workflow, or an action loop. One inference has no memory of another unless earlier text is sent again, and it does not perform actions; it only returns text.
 
 ## [IV · Foundations] The Context Window {#context-window}
 
@@ -52,7 +54,7 @@ This is why agentic architecture is largely context architecture. A system promp
 
 > **Examples:**
 >
-> - Claude Code, GitHub Copilot CLI, Cursor, Aider, Cline, OpenHands, and custom LangChain or LangGraph applications.
+> Claude Code, GitHub Copilot CLI, Cursor, Aider, Cline, OpenHands, and custom LangChain or LangGraph applications.
 
 Whether it is a coding assistant in your IDE, a chat interface, or a custom Python script calling an API, the harness owns the state and side effects the model lacks. The model can request execution only by returning text the harness can parse; the harness decides whether that request maps to an available capability, runs the action if allowed, and places the result in the context window for the next model request.
 
@@ -98,7 +100,7 @@ Note that this table flattens constructs onto comparable axes but does not captu
 
 > **Examples:**
 >
-> - Planner, Builder, Researcher, Code Reviewer, QA, and Security Reviewer agents configured with different prompts, tools, skills, and permissions.
+> Planner, Builder, Researcher, Code Reviewer, QA, and Security Reviewer agents configured with different prompts, tools, skills, and permissions.
 
 An agent is not a peer to tools or skills in the sense of doing the same kind of work. It is the construct that composes them into a particular operating configuration. Mechanically, that configuration is defined by four things:
 
@@ -131,7 +133,7 @@ agent {
 
 > **Examples:**
 >
-> - `read_file`, `write_file`, `execute_shell`, `read_web`, `search_code`, and `mcp-atlassian-jira_get_issue`.
+> `read_file`, `write_file`, `execute_shell`, `read_web`, `search_code`, and `mcp-atlassian-jira_get_issue`.
 
 - **Initialization:** The tool's name, description, and schema are loaded into the system prompt at the start of the session. Some harnesses with large tool inventories route schemas into context based on relevance rather than loading them all at session start (for example, Claude Code defers MCP tool definitions by default, initially exposing only tool names); the payload itself remains an opaque contract either way.
 - **Execution:** When the model emits a tool call matching the schema, the harness intercepts the request, runs the underlying code in its own runtime environment, and appends the return value as text to the context window before issuing the next model request. The model itself never executes code; it only requests execution.
@@ -158,7 +160,7 @@ tool {
 
 > **Examples:**
 >
-> - Code-review runbooks; release or deployment runbooks; incident-response playbooks; organization-specific style-guide skills; and Anthropic's shipped document-processing skills for PDF, DOCX, XLSX, and PPTX.
+> Code-review runbooks; release or deployment runbooks; incident-response playbooks; organization-specific style-guide skills; and Anthropic's shipped document-processing skills for PDF, DOCX, XLSX, and PPTX.
 
 Where a tool exposes an operation the harness can execute, a skill exposes instructions the model can follow, often by orchestrating one or more tool calls along the way.
 
@@ -192,7 +194,7 @@ skill {
 
 > **Examples:**
 >
-> - Research, code-review, test-failure triage, security-review, documentation, migration-planning, and dependency-upgrade subagents spawned by a parent coding agent.
+> Research, code-review, test-failure triage, security-review, documentation, migration-planning, and dependency-upgrade subagents spawned by a parent coding agent.
 
 The core tradeoff is **context and toolset isolation**. A subagent helps when a task can be bounded, needs many tokens, can run independently, or should operate with narrower permissions. It hurts when the task depends tightly on the parent's surrounding context, is small, or would require an expensive summary to be useful.
 
@@ -222,7 +224,7 @@ subagent {
 
 > **Examples:**
 >
-> - GitHub MCP server, filesystem MCP server, Playwright MCP server, PostgreSQL MCP server, Atlassian/Jira MCP server, and Terraform MCP server.
+> GitHub MCP server, filesystem MCP server, Playwright MCP server, PostgreSQL MCP server, Atlassian/Jira MCP server, and Terraform MCP server.
 
 MCP is therefore not a new kind of model capability. It exists in the harness layer: it extends the harness's perimeter by moving authentication, portability, vendor coupling, permissions, and service ownership out of the local runtime and into a protocol relationship with another system.
 
