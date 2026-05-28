@@ -104,10 +104,10 @@ Note that this table flattens constructs onto comparable axes but does not captu
 
 An agent is not a peer to tools or skills in the sense of doing the same kind of work. It is the construct that composes them into a particular operating configuration. Mechanically, that configuration is defined by four things:
 
-1. **A System Prompt:** Defining the model's role, purpose, and behavioral guidance.
-2. **A Toolset:** The specific capabilities exposed to the loop, including the permissions and access boundaries enforced by the harness.
-3. **A Skill Set:** The procedural knowledge available for the model to read in on demand.
-4. **Permissions and Subagent Access:** The boundaries that determine what the agent may execute directly and which separate loops, if any, it may ask the harness to start.
+1. **System Prompt:** The instructions that define the agent's role, purpose, and behavior.
+2. **Toolset:** The operations the agent may request from the harness, along with any access limits around them.
+3. **Skill Set:** The procedural knowledge the agent may load into context when relevant.
+4. **Permissions and Subagent Access:** The rules that determine what the agent may do directly and which separate loops, if any, it may ask the harness to start.
 
 Most harnesses ship with one or more **built-in agents**: predefined system prompts and toolsets exposed as *modes* (e.g., Planner, Coder, Researcher). Some harnesses also support **user-defined agents**, allowing operators to register their own system prompts and curate which tools, skills, MCP connections, and subagents are available within that agent's loop. The capability to bring your own agent is not universal; it is a deliberate harness feature, and its absence can be a meaningful constraint when evaluating a harness.
 
@@ -174,16 +174,24 @@ Two mechanical properties distinguish them from tools:
 Crucially, skills compose with tools rather than replacing them. A skill's instructions typically direct the model to invoke specific tools (local or MCP-delivered) in a particular sequence, with branching logic the model interprets at read time. The relationship is hierarchical: skills can orchestrate tools; tools cannot contain skills.
 
 ```text
-# illustrative only; actual structure varies by harness
+# PSEUDOCODE - illustrative only; actual structure varies by harness
 skill {
-  name:        "deploy-to-prod"
-  description: "Production deployment runbook. Invoke before pushing
-                to prod or when a deployment fails."
-  body: {        # lazy-loaded only when the model decides to read it
-    instructions: "1. Verify CI status.  2. Run canary deploy.  3. Smoke
-                   test endpoints.  4. Promote to full prod.  5. On
-                   failure, invoke rollback_template.yaml."
-    files:        [check_ci.sh, rollback_template.yaml, smoke_tests.py]
+  name:        "production-deploy"
+  description: "Use before a production deployment or when a deployment fails."
+
+  body: {        # loaded into context only after the skill is requested
+    instructions: [
+      "Verify CI status and release approval.",
+      "Run the canary deployment.",
+      "Smoke test critical endpoints.",
+      "Promote to full production only if checks pass.",
+      "If a check fails, follow rollback.md."
+    ]
+    files: [
+      scripts/check_ci.sh,
+      scripts/canary_deploy.sh,
+      docs/rollback.md
+    ]
   }
 }
 ```
