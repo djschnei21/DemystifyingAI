@@ -1,6 +1,7 @@
 ---
 eyebrow: Customer Design Labs • 2026
 title: A *Mechanical* Agentic Taxonomy
+author: Dan Schneider
 footer: Customer Design Labs • 2026
 ---
 
