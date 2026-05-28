@@ -140,17 +140,19 @@ agent {
 - **Visibility:** The implementation is opaque to the model. The model only sees the schema going in and the text result coming back; it never sees the underlying code.
 
 ```text
-# illustrative only; actual syntax varies by harness
+# PSEUDOCODE - illustrative only; actual syntax varies by harness
 tool {
-  name:           "search_docs"
-  description:    "Search the IBM Knowledge Center. Use when the user
-                   asks about a product, configuration, or how-to."
-  parameters: {
-    query:        string    # required
-    max_results:  integer   # default: 5
-    product:      string    # optional filter, e.g. "watsonx"
+  name:        "search_docs"
+  description: "Search product documentation when the answer depends on
+                published docs or configuration details."
+
+  schema: {      # visible to the model
+    query:       string    # required
+    product:     string    # optional filter, e.g. "watsonx"
+    max_results: integer   # default: 5
   }
-  implementation: search_docs_impl()   # executed by harness; opaque to model
+
+  handler: search_docs_impl()   # harness-owned; opaque to the model
 }
 ```
 
