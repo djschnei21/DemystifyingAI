@@ -77,7 +77,7 @@ A single inference only produces a model response. For a simple prompt, parsing 
 
 The loop is what makes a harness agentic. Strip it away, and you have a standard chatbot. Add it, and you have a system capable of chaining actions together to achieve a goal.
 
-## [VII · Analytical Lens] The Three Axes {#axes}
+## [VII · Context Architecture Lens] The Three Axes {#axes}
 
 Before comparing agents, tools, skills, and subagents, it's crucial to keep each of the following mechanical questions in mind:
 
