@@ -101,15 +101,15 @@ Note that this table flattens constructs onto comparable axes but does not captu
 
 > **Examples:**
 >
-> Planner, Builder, Researcher, Code Reviewer, QA, and Security Reviewer agents configured with different prompts, tools, skills, and permissions.
+> Planner, Builder, Researcher, Code Reviewer, QA, and Security Reviewer are agent types configured with different prompts, tools, skills, and permissions.
 
-An agent is not a peer to tools or skills in the sense of doing the same kind of work. Rather, an agent composes tools, skills, instructions, and access boundaries into a particular operating configuration. Mechanically, that configuration is defined by four things:
+An agent is not a peer to tools or skills in the sense of doing the same kind of work. Rather, an agent composes tools, skills, instructions, and access boundaries into a particular operating configuration. That configuration is defined by four things:
 1. **System Prompt:** The instructions that define the agent's role, purpose, and behavior.
 2. **Toolset:** The operations the agent may request from the harness, along with any access limits around them.
 3. **Skill Set:** The procedural knowledge the agent may load into context when relevant.
 4. **Permissions and Subagent Access:** The rules that determine what the agent may do directly and which separate loops, if any, it may ask the harness to start.
 
-Most harnesses ship with one or more **built-in agents**: predefined system prompts and toolsets exposed as *modes* (e.g., Planner, Coder, Researcher). Some harnesses also support **user-defined agents**, allowing operators to register their own system prompts and curate which tools, skills, MCP connections, and subagents are available within that agent's loop. The capability to bring your own agent is not universal; it is a deliberate harness feature, and its absence can be a meaningful constraint when evaluating a harness.
+Most harnesses ship with one or more **built-in agents**, which have predefined system prompts and toolsets exposed as *modes* (e.g., Planner, Coder, Researcher). Some harnesses also support **user-defined agents**, allowing operators to register their own system prompts and curate which tools, skills, MCP connections, and subagents are available within that agent's loop.
 
 Do not confuse an agent with files such as `AGENTS.md`, `CLAUDE.md`, or similar repository instruction files. Those files are not agents; they are context sources. If a harness loads them, their contents become instructions inside the context window for an agentic loop.
 
@@ -129,20 +129,22 @@ agent {
 }
 ```
 
+> **Portability Note:** The capability to bring your own agent is not universal. It is a deliberate harness feature, and its absence can be a meaningful constraint when evaluating a harness.
+
 ## [IX · Agentic Construct] Tools {#tools}
 
-**Definition:** A tool is a named operation made available to the model through a description and parameter schema. When the model returns a structured tool call matching that schema, the harness executes the underlying code within its own environment and places the result in the context window for the next model request.
+**Definition:** A tool is a named operation the harness makes available to the model through a description and request schema.
 
 > **Examples:**
 >
 > `read_file`, `write_file`, `execute_shell`, `read_web`, `search_code`, and `mcp-atlassian-jira_get_issue`.
 
-- **Initialization:** The tool's name, description, and schema are loaded into the system prompt at the start of the session. Some harnesses with large tool inventories route schemas into context based on relevance rather than loading them all at session start (for example, Claude Code defers MCP tool definitions by default, initially exposing only tool names); the payload itself remains an opaque contract either way.
-- **Execution:** When the model emits a tool call matching the schema, the harness intercepts the request, runs the underlying code in its own runtime environment, and appends the return value as text to the context window before issuing the next model request. The model itself never executes code; it only requests execution.
-- **Visibility:** The implementation is opaque to the model. The model only sees the schema going in and the text result coming back; it never sees the underlying code.
+- **Initialization:** A tool's name, description, and request schema are made available to the model before it can request that tool.
+- **Execution:** When the model emits a tool call matching the request schema, the harness intercepts the request, runs the named tool in its own runtime environment, and appends the return value as text to the context window before issuing the next model request. The model itself never executes code; it only requests execution.
+- **Visibility:** The implementation is opaque to the model. The model sees the name, description, request schema, and returned text; it never sees the underlying code.
 
 ```text
-# PSEUDOCODE - illustrative only; actual syntax varies by harness
+# illustrative only; actual syntax varies by harness
 tool {
   name:        "search_docs"
   description: "Search product documentation when the answer depends on
@@ -168,17 +170,17 @@ tool {
 
 Where a tool exposes an operation the harness can execute, a skill exposes instructions the model can follow, often by orchestrating one or more tool calls along the way.
 
-Mechanically, skill invocation resembles tool invocation at the model boundary: the model sees a name and description, then returns text the harness parses as a request to load that skill. The difference is the harness response. A tool request executes opaque code and returns a result; a skill request reads transparent procedural content into the context window.
+Skill invocation resembles tool invocation at the model boundary: the model sees a name and description, then returns text the harness parses as a request to load that skill. The difference is the harness response. A tool request executes opaque code and returns a result; a skill request reads transparent procedural content into the context window.
 
-Two mechanical properties distinguish them from tools:
+Two properties distinguish them from tools:
 
-- **Lazy Loading:** Only the skill's name and a brief description sit in the system prompt. The full body (manifest, instructions, supporting files) is only injected into the context window when the model explicitly decides to read or invoke it.
-- **Transparent Payload:** A skill is a directory containing a manifest and supporting files (scripts, templates, prose). Unlike a tool, which hides its code, a skill allows the model to open and read its bundled contents *before* invoking them (usually via a generic execution tool provided by the harness).
+- **Lazy loading:** Only the skill's name and a brief description sit in the system prompt. The full body (manifest, instructions, supporting files) is only injected into the context window when the model explicitly decides to read or invoke it.
+- **Transparent payload:** A skill is a directory containing a manifest and supporting files (scripts, templates, prose). Unlike a tool, which hides its code, a skill allows the model to open and read its bundled contents *before* invoking them (usually via a generic execution tool provided by the harness).
 
-Crucially, skills compose with tools rather than replacing them. A skill's instructions typically direct the model to invoke specific tools (local or MCP-delivered) in a particular sequence, with branching logic the model interprets at read time. The relationship is hierarchical: skills can orchestrate tools; tools cannot contain skills.
+Skills compose with tools rather than replacing them. A skill's instructions typically direct the model to invoke specific tools (local or MCP-delivered) in a particular sequence, with branching logic the model interprets at read time. The relationship is hierarchical: skills can orchestrate tools; tools cannot contain skills.
 
 ```text
-# PSEUDOCODE - illustrative only; actual structure varies by harness
+# illustrative only; actual structure varies by harness
 skill {
   name:        "production-deploy"
   description: "Use before a production deployment or when a deployment fails."
@@ -208,11 +210,11 @@ skill {
 >
 > Research, code-review, test-failure triage, security-review, documentation, migration-planning, and dependency-upgrade subagents spawned by a parent coding agent.
 
-The core tradeoff is **context and toolset isolation**. A subagent helps when a task can be bounded, needs many tokens, can run independently, or should operate with narrower permissions. It hurts when the task depends tightly on the parent's surrounding context, is small, or would require an expensive summary to be useful.
+The core tradeoff is **context and toolset isolation**. A subagent helps when a task has a clear boundary, needs many tokens, can run independently, or should operate with narrower permissions. It hurts when the task depends tightly on the parent's surrounding context, is small, or would require an expensive summary to be useful.
 
 When the harness starts a subagent, the parent loop waits while the child loop works. The parent receives a summary or artifact, not the child's full intermediate history. This keeps the parent context cleaner, but detail can be lost at the handoff.
 
-The token cost is material. A parent-child workflow spends tokens in both loops: the parent frames the task and absorbs the result, while the child spends context on investigation, tool use, and summarization. Anthropic's June 2025 multi-agent research system report found roughly 15× more token use than comparable single-agent baselines. The question is whether isolation, scoped permissions, or parallel exploration justify the added coordination and spend.
+A parent-child workflow spends tokens in both loops: the parent frames the task and absorbs the result, while the child spends context on investigation, tool use, and summarization. The question is whether isolation, scoped permissions, or parallel exploration justify the added coordination and spend.
 
 ```text
 # illustrative only; actual structure varies by harness
@@ -230,6 +232,8 @@ subagent {
 }
 ```
 
+> **Cost Note:** Anthropic's June 2025 multi-agent research system report found roughly 15× more token use than comparable single-agent baselines.
+
 ## [XII · The Harness Extended] MCP {#mcp}
 
 **Definition:** MCP is a standardized protocol that lets a harness connect to external servers that expose tools, resources, or prompts. MCP does not give the model a new capability directly; the harness must register or inject what the server provides before it can appear in the context window or be requested by the model.
@@ -238,7 +242,7 @@ subagent {
 >
 > GitHub MCP server, filesystem MCP server, Playwright MCP server, PostgreSQL MCP server, Atlassian/Jira MCP server, and Terraform MCP server.
 
-MCP is therefore not a new kind of model capability. It exists in the harness layer: it extends the harness's perimeter by moving authentication, portability, vendor coupling, permissions, and service ownership out of the local runtime and into a protocol relationship with another system.
+MCP is not a new model capability. It is a protocol at the harness boundary: it extends the harness's perimeter by moving authentication, portability, vendor coupling, permissions, and service ownership out of the local runtime and into a relationship with another system.
 
 Today, MCP-exposed tools are the most common use case, but the protocol is broader than tool delivery. An MCP server can expose tools, resources, and prompts; the harness can expose capabilities back to the server, such as LLM inference, workspace scope, and user input collection. Once registered or injected by the harness, these resolve into patterns this document has already described:
 
@@ -253,7 +257,7 @@ In practice, most harnesses fully surface MCP tools. Support for resources and p
 
 ## [XIII · Synthesis] Implications {#implications}
 
-By evaluating these constructs mechanically rather than metaphorically, several architectural tradeoffs become clear:
+By evaluating these constructs by their behavior rather than their metaphors, several architectural tradeoffs become clear:
 
 - **The harness and loop are the operating frame.** Agents, tools, skills, and subagents are useful only because a harness can run an agentic loop: construct model requests, parse requested actions, execute allowed work, and place results back into context.
 - **MCP is not an agentic construct.** MCP is a delivery boundary. You can have a local tool, an MCP-delivered tool, or a skill that instructs the model to use an MCP-delivered tool.
