@@ -18,7 +18,7 @@ It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CL
 
 ![Text to tokens](diagrams/tokens.png)
 
-Before an AI system can work with text, the text is broken into tokens. A familiar word may stay whole, while a longer word may become several pieces. Token counts therefore matter for both limits and cost. Two sentences with the same number of words can require different amounts of processing, and providers usually charge based on how many tokens are sent in and generated back.
+Before an AI system can work with text, a tokenizer breaks the text into tokens. A familiar word may stay whole, while a longer word may become several pieces. Token counts therefore matter for both limits and cost. Two sentences with the same number of words can require different amounts of processing, and providers usually charge based on how many tokens are sent in and generated back.
 
 ## [II · Foundations] The Model {#model}
 
