@@ -6,11 +6,11 @@ footer: Customer Design Labs • Dan Schneider • 2026
 
 ## [Preamble] What This Document Is {#what-this-is}
 
-Anthropomorphic metaphors have their place in how we talk about agentic systems. Calling an agent a *persona*, a skill a *runbook*, or a subagent a *teammate* can speed up early design conversations. But for engineers without a working intuition for these systems, the same vocabulary can feel imprecise or worse, inaccessible. For those engineers, the mechanics are the foundation, and metaphors sit on top of them.
+Anthropomorphic metaphors have their place in how we talk about agentic systems. Calling an agent a *persona* or a subagent a *teammate* can speed up early design conversations. Even *skill*, now the industry-standard term, quietly frames a conditionally-loaded set of instructions as a competency the agent possesses. For engineers without a working intuition for these systems, this vocabulary can feel imprecise or, worse, inaccessible. For those engineers, myself included, it's worth setting the metaphors aside long enough to see what each component actually *does*.
 
-This document is what you get when you commit to that view. It is a mechanical explanation of the components that make up modern agentic systems, from the model request boundary to the harness patterns built around it. The organizing claim is simple: agentic architecture is context architecture. Once you ask what the model can see, what the harness can execute, and what happens to context between model requests, the tradeoffs become surfaceable rather than speculative.
+This document is what you get when you commit to that view. It is a mechanical explanation of the components that make up modern agentic systems, from the model request boundary to the harness patterns built around it. The thesis is simple: agentic architecture is harness architecture, and harness architecture is context architecture. Once you ask what the model can see, what the harness can execute, and what happens to context between model requests, the tradeoffs stop being guesswork and become things you can reason about directly.
 
-It is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CLI, OpenCode, etc.), or an API reference. The goal is a shared mental model that any engineer can use to evaluate, design, or critique an agentic system without getting trapped in vendor-specific metaphor.
+This document is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CLI, OpenCode, etc.), or an API reference. The goal is a shared mental model that any engineer can use to evaluate, design, or critique an agentic system without getting trapped in vendor-specific metaphor.
 
 ## [I · Foundations] Tokens {#tokens}
 
