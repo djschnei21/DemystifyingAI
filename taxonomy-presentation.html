@@ -1,0 +1,823 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>A Mechanical Agentic Taxonomy - Presentation</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23FAF7F1'/%3E%3Cpath d='M16 32h32M32 16v32' stroke='%237A2E1E' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Source+Serif+4:opsz,wght@8..60,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+
+  <style>
+    :root {
+      --bg: #FAF7F1;
+      --bg-deep: #F2EDE3;
+      --text: #1C1A17;
+      --text-muted: #76706A;
+      --text-subtle: #A39C92;
+      --accent: #7A2E1E;
+      --accent-soft: #B0584A;
+      --rule: #DDD5C8;
+      --rule-soft: #EAE4D8;
+      --code-bg: #F2ECE0;
+      --pre-bg: #221E19;
+      --pre-text: #F8F1E8;
+      --pre-muted: #B8AEA1;
+
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body: 'Source Serif 4', Georgia, serif;
+      --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+    }
+
+    html,
+    body,
+    .reveal-viewport {
+      background: var(--bg);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.35;
+      z-index: 1;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.11  0 0 0 0 0.10  0 0 0 0 0.09  0 0 0 0.06 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    }
+
+    .site-links {
+      position: fixed;
+      top: 1.1rem;
+      right: 1.4rem;
+      z-index: 30;
+      display: flex;
+      gap: 0.85rem;
+      font-family: var(--font-display);
+      font-size: 0.67rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .site-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+
+    .site-links a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent-soft);
+    }
+
+    .reveal {
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 32px;
+      font-feature-settings: "onum" 1, "kern" 1, "liga" 1;
+      line-height: 1.45;
+    }
+
+    .reveal .slides {
+      text-align: left;
+    }
+
+    .reveal .slides > section:not(.stack) {
+      box-sizing: border-box;
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 100%;
+      padding: 0.75em 5.2%;
+    }
+
+    .reveal h1,
+    .reveal h2,
+    .reveal h3,
+    .reveal h4 {
+      color: var(--text);
+      font-family: var(--font-display);
+      font-weight: 480;
+      font-variation-settings: "opsz" 72, "SOFT" 30;
+      letter-spacing: -0.018em;
+      line-height: 1.1;
+      margin: 0 0 0.55em;
+      text-transform: none;
+      text-wrap: balance;
+    }
+
+    .reveal h1 {
+      font-size: 3.9em;
+      font-weight: 380;
+      font-variation-settings: "opsz" 144, "SOFT" 50;
+      line-height: 0.98;
+      max-width: 9.3em;
+    }
+
+    .reveal h1 em,
+    .reveal h2 em {
+      color: var(--accent);
+      font-style: italic;
+      font-variation-settings: "opsz" 144, "SOFT" 100;
+    }
+
+    .reveal h2 {
+      font-size: 2.14em;
+      max-width: 12.5em;
+    }
+
+    .reveal h3 {
+      font-size: 1.12em;
+      font-weight: 500;
+      font-variation-settings: "opsz" 24, "SOFT" 30;
+      margin-bottom: 0.35em;
+    }
+
+    .reveal h4,
+    .label,
+    .slide-title,
+    .eyebrow {
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-size: 0.62em;
+      font-style: normal;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .eyebrow {
+      color: var(--text-muted);
+      margin-bottom: 2.1em;
+    }
+
+    .slide-title {
+      display: block;
+      margin-bottom: 1.25em;
+    }
+
+    .reveal p {
+      margin: 0 0 0.8em;
+    }
+
+    .lede {
+      color: var(--text);
+      font-size: 1.06em;
+      line-height: 1.45;
+      max-width: 31em;
+    }
+
+    .subtle {
+      color: var(--text-muted);
+    }
+
+    .small {
+      color: var(--text-muted);
+      font-size: 0.74em;
+      line-height: 1.45;
+    }
+
+    .title-rule {
+      display: flex;
+      align-items: center;
+      margin-top: 1.65em;
+      width: 7.4em;
+    }
+
+    .title-rule::before,
+    .title-rule::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--rule);
+    }
+
+    .title-rule span {
+      width: 5px;
+      height: 5px;
+      background: var(--accent);
+      margin: 0 0.85rem;
+      transform: rotate(45deg);
+    }
+
+    .meta {
+      display: flex;
+      gap: 2.1em;
+      margin-top: 2em;
+      color: var(--text-subtle);
+      font-family: var(--font-display);
+      font-size: 0.58em;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .meta strong {
+      color: var(--text);
+      display: block;
+      font-size: 1.25em;
+      font-weight: 480;
+      letter-spacing: 0;
+      margin-top: 0.32em;
+      text-transform: none;
+    }
+
+    .section-divider {
+      align-items: flex-start;
+    }
+
+    .section-divider .num {
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-size: 5em;
+      font-style: italic;
+      font-variation-settings: "opsz" 144, "SOFT" 70;
+      line-height: 0.9;
+      margin-bottom: 0.28em;
+    }
+
+    .grid {
+      display: grid;
+      gap: 0.8em;
+      margin-top: 0.7em;
+    }
+
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    .card,
+    .definition,
+    .callout {
+      background: var(--bg-deep);
+      border: 1px solid var(--rule);
+      border-left: 3px solid var(--accent);
+      padding: 0.9em 1em 0.95em;
+    }
+
+    .card.alt {
+      background: rgba(176, 88, 74, 0.08);
+      border-left-color: var(--accent-soft);
+    }
+
+    .card p,
+    .definition p {
+      color: var(--text);
+      font-size: 0.72em;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .definition p {
+      font-size: 0.9em;
+      font-style: italic;
+    }
+
+    .definition .label,
+    .card .label {
+      display: block;
+      margin-bottom: 0.65em;
+    }
+
+    .callout {
+      font-size: 0.9em;
+      font-style: italic;
+      line-height: 1.5;
+      margin-top: 1em;
+      max-width: 34em;
+    }
+
+    .pull-quote {
+      border-left: 5px solid var(--accent);
+      color: var(--text);
+      font-family: var(--font-display);
+      font-size: 2.15em;
+      font-variation-settings: "opsz" 72, "SOFT" 30;
+      line-height: 1.16;
+      margin: 0.2em 0;
+      max-width: 12.5em;
+      padding-left: 0.55em;
+    }
+
+    .compare {
+      border-collapse: collapse;
+      font-size: 0.62em;
+      margin-top: 0.8em;
+      width: 100%;
+    }
+
+    .compare th {
+      border-bottom: 1.5px solid var(--text);
+      color: var(--text);
+      font-family: var(--font-display);
+      font-size: 0.82em;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      padding: 0.7em 0.8em;
+      text-align: left;
+      text-transform: uppercase;
+    }
+
+    .compare td {
+      border-bottom: 1px solid var(--rule);
+      line-height: 1.35;
+      padding: 0.82em 0.8em;
+      vertical-align: top;
+    }
+
+    .compare td:first-child {
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-weight: 500;
+    }
+
+    .diagram-row {
+      align-items: center;
+      display: grid;
+      gap: 1.4em;
+      grid-template-columns: 1fr 1.05fr;
+      margin-top: 0.7em;
+    }
+
+    .diagram-frame {
+      background: rgba(242, 237, 227, 0.65);
+      border: 1px solid var(--rule);
+      padding: 0.8em;
+    }
+
+    .diagram-frame img {
+      display: block;
+      height: auto;
+      width: 100%;
+    }
+
+    .stack-list {
+      display: grid;
+      gap: 0.55em;
+      margin-top: 0.85em;
+      max-width: 34em;
+    }
+
+    .stack-item {
+      border-bottom: 1px solid var(--rule);
+      display: grid;
+      gap: 0.9em;
+      grid-template-columns: 2.9em 1fr;
+      padding: 0.42em 0 0.58em;
+    }
+
+    .stack-item .n {
+      color: var(--accent);
+      font-family: var(--font-display);
+      font-size: 1.35em;
+      font-style: italic;
+      line-height: 1;
+    }
+
+    .stack-item .body {
+      font-size: 0.8em;
+      line-height: 1.35;
+    }
+
+    .stack-item strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .reveal code {
+      background: var(--code-bg);
+      border-radius: 2px;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.78em;
+      padding: 0.08em 0.35em;
+    }
+
+    .code-card {
+      background: var(--pre-bg);
+      border: 1px solid rgba(28, 26, 23, 0.18);
+      border-top: 3px solid var(--accent);
+      box-shadow: 0 0.7rem 1.8rem rgba(28, 26, 23, 0.08);
+      color: var(--pre-text);
+      font-family: var(--font-mono);
+      font-size: 0.54em;
+      line-height: 1.55;
+      margin-top: 0.7em;
+      padding: 1.2em 1.4em;
+    }
+
+    .code-card .muted {
+      color: var(--pre-muted);
+      font-style: italic;
+    }
+
+    .reveal ul,
+    .reveal ol {
+      margin: 0.4em 0 0;
+      padding: 0;
+    }
+
+    .reveal li {
+      list-style: none;
+      margin: 0 0 0.58em;
+      padding-left: 1.05em;
+      position: relative;
+    }
+
+    .reveal li::before {
+      background: var(--accent);
+      content: "";
+      height: 1px;
+      left: 0;
+      position: absolute;
+      top: 0.78em;
+      width: 0.45em;
+    }
+
+    .footer-mark {
+      bottom: 1rem;
+      color: var(--text-subtle);
+      font-family: var(--font-display);
+      font-size: 0.56rem;
+      left: 1.4rem;
+      letter-spacing: 0.2em;
+      position: fixed;
+      text-transform: uppercase;
+      z-index: 20;
+    }
+
+    .footer-mark .dot {
+      background: var(--accent);
+      border-radius: 50%;
+      display: inline-block;
+      height: 3px;
+      margin: 0 0.85em;
+      transform: translateY(-1px);
+      vertical-align: middle;
+      width: 3px;
+    }
+
+    .reveal .slide-number {
+      background: transparent;
+      color: var(--text-subtle);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      right: 1.4rem;
+    }
+
+    .reveal .progress {
+      color: var(--accent);
+      height: 3px;
+    }
+
+    .reveal .controls {
+      color: var(--accent);
+    }
+
+    @media (max-width: 900px) {
+      .site-links {
+        display: none;
+      }
+
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .diagram-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-links" aria-label="Site links">
+    <a href="taxonomy.html">Full taxonomy</a>
+  </nav>
+
+  <div class="footer-mark">Customer Design Labs <span class="dot"></span> Dan Schneider <span class="dot"></span> 2026</div>
+
+  <div class="reveal">
+    <div class="slides">
+      <section>
+        <div class="eyebrow">Customer Design Labs &middot; 2026</div>
+        <h1>A <em>Mechanical</em> Agentic Taxonomy</h1>
+        <p class="lede subtle">A presentation version of the taxonomy: same concepts, compressed for engineers who need the mechanics before the metaphors.</p>
+        <div class="title-rule"><span></span></div>
+        <div class="meta">
+          <div>Format<strong>Taxonomy briefing</strong></div>
+          <div>Lens<strong>Context architecture</strong></div>
+          <div>Scope<strong>Agents, tools, skills, subagents, MCP</strong></div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Preamble</span>
+        <h2>Metaphors help. Mechanics decide.</h2>
+        <p class="lede">Anthropomorphic metaphors have their place in how we talk about agentic systems. Calling an agent a <em>persona</em>, a skill a <em>runbook</em>, or a subagent a <em>teammate</em> can speed up early design conversations.</p>
+        <p class="callout">But for engineers without a working intuition for these systems, the same vocabulary can feel imprecise or worse, inaccessible. For those engineers, the mechanics are the foundation, and metaphors sit on top of them.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Organizing claim</span>
+        <h2>Agentic architecture is context architecture.</h2>
+        <p class="pull-quote">Ask what the model can see, what the harness can execute, and what happens to context between model requests.</p>
+      </section>
+
+      <section class="section-divider">
+        <div class="num">I</div>
+        <h2>Foundations.</h2>
+        <p class="lede subtle">Tokens, models, inference, context windows, harnesses, and loops.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Foundation - Tokens</span>
+        <h2>Tokens are the unit of processing.</h2>
+        <div class="diagram-row">
+          <div>
+            <div class="definition">
+              <span class="label">Definition</span>
+              <p>A token is a chunk of text used for processing, prediction, counting, and billing. Tokens are not necessarily words.</p>
+            </div>
+            <p class="small">Token counts matter for limits and cost. Two sentences with the same number of words can require different amounts of processing.</p>
+          </div>
+          <div class="diagram-frame">
+            <img src="diagrams/tokens.png" alt="Text to tokens">
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Foundation - The model</span>
+        <h2>The model is a stateless service.</h2>
+        <div class="definition">
+          <span class="label">Definition</span>
+          <p>A model receives text, processes it as tokens, and returns predicted text. It does not remember previous requests, execute code, inspect your environment, or take action.</p>
+        </div>
+        <p class="callout">When we say a model has a tool, uses a skill, or acts as an agent, we are describing harness behavior around the model, not properties inside the model.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Foundation - Inference</span>
+        <h2>Inference is one pass through the model.</h2>
+        <div class="diagram-row">
+          <div>
+            <div class="definition">
+              <span class="label">Definition</span>
+              <p>An inference is one pass through a model: input text is processed as tokens, and predicted text is returned.</p>
+            </div>
+            <p class="small">An inference is not a conversation, workflow, or action loop. One inference has no memory of another unless earlier text is sent again.</p>
+          </div>
+          <div class="diagram-frame">
+            <img src="diagrams/inference.png" alt="Text input is encoded into tokens, processed by the model, decoded, and returned as text output">
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Foundation - Context window</span>
+        <h2>The context window is what exists to the model.</h2>
+        <div class="diagram-row">
+          <div>
+            <div class="definition">
+              <span class="label">Definition</span>
+              <p>The context window is the set of tokens the model can use during a single inference. Anything outside it does not exist to the model.</p>
+            </div>
+            <p class="small">System prompts, tool schemas, file snippets, skill bodies, tool results, and subagent summaries only matter if the harness includes them in the next request.</p>
+          </div>
+          <div class="diagram-frame">
+            <img src="diagrams/contextwindow.png" alt="The context window contains the system prompt, tool schemas, skill descriptions, user request, and remaining free space">
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Foundation - Harness</span>
+        <h2>The harness owns state and side effects.</h2>
+        <div class="definition">
+          <span class="label">Definition</span>
+          <p>The harness is the runtime responsible for constructing model requests, parsing model responses, executing requested actions, and deciding what populates the next context window.</p>
+        </div>
+        <div class="grid grid-3">
+          <div class="card"><span class="label">Request</span><p>Builds the input text, tool schemas, and selected context.</p></div>
+          <div class="card alt"><span class="label">Execution</span><p>Runs allowed actions in its own environment, outside the model.</p></div>
+          <div class="card"><span class="label">Context</span><p>Places results back into the next model request.</p></div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Foundation - Agentic loop</span>
+        <h2>The loop is what makes a harness agentic.</h2>
+        <div class="diagram-row">
+          <div>
+            <div class="definition">
+              <span class="label">Definition</span>
+              <p>The agentic loop sends a model request, receives a response, parses requested actions, runs allowed actions, updates context, and repeats until no further actions are requested.</p>
+            </div>
+            <p class="small">Strip the loop away, and you have a standard chatbot. Add it, and you have a system capable of chaining actions together to achieve a goal.</p>
+          </div>
+          <div class="diagram-frame">
+            <img src="diagrams/agenticloop.png" alt="The agentic loop cycles from model request to inference, model response, parse response, run actions, update context, and back to model request">
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Loop mechanics</span>
+        <h2>One prompt becomes repeated request construction.</h2>
+        <div class="stack-list">
+          <div class="stack-item"><div class="n">1</div><div class="body"><strong>Model request:</strong> the harness sends the current context.</div></div>
+          <div class="stack-item"><div class="n">2</div><div class="body"><strong>Inference:</strong> the model processes request text as tokens.</div></div>
+          <div class="stack-item"><div class="n">3</div><div class="body"><strong>Model response:</strong> the model returns predicted text.</div></div>
+          <div class="stack-item"><div class="n">4</div><div class="body"><strong>Parse response:</strong> the harness looks for requested actions.</div></div>
+          <div class="stack-item"><div class="n">5</div><div class="body"><strong>Run actions:</strong> allowed work executes in the harness environment.</div></div>
+          <div class="stack-item"><div class="n">6</div><div class="body"><strong>Update context:</strong> results enter the next request, or the loop stops.</div></div>
+        </div>
+      </section>
+
+      <section class="section-divider">
+        <div class="num">II</div>
+        <h2>The comparison lens.</h2>
+        <p class="lede subtle">Compare constructs by initialization, loop scope, and payload.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">The three axes</span>
+        <h2>Every construct answers three questions.</h2>
+        <div class="grid grid-3">
+          <div class="card"><span class="label">Initialization</span><p>When does its model-visible payload enter the context window?</p></div>
+          <div class="card alt"><span class="label">Loop scope</span><p>Which agentic loop does this construct operate within?</p></div>
+          <div class="card"><span class="label">Context payload</span><p>What gets added to the context window?</p></div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Construct map</span>
+        <h2>A flat comparison of the main constructs.</h2>
+        <table class="compare">
+          <thead>
+            <tr>
+              <th>Construct</th>
+              <th>Initialization</th>
+              <th>Loop scope</th>
+              <th>Context payload</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Agent</td>
+              <td>On session start or agent selection</td>
+              <td>Defines the current loop</td>
+              <td>System prompt, toolset, skill set, permissions</td>
+            </tr>
+            <tr>
+              <td>Tool</td>
+              <td>Session initialization</td>
+              <td>Current loop</td>
+              <td>Request schema only; implementation stays opaque</td>
+            </tr>
+            <tr>
+              <td>Skill</td>
+              <td>On skill request</td>
+              <td>Current loop</td>
+              <td>Manifest, instructions, scripts, files</td>
+            </tr>
+            <tr>
+              <td>Subagent</td>
+              <td>When a parent invokes it</td>
+              <td>Defines a child loop</td>
+              <td>System prompt, toolset, skill set, permissions</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="small">The table flattens constructs for comparison. In practice, agents contain tools and skills, skills orchestrate tools, and subagents are agents with their own loops.</p>
+      </section>
+
+      <section class="section-divider">
+        <div class="num">III</div>
+        <h2>Agentic constructs.</h2>
+        <p class="lede subtle">Agents, tools, skills, subagents, and MCP.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Agents</span>
+        <h2>An agent is a named loop configuration.</h2>
+        <div class="definition">
+          <span class="label">Definition</span>
+          <p>An agent tells the harness how to run an agentic loop. It bundles a system prompt, toolset, skill set, permissions, and possibly subagents the loop may invoke.</p>
+        </div>
+        <div class="grid grid-4">
+          <div class="card"><span class="label">Prompt</span><p>Role, purpose, behavior, and constraints.</p></div>
+          <div class="card alt"><span class="label">Tools</span><p>Operations the agent may request.</p></div>
+          <div class="card"><span class="label">Skills</span><p>Procedural knowledge it may load.</p></div>
+          <div class="card alt"><span class="label">Permissions</span><p>Rules for actions and delegation.</p></div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Agents - naming trap</span>
+        <h2>Instruction files are not agents.</h2>
+        <p class="lede"><code>AGENTS.md</code>, <code>CLAUDE.md</code>, and similar repository instruction files are context sources. If a harness loads them, their contents become instructions inside a context window.</p>
+        <p class="callout">They do not define a separate loop, toolset, permission boundary, or execution configuration by themselves.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Tools</span>
+        <h2>A tool is a harness-owned operation.</h2>
+        <div class="definition">
+          <span class="label">Definition</span>
+          <p>A tool is a named operation the harness makes available to the model through a description and request schema.</p>
+        </div>
+        <div class="stack-list">
+          <div class="stack-item"><div class="n">1</div><div class="body"><strong>Visible:</strong> name, description, request schema.</div></div>
+          <div class="stack-item"><div class="n">2</div><div class="body"><strong>Requested:</strong> the model emits a matching tool call.</div></div>
+          <div class="stack-item"><div class="n">3</div><div class="body"><strong>Executed:</strong> the harness runs opaque code in its own runtime.</div></div>
+          <div class="stack-item"><div class="n">4</div><div class="body"><strong>Returned:</strong> tool output is appended as context for the next request.</div></div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Skills</span>
+        <h2>A skill is a context package of procedure.</h2>
+        <div class="definition">
+          <span class="label">Definition</span>
+          <p>A skill is a named bundle of procedural knowledge made available through a description. When requested, the harness reads the full body into the next context window.</p>
+        </div>
+        <div class="grid grid-2">
+          <div class="card"><span class="label">Lazy loading</span><p>Only the name and brief description sit in the prompt until the skill is requested.</p></div>
+          <div class="card alt"><span class="label">Transparent payload</span><p>The model can read instructions, supporting files, scripts, templates, and prose.</p></div>
+        </div>
+        <p class="callout">Skills compose with tools rather than replacing them: a skill gives the model procedure; tools provide executable operations.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Subagents</span>
+        <h2>A subagent is a separate child loop.</h2>
+        <div class="definition">
+          <span class="label">Definition</span>
+          <p>A subagent is a separate agentic loop started by the harness in response to a parent agent's request. It runs with its own context window, system prompt, and toolset.</p>
+        </div>
+        <div class="grid grid-3">
+          <div class="card"><span class="label">Useful when</span><p>The parent can hand off a clearly scoped task.</p></div>
+          <div class="card alt"><span class="label">Helpful because</span><p>It isolates context and can run with narrower permissions.</p></div>
+          <div class="card"><span class="label">Costly because</span><p>The parent receives a summary, not the child's full history.</p></div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">MCP</span>
+        <h2>MCP is a standardized boundary, not a new model capability.</h2>
+        <div class="definition">
+          <span class="label">Definition</span>
+          <p>MCP lets a harness connect to external servers that expose tools, resources, or prompts. The harness must register or inject what the server provides before it reaches the model.</p>
+        </div>
+        <div class="grid grid-2">
+          <div class="card"><span class="label">MCP tool</span><p>Once registered, it is a tool: schema enters context, implementation stays opaque, result returns as context.</p></div>
+          <div class="card alt"><span class="label">MCP resource or prompt</span><p>Once injected, it is context, no different in kind from a local file or prompt fragment.</p></div>
+        </div>
+      </section>
+
+      <section class="section-divider">
+        <div class="num">IV</div>
+        <h2>Synthesis.</h2>
+        <p class="lede subtle">Evaluate constructs by behavior, not metaphor.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Implications</span>
+        <h2>The harness and loop are the operating frame.</h2>
+        <div class="grid grid-2">
+          <div class="card"><span class="label">MCP</span><p>MCP is a delivery boundary. It can deliver tools, resources, or prompts, but it is not itself an agentic construct.</p></div>
+          <div class="card alt"><span class="label">Skills and tools</span><p>Tools expose operations the harness can execute. Skills expose procedural knowledge the model can follow.</p></div>
+          <div class="card"><span class="label">Subagents</span><p>Subagents trade isolation for startup, summarization, coordination, and token cost.</p></div>
+          <div class="card alt"><span class="label">Architecture</span><p>Construct selection is an implementation decision, not a metaphor decision.</p></div>
+        </div>
+      </section>
+
+      <section>
+        <span class="slide-title">Final lens</span>
+        <h2>Keep asking the mechanical questions.</h2>
+        <p class="pull-quote">What can the model see? What can the harness execute? What happens to context between model requests?</p>
+        <p class="callout">Personas, runbooks, and teammates can be useful while sketching a system. They do not define implementation boundaries.</p>
+      </section>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      controls: true,
+      progress: true,
+      slideNumber: "c/t",
+      transition: "fade",
+      backgroundTransition: "fade",
+      width: 1280,
+      height: 720,
+      margin: 0.055
+    });
+  </script>
+</body>
+</html>

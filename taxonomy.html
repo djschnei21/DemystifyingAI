@@ -77,6 +77,28 @@
     text-align: center;
   }
 
+  .site-links {
+    position: absolute;
+    top: 1.1rem;
+    right: 1.4rem;
+    z-index: 20;
+    display: flex;
+    gap: 0.85rem;
+    font-family: var(--font-display);
+    font-size: 0.67rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .site-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+  .site-links a:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent-soft);
+  }
+
   /* Sticky TOC sidebar - desktop only */
   .toc {
     position: fixed;
@@ -166,6 +188,10 @@
 
   @media (min-width: 1180px) {
     .toc { display: block; }
+  }
+
+  @media (max-width: 760px) {
+    .site-links { display: none; }
   }
 
   /* Masthead */
@@ -637,6 +663,10 @@
 </style>
 </head>
 <body>
+
+<nav class="site-links" aria-label="Site links">
+  <a href="taxonomy-presentation.html">Presentation version</a>
+</nav>
 
 <nav class="toc" aria-label="Table of contents">
   <div class="toc-label">Contents</div>
