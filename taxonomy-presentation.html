@@ -388,6 +388,23 @@
       font-weight: 600;
     }
 
+    .loop-steps-slide .stack-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.35em 1.15em;
+      max-width: none;
+    }
+
+    .loop-steps-slide .stack-item {
+      gap: 0.55em;
+      grid-template-columns: 2.2em 1fr;
+      padding: 0.34em 0 0.44em;
+    }
+
+    .loop-steps-slide .stack-item .body {
+      font-size: 0.74em;
+      line-height: 1.28;
+    }
+
     .reveal code {
       background: var(--code-bg);
       border-radius: 2px;
@@ -624,7 +641,7 @@
         </div>
       </section>
 
-      <section>
+      <section class="loop-steps-slide">
         <span class="slide-title">Loop mechanics</span>
         <h2>One prompt becomes repeated request construction.</h2>
         <div class="stack-list">
