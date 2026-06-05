@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Source+Serif+4:opsz,wght@8..60,300..600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
 <style>
   :root {
     --bg: #FAF7F1;
@@ -274,6 +275,48 @@
     background: var(--accent);
     margin: 0 0.85rem;
     transform: rotate(45deg);
+  }
+  .audio-widget {
+    max-width: 30rem;
+    margin: 0.25rem auto 0;
+    --plyr-color-main: var(--accent);
+    --plyr-audio-controls-background: color-mix(in srgb, var(--bg-deep) 78%, transparent);
+    --plyr-audio-control-color: var(--text);
+    --plyr-audio-control-color-hover: var(--bg);
+    --plyr-control-radius: 999px;
+    --plyr-range-track-height: 3px;
+    --plyr-range-thumb-height: 11px;
+    --plyr-font-family: var(--font-display);
+    --plyr-font-size-time: 0.74rem;
+  }
+  .audio-kicker {
+    margin: 0 0 0.55rem;
+    color: var(--text-muted);
+    font-family: var(--font-display);
+    font-size: 0.86rem;
+    font-style: italic;
+    line-height: 1.35;
+  }
+  .audio-widget .plyr {
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    box-shadow: none;
+  }
+  .audio-widget .plyr--audio .plyr__controls {
+    border-radius: 999px;
+    padding: 0.55rem 0.7rem;
+  }
+  .audio-widget .plyr__control {
+    color: var(--text);
+  }
+  .audio-widget .plyr__control:hover,
+  .audio-widget .plyr__control[aria-expanded="true"] {
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .audio-widget .plyr__time {
+    color: var(--text-muted);
+    font-family: var(--font-mono);
   }
 
   /* Section structure */
@@ -681,8 +724,10 @@
   <footer id="footer"></footer>
 </div>
 
+<script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
 <script>
   const MARKDOWN_SOURCE = 'taxonomy.md';
+  const AUDIO_SOURCE = 'audio/mechanical%20agentic%20taxonomy.m4a';
 
   const escapeHtml = (value) => value
     .replace(/&/g, '&amp;')
@@ -951,8 +996,15 @@
       <div class="eyebrow">${formatWithDots(metadata.eyebrow || '')}</div>
       <h1 class="title">${inlineMarkdown(metadata.title || 'Taxonomy')}</h1>
       ${byline}
+      <div class="audio-widget">
+        <div class="audio-kicker">Listen to a podcast conversation exploring this document.</div>
+        <audio controls preload="metadata" data-plyr-audio>
+          <source src="${AUDIO_SOURCE}" type="audio/mp4">
+        </audio>
+      </div>
       <div class="title-rule"><span class="ornament"></span></div>
     `;
+    setupAudioPlayer();
 
     const rendered = renderBlocks(body);
     document.getElementById('content').innerHTML = rendered.html;
@@ -989,6 +1041,15 @@
     document.getElementById('footer').innerHTML = formatWithDots(metadata.footer || '');
 
     activateScrollSpy();
+  };
+
+  const setupAudioPlayer = () => {
+    const audio = document.querySelector('[data-plyr-audio]');
+    if (!audio || !window.Plyr) return;
+
+    new Plyr(audio, {
+      controls: ['play', 'progress', 'current-time', 'duration', 'mute', 'volume'],
+    });
   };
 
   const activateScrollSpy = () => {
