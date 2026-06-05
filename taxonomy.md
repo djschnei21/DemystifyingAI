@@ -266,3 +266,14 @@ By evaluating these constructs by their behavior rather than their metaphors, se
 - **Skills and tools compose rather than compete.** A tool exposes an operation the harness can execute. A skill exposes procedural knowledge the model can follow, often by invoking one or more tools. The reverse does not hold: tools have no mechanism to contain or invoke skills.
 - **Subagents trade isolation for coordination cost.** A subagent provides a fresh context window and scoped toolset, but introduces startup, summarization, and token overhead. It is useful when that isolation is worth more than the added cost.
 - **Construct selection is an architectural decision.** Personas, runbooks, and teammates can be useful metaphors while sketching a system, but they do not define implementation boundaries. The mechanical questions are what the model can see, what the harness can execute, and what happens to context between model requests.
+
+## [XIV · Further Reading] Recommended Reading {#further-reading}
+
+Now that you have the baseline, these articles are useful next reads. They were influential in the writing of this taxonomy and expand the same mechanical view from different angles:
+
+- **Anthropic, ["Building Effective Agents"](https://www.anthropic.com/engineering/building-effective-agents)** — expands on workflows versus agents and common orchestration patterns.
+- **Anthropic, ["How we built our multi-agent research system"](https://www.anthropic.com/engineering/built-multi-agent-research-system)** — expands on subagents, parallel context windows, coordination cost, and token spend.
+- **Chen Zhang, ["Claude Code's Leaked Source: A Real-World Masterclass in Harness Engineering"](https://dev.to/chen_zhang_bac430bc7f6b95/claude-codes-leaked-source-a-real-world-masterclass-in-harness-engineering-2d9n)** — expands on harness internals: caching, memory, security checks, cost control, rendering, and state.
+- **Agentic Engineer, ["The Only Claude Code Competitor"](https://agenticengineer.com/the-only-claude-code-competitor)** — expands on harness-design tradeoffs through Claude Code versus Pi.
+- **Simon Willison, ["The lethal trifecta for AI agents"](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/)** — expands on tool exposure, untrusted context, private data, and exfiltration risk.
+- **Armin Ronacher, ["Agentic Coding"](https://lucumr.pocoo.org/2025/6/12/agentic-coding/)** — expands on tool ergonomics, logs, scripts, and feedback loops in real agentic coding practice.
