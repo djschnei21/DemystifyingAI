@@ -1,14 +1,14 @@
 ---
 eyebrow: Customer Design Labs • 2026
 title: A *Mechanical* Agentic Taxonomy
-footer: Customer Design Labs • Dan Schneider • 2026
+footer: Dan Schneider • 2026
 ---
 
 ## [Preamble] What This Document Is {#what-this-is}
 
-Anthropomorphic metaphors have their place in how we talk about agentic systems. Calling an agent a *persona* or a subagent a *teammate* can speed up early design conversations. Even *skill*, now the industry-standard term, quietly frames a conditionally-loaded set of instructions as a competency the agent possesses. For engineers without a working intuition for these systems, this vocabulary can feel imprecise or, worse, inaccessible. For those engineers, myself included, it's worth setting the metaphors aside long enough to see what each component actually *does*.
+Anthropomorphic metaphors have their place in how we talk about agentic systems. Calling an agent a *persona* or a subagent a *teammate* can speed up early design conversations. Even *skill*, now the industry-standard term, quietly turns a collection of conditionally-loaded text files into something that sounds like a competency. For engineers without a working intuition for these systems, this vocabulary can feel imprecise or, worse, inaccessible. For those engineers, myself included, it's worth setting the metaphors aside long enough to see what each component actually *does*.
 
-This document is what you get when you commit to that view. It is a mechanical explanation of the components that make up modern agentic systems, from the model request boundary to the harness patterns built around it. The thesis is simple: agentic architecture is harness architecture, and harness architecture is context architecture. Once you ask what the model can see, what the harness can execute, and what happens to context between model requests, the tradeoffs stop being guesswork and become things you can reason about directly.
+This document is what you get when you strip away the metaphors and magic. It is a mechanical explanation of the components that make up modern agentic systems, from the model request boundary to the harness patterns built around it. The thesis is simple: agentic architecture is harness architecture, and harness architecture is context architecture. Once you ask what the model can see, what the harness can execute, and what happens to context between model requests, the tradeoffs stop being guesswork and become things you can reason about directly.
 
 This document is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CLI, OpenCode, etc.), or an API reference. The goal is a shared mental model that any engineer can use to evaluate, design, or critique an agentic system without getting trapped in vendor-specific metaphor.
 
@@ -58,7 +58,7 @@ This is why agentic architecture is largely context architecture. A system promp
 
 Whether it is a coding assistant in your IDE, a chat interface, or a custom Python script calling an API, the harness owns the state and side effects the model lacks. The model can request execution only by returning text the harness can parse; the harness decides whether that request maps to an available capability, runs the action if allowed, and places the result in the context window for the next model request.
 
-Every construct in this document is fundamentally a design pattern dictating how the harness manages context and takes action; not the model, because it cannot.
+Every construct in this document is fundamentally a harness design choice: what gets exposed, what gets executed, what gets isolated, and what gets forbidden. To the model, every request is still atomic and independent; agent and subagent boundaries only exist because the harness builds and enforces them. If a product says a construct "cannot" do something, read that as "this harness does not expose or permit that path," not as a property of the model.
 
 ## [VI · Foundations] The Agentic Loop {#loop}
 
@@ -125,7 +125,7 @@ tool {
 
 ## [IX · Agentic Construct] Skills {#skills}
 
-**Definition:** A skill is a named bundle of procedural knowledge made available to the model through a description. When the model requests the skill, the harness reads its full body, usually instructions plus supporting files, into the context window for the next model request.
+**Definition:** A skill is a named bundle of files made available to the model through a description. When the model requests the skill, the harness reads its full contents, usually instructions plus supporting files, into the context window for the next model request.
 
 > **Examples:**
 >
@@ -216,6 +216,8 @@ When the harness starts a subagent, the parent loop waits while the child loop w
 
 A parent-child workflow spends tokens in both loops: the parent frames the task and absorbs the result, while the child spends context on investigation, tool use, and summarization. The question is whether isolation, scoped permissions, or parallel exploration justify the added coordination and spend.
 
+Some harnesses prohibit nested subagents; others could allow them. That difference is orchestration policy, not a model constraint.
+
 ```text
 # illustrative only; actual structure varies by harness
 subagent {
@@ -227,7 +229,7 @@ subagent {
   model:         "sonnet"   # cheaper than parent's opus
   tools:         [read_file, grep, run_tests]   # narrower than parent
   skills:        [review-checklist, secure-coding-guidelines]
-  subagents:     []   # often omitted; many harnesses do not allow nesting
+  subagents:     []   # optional; nesting is a harness policy, not a model constraint
   permissions:   read_only
 }
 ```
