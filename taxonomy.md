@@ -38,7 +38,7 @@ When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are 
 
 The important word is *one*. An inference is not a conversation, a workflow, or an action loop. One inference has no memory of another unless earlier text is sent again, and it does not perform actions; it only returns text.
 
-**Fun fact:** LLMs are not inherently non-deterministic in the way many people assume. The model predicts a distribution over likely next tokens; non-determinism is usually introduced afterward during decoding, when the system samples from that distribution. Settings like temperature control how much randomness is allowed, helping simulate creativity by making outputs less rigid and more varied.
+**Fun fact:** LLMs are not inherently non-deterministic in the way many people assume. The model predicts a distribution over likely next tokens; non-determinism is introduced optionally afterward while selecting tokens from that distribution.  This randomness is injected to simulate creativity.
 
 ## [IV · Foundations] The Context Window {#context-window}
 
