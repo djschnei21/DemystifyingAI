@@ -251,8 +251,7 @@
     .grid-4 { grid-template-columns: repeat(4, 1fr); }
 
     .card,
-    .definition,
-    .callout {
+    .definition {
       background: var(--bg-deep);
       border: 1px solid var(--rule);
       border-left: 3px solid var(--accent);
@@ -284,11 +283,13 @@
     }
 
     .callout {
+      border-left: 3px solid var(--accent);
       font-size: 0.9em;
       font-style: italic;
       line-height: 1.5;
       margin-top: 1em;
       max-width: 34em;
+      padding-left: 0.9em;
     }
 
     .pull-quote {
@@ -333,6 +334,33 @@
       color: var(--accent);
       font-family: var(--font-display);
       font-weight: 500;
+    }
+
+    .plain-grid {
+      display: grid;
+      gap: 1em;
+      margin-top: 0.95em;
+    }
+
+    .plain-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .plain-grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .plain-grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    .plain-point {
+      border-top: 1px solid var(--rule);
+      padding-top: 0.75em;
+    }
+
+    .plain-point .label {
+      display: block;
+      margin-bottom: 0.55em;
+    }
+
+    .plain-point p {
+      color: var(--text);
+      font-size: 0.72em;
+      line-height: 1.45;
+      margin: 0;
     }
 
     .diagram-row {
@@ -593,6 +621,9 @@
       .grid-2,
       .grid-3,
       .grid-4,
+      .plain-grid-2,
+      .plain-grid-3,
+      .plain-grid-4,
       .diagram-row {
         grid-template-columns: 1fr;
       }
@@ -611,12 +642,12 @@
       <section>
         <div class="eyebrow">Customer Design Labs &middot; 2026</div>
         <h1>A <em>Mechanical</em> Agentic Taxonomy</h1>
-        <p class="lede subtle">What agents, tools, skills, subagents, and MCP actually do once you look past the names.</p>
+        <p class="lede subtle">What tools, skills, agents, subagents, and MCP actually do once you look past the names.</p>
         <div class="title-rule"><span></span></div>
         <div class="meta">
           <div>Purpose<strong>Shared mental model</strong></div>
           <div>Lens<strong>Harness + context architecture</strong></div>
-          <div>Constructs<strong>Agents · tools · skills · subagents · MCP</strong></div>
+          <div>Constructs<strong>Tools · skills · agents · subagents · MCP</strong></div>
         </div>
       </section>
 
@@ -707,10 +738,10 @@
           <span class="label">Definition</span>
           <p>The harness is the runtime responsible for constructing model requests, parsing model responses, executing requested actions, and deciding what populates the next context window.</p>
         </div>
-        <div class="grid grid-3">
-          <div class="card"><span class="label">Request</span><p>Builds the input text, tool schemas, and selected context.</p></div>
-          <div class="card alt"><span class="label">Execution</span><p>Runs allowed actions in its own environment, outside the model.</p></div>
-          <div class="card"><span class="label">Context</span><p>Places results back into the next model request.</p></div>
+        <div class="plain-grid plain-grid-3">
+          <div class="plain-point"><span class="label">Request</span><p>Builds the input text, tool schemas, and selected context.</p></div>
+          <div class="plain-point"><span class="label">Execution</span><p>Runs allowed actions in its own environment, outside the model.</p></div>
+          <div class="plain-point"><span class="label">Context</span><p>Places results back into the next model request.</p></div>
         </div>
       </section>
 
@@ -753,10 +784,10 @@
       <section>
         <span class="slide-title">The three axes</span>
         <h2>Every construct answers three questions.</h2>
-        <div class="grid grid-3">
-          <div class="card"><span class="label">Initialization</span><p>When does its model-visible payload enter the context window?</p></div>
-          <div class="card alt"><span class="label">Loop scope</span><p>Which agentic loop does this construct operate within?</p></div>
-          <div class="card"><span class="label">Context payload</span><p>What gets added to the context window?</p></div>
+        <div class="plain-grid plain-grid-3">
+          <div class="plain-point"><span class="label">Initialization</span><p>When does its model-visible payload enter the context window?</p></div>
+          <div class="plain-point"><span class="label">Loop scope</span><p>Which agentic loop does this construct operate within?</p></div>
+          <div class="plain-point"><span class="label">Context payload</span><p>What gets added to the context window?</p></div>
         </div>
       </section>
 
@@ -774,12 +805,6 @@
           </thead>
           <tbody>
             <tr>
-              <td>Agent</td>
-              <td>On session start or agent selection</td>
-              <td>Defines the current loop</td>
-              <td>System prompt, toolset, skill set, permissions</td>
-            </tr>
-            <tr>
               <td>Tool</td>
               <td>Session initialization</td>
               <td>Current loop</td>
@@ -790,6 +815,12 @@
               <td>On skill request</td>
               <td>Current loop</td>
               <td>Manifest, instructions, scripts, files</td>
+            </tr>
+            <tr>
+              <td>Agent</td>
+              <td>On session start or agent selection</td>
+              <td>Defines the current loop</td>
+              <td>System prompt, toolset, skill set, permissions</td>
             </tr>
             <tr>
               <td>Subagent</td>
@@ -805,29 +836,7 @@
       <section class="section-divider">
         <div class="num">III</div>
         <h2>Agentic constructs.</h2>
-        <p class="lede subtle">Agents, tools, skills, subagents, and MCP.</p>
-      </section>
-
-      <section>
-        <span class="slide-title">Agents</span>
-        <h2>An agent is a named loop configuration.</h2>
-        <div class="definition">
-          <span class="label">Definition</span>
-          <p>An agent tells the harness how to run an agentic loop. It bundles a system prompt, toolset, skill set, permissions, and possibly subagents the loop may invoke.</p>
-        </div>
-        <div class="grid grid-4">
-          <div class="card"><span class="label">Prompt</span><p>Role, purpose, behavior, and constraints.</p></div>
-          <div class="card alt"><span class="label">Tools</span><p>Operations the agent may request.</p></div>
-          <div class="card"><span class="label">Skills</span><p>Procedural knowledge it may load.</p></div>
-          <div class="card alt"><span class="label">Permissions</span><p>Rules for actions and delegation.</p></div>
-        </div>
-      </section>
-
-      <section>
-        <span class="slide-title">Agents - naming trap</span>
-        <h2>Instruction files are not agents.</h2>
-        <p class="lede"><code>AGENTS.md</code>, <code>CLAUDE.md</code>, and similar repository instruction files are context sources. If a harness loads them, their contents become instructions inside a context window.</p>
-        <p class="callout">They do not define a separate loop, toolset, permission boundary, or execution configuration by themselves.</p>
+        <p class="lede subtle">Tools, skills, agents, subagents, and MCP.</p>
       </section>
 
       <section class="tool-steps-slide">
@@ -852,11 +861,34 @@
           <span class="label">Definition</span>
           <p>A skill is a named bundle of procedural knowledge made available through a description. When requested, the harness reads the full body into the next context window.</p>
         </div>
-        <div class="grid grid-2">
-          <div class="card"><span class="label">Lazy loading</span><p>Only the name and brief description sit in the prompt until the skill is requested.</p></div>
-          <div class="card alt"><span class="label">Transparent payload</span><p>The model can read instructions, supporting files, scripts, templates, and prose.</p></div>
+        <div class="plain-grid plain-grid-2">
+          <div class="plain-point"><span class="label">Lazy loading</span><p>Only the name and brief description sit in the prompt until the skill is requested.</p></div>
+          <div class="plain-point"><span class="label">Transparent payload</span><p>The model can read instructions, supporting files, scripts, templates, and prose.</p></div>
         </div>
         <p class="callout">Skills compose with tools rather than replacing them: a skill gives the model procedure; tools provide executable operations.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Agents</span>
+        <h2>An agent is a named loop configuration.</h2>
+        <div class="definition">
+          <span class="label">Definition</span>
+          <p>An agent tells the harness how to run an agentic loop. It bundles a system prompt, toolset, skill set, permissions, and possibly subagents the loop may invoke.</p>
+        </div>
+        <div class="plain-grid plain-grid-4">
+          <div class="plain-point"><span class="label">Prompt</span><p>Role, purpose, behavior, and constraints.</p></div>
+          <div class="plain-point"><span class="label">Tools</span><p>Operations the agent may request.</p></div>
+          <div class="plain-point"><span class="label">Skills</span><p>Procedural knowledge it may load.</p></div>
+          <div class="plain-point"><span class="label">Permissions</span><p>Rules for actions and delegation.</p></div>
+        </div>
+        <p class="small">With tools and skills defined, an agent becomes the harness configuration that composes them into a loop.</p>
+      </section>
+
+      <section>
+        <span class="slide-title">Agents - naming trap</span>
+        <h2>Instruction files are not agents.</h2>
+        <p class="lede"><code>AGENTS.md</code>, <code>CLAUDE.md</code>, and similar repository instruction files are context sources. If a harness loads them, their contents become instructions inside a context window.</p>
+        <p class="callout">They do not define a separate loop, toolset, permission boundary, or execution configuration by themselves.</p>
       </section>
 
       <section>
@@ -866,10 +898,10 @@
           <span class="label">Definition</span>
           <p>A subagent is a separate agentic loop started by the harness in response to a parent agent's request. It runs with its own context window, system prompt, and toolset.</p>
         </div>
-        <div class="grid grid-3">
-          <div class="card"><span class="label">Useful when</span><p>The parent can hand off a clearly scoped task.</p></div>
-          <div class="card alt"><span class="label">Helpful because</span><p>It isolates context and can run with narrower permissions.</p></div>
-          <div class="card"><span class="label">Costly because</span><p>The parent receives a summary, not the child's full history.</p></div>
+        <div class="plain-grid plain-grid-3">
+          <div class="plain-point"><span class="label">Useful when</span><p>The parent can hand off a clearly scoped task.</p></div>
+          <div class="plain-point"><span class="label">Helpful because</span><p>It isolates context and can run with narrower permissions.</p></div>
+          <div class="plain-point"><span class="label">Costly because</span><p>The parent receives a summary, not the child's full history.</p></div>
         </div>
       </section>
 
@@ -895,11 +927,11 @@
       <section>
         <span class="slide-title">Implications</span>
         <h2>The harness and loop are the operating frame.</h2>
-        <div class="grid grid-2">
-          <div class="card"><span class="label">MCP</span><p>MCP is a delivery boundary. It can deliver tools, resources, or prompts, but it is not itself an agentic construct.</p></div>
-          <div class="card alt"><span class="label">Skills and tools</span><p>Tools expose operations the harness can execute. Skills expose procedural knowledge the model can follow.</p></div>
-          <div class="card"><span class="label">Subagents</span><p>Subagents trade isolation for startup, summarization, coordination, and token cost.</p></div>
-          <div class="card alt"><span class="label">Architecture</span><p>Construct selection is an implementation decision, not a metaphor decision.</p></div>
+        <div class="stack-list">
+          <div class="stack-item"><div class="n">1</div><div class="body"><strong>MCP:</strong> a delivery boundary for tools, resources, or prompts, not an agentic construct.</div></div>
+          <div class="stack-item"><div class="n">2</div><div class="body"><strong>Skills and tools:</strong> tools expose operations; skills expose procedural knowledge.</div></div>
+          <div class="stack-item"><div class="n">3</div><div class="body"><strong>Subagents:</strong> isolation trades against startup, summarization, coordination, and token cost.</div></div>
+          <div class="stack-item"><div class="n">4</div><div class="body"><strong>Architecture:</strong> construct selection is an implementation decision, not a metaphor decision.</div></div>
         </div>
       </section>
 
