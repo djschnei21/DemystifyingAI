@@ -318,6 +318,9 @@
     color: var(--text-muted);
     font-family: var(--font-mono);
   }
+  #audio-player {
+    margin-top: 4rem;
+  }
 
   /* Section structure */
   section {
@@ -640,7 +643,7 @@
 
   /* Footer */
   footer {
-    margin-top: 7rem;
+    margin-top: 2.5rem;
     padding-top: 2.5rem;
     border-top: 1px solid var(--rule);
     text-align: center;
@@ -721,6 +724,7 @@
   <main id="content" aria-live="polite">
     <p class="loading">Loading taxonomy.md...</p>
   </main>
+  <aside class="audio-widget" id="audio-player" aria-label="Podcast player"></aside>
   <footer id="footer"></footer>
 </div>
 
@@ -996,18 +1000,18 @@
       <div class="eyebrow">${formatWithDots(metadata.eyebrow || '')}</div>
       <h1 class="title">${inlineMarkdown(metadata.title || 'Taxonomy')}</h1>
       ${byline}
-      <div class="audio-widget">
-        <div class="audio-kicker">Listen to a podcast conversation exploring this document.</div>
-        <audio controls preload="metadata" data-plyr-audio>
-          <source src="${AUDIO_SOURCE}" type="audio/mp4">
-        </audio>
-      </div>
       <div class="title-rule"><span class="ornament"></span></div>
     `;
-    setupAudioPlayer();
 
     const rendered = renderBlocks(body);
     document.getElementById('content').innerHTML = rendered.html;
+    document.getElementById('audio-player').innerHTML = `
+      <div class="audio-kicker">Listen to a podcast conversation exploring this document.</div>
+      <audio controls preload="metadata" data-plyr-audio>
+        <source src="${AUDIO_SOURCE}" type="audio/mp4">
+      </audio>
+    `;
+    setupAudioPlayer();
     const tocGroupLabel = (entry) => {
       if (entry.label.toLowerCase() === 'preamble') return '';
       const group = entry.label.split('·')[1]?.trim() || '';
