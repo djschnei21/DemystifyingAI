@@ -711,6 +711,7 @@
     html = html
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
       .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+      .replace(/__([^_]+)__/g, '<u>$1</u>')
       .replace(/\*([^*]+)\*/g, '<em>$1</em>');
 
     return html.replace(/@@CODE(\d+)@@/g, (_, index) => code[Number(index)]);
