@@ -38,6 +38,8 @@ When we say a model *has* a tool, *uses* a skill, or *acts* as an agent, we are 
 
 The important word is *one*. An inference is not a conversation, a workflow, or an action loop. One inference has no memory of another unless earlier text is sent again, and it does not perform actions; it only returns text.
 
+**Fun fact:** LLMs are not inherently non-deterministic in the way many people assume. The model predicts a distribution over likely next tokens; non-determinism is usually introduced afterward during decoding, when the system samples from that distribution. Settings like temperature control how much randomness is allowed, helping simulate creativity by making outputs less rigid and more varied.
+
 ## [IV · Foundations] The Context Window {#context-window}
 
 **Definition:** The context window is the set of tokens the model can use during a single inference. Anything outside the context window does not exist to the model; everything inside competes for finite attention and space.
