@@ -6,7 +6,7 @@ footer: Dan Schneider • 2026
 
 ## [Preamble] What This Document Is {#what-this-is}
 
-Anthropomorphic metaphors have their place in how we talk about agentic systems. Treating an agent like a *persona* or a subagent like a *teammate* can speed up early design conversations. Even *skill*, now an industry-standard term, quietly frames a collection of conditionally-loaded text files as something that sounds like a competency. However, for some engineers this vocabulary can prove inaccurate or, worse, inaccessible. For those engineers, myself included, it's worth setting the metaphors aside long enough to see what each component actually *does*.
+Anthropomorphic metaphors have their place in how we talk about agentic systems. Treating an agent like a *persona* or a subagent like a *teammate* can speed up early design conversations. Even *skill* quietly frames a collection of conditionally-loaded text files as something that sounds like a competency. However, for some engineers this vocabulary can prove inaccurate or, worse, inaccessible. For those engineers, myself included, it's worth setting the metaphors aside long enough to see what each component actually *does*.
 
 This document is what you get when you strip away the metaphors and magic. It is a mechanical explanation of the components that make up modern agentic systems, from the model request boundary to the harness patterns built around it. The thesis is simple: agentic architecture is harness architecture, and harness architecture is context architecture. Once you ask what the model can see, what the harness can execute, and what happens to context between model requests, the tradeoffs stop being guesswork and become things you can reason about directly.
 
