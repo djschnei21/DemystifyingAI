@@ -42,7 +42,7 @@ The important word is *one*. An inference is not a conversation, a workflow, or 
 
 ## [IV · Foundations] The Context Window {#context-window}
 
-**Definition:** The context window is the set of tokens the model can use during a single inference. Anything outside the context window does not exist to the model; everything inside competes for finite attention and space.
+**Definition:** The context window is the input text for a single inference: the set of tokens the model can use while generating its response. Anything outside the context window does not exist to the model; everything inside competes for finite attention and space.
 
 ![The context window contains the system prompt, tool schemas, skill descriptions, user request, and remaining free space](diagrams/contextwindow.png)
 
