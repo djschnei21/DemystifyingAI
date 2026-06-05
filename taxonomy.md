@@ -1,7 +1,7 @@
 ---
-eyebrow: Customer Design Labs • 2026
+eyebrow: Dan Schneider • Customer Design Labs • 2026
 title: A *Mechanical* Agentic Taxonomy
-footer: Dan Schneider • 2026
+footer: Dan Schneider • Customer Design Labs • 2026
 ---
 
 ## [Preamble] What This Document Is {#what-this-is}
