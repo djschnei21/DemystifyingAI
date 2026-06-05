@@ -677,7 +677,7 @@
           <div>
             <div class="definition">
               <span class="label">Definition</span>
-              <p>A token is a chunk of text used for processing, prediction, counting, and billing. Tokens are not necessarily words.</p>
+              <p>A token is a chunk of text used as a unit for processing, prediction, counting, and billing. Tokens are not necessarily words; they may be whole words, parts of words, punctuation, whitespace, or other text fragments.</p>
             </div>
             <p class="small">Token counts matter for limits and cost. Two sentences with the same number of words can require different amounts of processing.</p>
           </div>
@@ -692,7 +692,7 @@
         <h2>The model is a stateless service.</h2>
         <div class="definition">
           <span class="label">Definition</span>
-          <p>A model receives text, processes it as tokens, and returns predicted text. It does not remember previous requests, execute code, inspect your environment, or take action.</p>
+          <p>A model is a stateless service that receives text, processes it as tokens, and returns predicted text. It does not remember previous requests, execute code, inspect your environment, or take action; it only returns text.</p>
         </div>
         <p class="callout">When we say a model has a tool, uses a skill, or acts as an agent, we are describing harness behavior around the model, not properties inside the model.</p>
       </section>
@@ -721,7 +721,7 @@
           <div>
             <div class="definition">
               <span class="label">Definition</span>
-              <p>The context window is the set of tokens the model can use during a single inference. Anything outside it does not exist to the model.</p>
+              <p>The context window is the set of tokens the model can use during a single inference. Anything outside the context window does not exist to the model; everything inside competes for finite attention and space.</p>
             </div>
             <p class="small">System prompts, tool schemas, file snippets, skill bodies, tool results, and subagent summaries only matter if the harness includes them in the next request.</p>
           </div>
@@ -736,7 +736,7 @@
         <h2>The harness owns state and side effects.</h2>
         <div class="definition">
           <span class="label">Definition</span>
-          <p>The harness is the runtime responsible for constructing model requests, parsing model responses, executing requested actions, and deciding what populates the next context window.</p>
+          <p>The harness is the runtime or application responsible for operating the model: it constructs each model request, sends it to the model, parses text returned by the model, executes any requested actions in its own environment, and decides what populates the context window for the next model request.</p>
         </div>
         <div class="plain-grid plain-grid-3">
           <div class="plain-point"><span class="label">Request</span><p>Assembles the context window: the input text for inference, including any tool schemas it chooses to expose.</p></div>
@@ -752,7 +752,7 @@
           <div>
             <div class="definition">
               <span class="label">Definition</span>
-              <p>The agentic loop sends a model request, receives a response, parses requested actions, runs allowed actions, updates context, and repeats until no further actions are requested.</p>
+              <p>The agentic loop is the cycle a harness runs for every prompt: it sends a model request, receives a model response, parses that response for requested actions, runs any allowed actions, updates context, and repeats until no further actions are requested. When the loop stops, the harness shows the model's final response to the user.</p>
             </div>
             <p class="small">Strip the loop away, and you have a standard chatbot. Add it, and you have a system capable of chaining actions together to achieve a goal.</p>
           </div>
@@ -859,7 +859,7 @@
         <h2>A skill is a context package of procedure.</h2>
         <div class="definition">
           <span class="label">Definition</span>
-          <p>A skill is a named bundle of procedural knowledge made available through a description. When requested, the harness reads the full body into the next context window.</p>
+          <p>A skill is a named bundle of files made available to the model through a description. When the model requests the skill, the harness reads its full contents, usually instructions plus supporting files, into the context window for the next model request.</p>
         </div>
         <div class="plain-grid plain-grid-2">
           <div class="plain-point"><span class="label">Lazy loading</span><p>Only the name and brief description sit in the prompt until the skill is requested.</p></div>
@@ -873,7 +873,7 @@
         <h2>An agent is a named loop configuration.</h2>
         <div class="definition">
           <span class="label">Definition</span>
-          <p>An agent tells the harness how to run an agentic loop. It bundles a system prompt, toolset, skill set, permissions, and possibly subagents the loop may invoke.</p>
+          <p>An agent is a named configuration that tells the harness how to run an agentic loop. It bundles a system prompt, toolset, skill set, permissions, and possibly subagents the loop may invoke.</p>
         </div>
         <div class="plain-grid plain-grid-4">
           <div class="plain-point"><span class="label">Prompt</span><p>Role, purpose, behavior, and constraints.</p></div>
@@ -896,7 +896,7 @@
         <h2>A subagent is a separate child loop.</h2>
         <div class="definition">
           <span class="label">Definition</span>
-          <p>A subagent is a separate agentic loop started by the harness in response to a parent agent's request. It runs with its own context window, system prompt, and toolset.</p>
+          <p>A subagent is a separate agentic loop started by the harness in response to a parent agent's request. It runs with its own context window, system prompt, and toolset; when it finishes, the harness places only its final output back into the parent's context window.</p>
         </div>
         <div class="plain-grid plain-grid-3">
           <div class="plain-point"><span class="label">Useful when</span><p>The parent can hand off a clearly scoped task.</p></div>
@@ -910,7 +910,7 @@
         <h2>MCP is a standardized boundary, not a new model capability.</h2>
         <div class="definition">
           <span class="label">Definition</span>
-          <p>MCP lets a harness connect to external servers that expose tools, resources, or prompts. The harness must register or inject what the server provides before it reaches the model.</p>
+          <p>MCP is a standardized protocol that lets a harness connect to external servers that expose tools, resources, or prompts. MCP does not give the model a new capability directly; the harness must register or inject what the server provides before it can appear in the context window or be requested by the model.</p>
         </div>
         <div class="grid grid-2">
           <div class="card"><span class="label">MCP tool</span><p>Once registered, it is a tool: schema enters context, implementation stays opaque, result returns as context.</p></div>
