@@ -739,7 +739,7 @@
           <p>The harness is the runtime responsible for constructing model requests, parsing model responses, executing requested actions, and deciding what populates the next context window.</p>
         </div>
         <div class="plain-grid plain-grid-3">
-          <div class="plain-point"><span class="label">Request</span><p>Builds the input text, tool schemas, and selected context.</p></div>
+          <div class="plain-point"><span class="label">Request</span><p>Assembles the context window: the input text for inference, including any tool schemas it chooses to expose.</p></div>
           <div class="plain-point"><span class="label">Execution</span><p>Runs allowed actions in its own environment, outside the model.</p></div>
           <div class="plain-point"><span class="label">Context</span><p>Places results back into the next model request.</p></div>
         </div>
