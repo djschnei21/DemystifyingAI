@@ -275,6 +275,7 @@ Now that you have the baseline, these articles are useful next reads. They were 
 
 - **Anthropic, ["Building Effective Agents"](https://www.anthropic.com/engineering/building-effective-agents)** — expands on workflows versus agents and common orchestration patterns.
 - **Anthropic, ["How we built our multi-agent research system"](https://www.anthropic.com/engineering/built-multi-agent-research-system)** — expands on subagents, parallel context windows, coordination cost, and token spend.
+- **0xKato, ["How LLMs Actually Work"](https://www.0xkato.xyz/how-llms-actually-work/)** — expands on transformer mechanics, tokenization, embeddings, attention, and next-token generation.
 - **Chen Zhang, ["Claude Code's Leaked Source: A Real-World Masterclass in Harness Engineering"](https://dev.to/chen_zhang_bac430bc7f6b95/claude-codes-leaked-source-a-real-world-masterclass-in-harness-engineering-2d9n)** — expands on harness internals: caching, memory, security checks, cost control, rendering, and state.
 - **Agentic Engineer, ["The Only Claude Code Competitor"](https://agenticengineer.com/the-only-claude-code-competitor)** — expands on harness-design tradeoffs through Claude Code versus Pi.
 - **Simon Willison, ["The lethal trifecta for AI agents"](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/)** — expands on tool exposure, untrusted context, private data, and exfiltration risk.
