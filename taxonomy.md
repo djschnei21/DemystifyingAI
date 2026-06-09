@@ -10,7 +10,7 @@ Anthropomorphic metaphors have their place in how we talk about agentic systems.
 
 This document is what you get when you strip away the metaphores and magic. It is a functional explanation of the components that make up modern agentic systems, from the model request boundary to the harness patterns built around it. The thesis is simple: agentic architecture is harness architecture, and harness architecture is context architecture. Once you ask what the model can see, what the harness can execute, and what happens to context between model requests, the tradeoffs stop being guesswork and become things you can reason about directly.
 
-This document is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CLI, OpenCode, etc.), or an API reference. The goal is a shared mental model that any engineer can use to evaluate, design, or critique an agentic system without getting trapped in vendor-specific metaphor.
+This document is not a tutorial, a how-to for any specific harness (Claude Code, Copilot CLI, OpenCode, etc.), or an API reference. The goal is a shared mental model that any engineer or architect can use to evaluate, design, or critique an agentic system without getting trapped in vendor-specific metaphor.
 
 ## [I · Foundations] Tokens {#tokens}
 
@@ -255,7 +255,7 @@ Today, MCP-exposed tools are the most common use case, but the protocol is broad
 
 What MCP does not change is the harness's responsibility: deciding what to expose, what to execute, what to inject, and what reaches the model.
 
-In practice, most harnesses fully surface MCP tools. Support for resources and prompts is uneven. Some expose them as attachable context and slash commands; others ignore them entirely. That variance is the point: the specification may define what can cross the boundary, but the harness decides what actually becomes available in the loop.
+In practice, most harnesses fully surface MCP tools. Support for resources and prompts is uneven. Some expose them as attachable context and slash commands; others ignore them entirely. That variance is important: the specification may define what can cross the boundary, but the harness decides what actually becomes available in the loop.
 
 > **Key Takeaway:** MCP standardizes the boundary between a harness and external capability servers. It does not create a new model-side capability; what arrives over MCP still becomes a tool, context, or harness-mediated request before it reaches the model.
 
