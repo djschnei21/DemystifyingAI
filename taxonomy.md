@@ -104,9 +104,15 @@ Note that this table flattens constructs onto comparable axes but does not captu
 >
 > `read_file`, `write_file`, `execute_shell`, `read_web`, `search_code`, and `mcp-atlassian-jira_get_issue`.
 
-- **Initialization:** A tool's name, description, and request schema are made available to the model before it can request that tool.
-- **Execution:** When the model emits a tool call matching the request schema, the harness intercepts the request, runs the named tool in its own runtime environment, and appends the return value as text to the context window before issuing the next model request. The model itself never executes code; it only requests execution.
-- **Visibility:** The implementation is opaque to the model. The model sees the name, description, request schema, and returned text; it never sees the underlying code.
+A tool enters the model's world as a name, description, and request schema. That schema is enough for the model to know when the tool might be useful and what arguments it must provide, but it is not the tool's implementation. The implementation remains harness-owned and opaque.
+
+When the model emits a tool call matching the request schema, the harness intercepts the request, runs the named operation in its own runtime environment, and appends the returned value as text to the context window before issuing the next model request. The model itself never executes code; it only requests execution and then reasons over the result the harness gives back.
+
+Mechanically, this creates three distinct boundaries:
+
+- **Initialization:** The model sees the tool's name, description, and schema before it can request the tool.
+- **Execution:** The harness, not the model, runs the operation after a valid tool call is emitted.
+- **Visibility:** The model sees the returned text, but not the underlying implementation.
 
 ```text
 # illustrative only; actual syntax varies by harness
@@ -133,14 +139,12 @@ tool {
 >
 > Code-review runbooks; release or deployment runbooks; incident-response playbooks; organization-specific style-guide skills; and Anthropic's shipped document-processing skills for PDF, DOCX, XLSX, and PPTX.
 
-Where a tool exposes an operation the harness can execute, a skill exposes instructions the model can follow, often by orchestrating one or more tool calls along the way.
+Where a tool exposes an operation the harness can execute, a skill exposes instructions the model can follow. Skill invocation resembles tool invocation at the model boundary: the model sees a name and description, then returns text the harness parses as a request to load that skill. The difference is the harness response. A tool request executes opaque code and returns a result; a skill request reads transparent procedural content into the context window.
 
-Skill invocation resembles tool invocation at the model boundary: the model sees a name and description, then returns text the harness parses as a request to load that skill. The difference is the harness response. A tool request executes opaque code and returns a result; a skill request reads transparent procedural content into the context window.
+Two details matter most:
 
-Two properties distinguish them from tools:
-
-- **Lazy loading:** Only the skill's name and a brief description sit in the system prompt. The full body (manifest, instructions, supporting files) is only injected into the context window when the model explicitly decides to read or invoke it.
-- **Transparent payload:** A skill is a directory containing a manifest and supporting files (scripts, templates, prose). Unlike a tool, which hides its code, a skill allows the model to open and read its bundled contents *before* invoking them (usually via a generic execution tool provided by the harness).
+- **Lazy loading:** Only the skill's name and brief description sit in the initial prompt. The full body enters the context window only when the model explicitly decides to read or invoke it.
+- **Transparent payload:** The body is not hidden implementation code. It is model-visible material: prose, scripts, templates, examples, and runbooks the model can inspect before using.
 
 Skills compose with tools rather than replacing them. A skill's instructions typically direct the model to invoke specific tools (local or MCP-delivered) in a particular sequence, with branching logic the model interprets at read time. The relationship is hierarchical: skills can orchestrate tools; tools cannot contain skills.
 
@@ -175,7 +179,9 @@ skill {
 >
 > Planner, Builder, Researcher, Code Reviewer, QA, and Security Reviewer are agent types configured with different prompts, tools, skills, and permissions.
 
-With tools and skills defined, an agent is easier to see mechanically: it is not a peer to tools or skills in the sense of doing the same kind of work. Rather, an agent composes tools, skills, instructions, and permissions into a particular operating configuration. That configuration is defined by four things:
+With tools and skills defined, an agent is easier to see mechanically: it is not a peer to tools or skills in the sense of doing the same kind of work. Rather, an agent composes tools, skills, instructions, and permissions into a particular operating configuration.
+
+That configuration usually includes:
 
 1. **System Prompt:** The instructions that define the agent's role, purpose, and behavior.
 2. **Toolset:** The operations the agent may request from the harness, along with any access limits around them.
