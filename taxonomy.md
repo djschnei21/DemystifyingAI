@@ -104,15 +104,9 @@ Note that this table flattens constructs onto comparable axes but does not captu
 >
 > `read_file`, `write_file`, `execute_shell`, `read_web`, `search_code`, and `mcp-atlassian-jira_get_issue`.
 
-A tool enters the model's world as a name, description, and request schema. That schema is enough for the model to know when the tool might be useful and what arguments it must provide, but it is not the tool's implementation. The implementation remains harness-owned and opaque.
+A tool enters the model's context window as a name, description, and request schema. The name, description, and request schema is enough for the model to know when the tool might be useful and what arguments it must provide, but it is not the tool's implementation. The implementation remains harness-owned and completely opaque to the model.
 
-When the model emits a tool call matching the request schema, the harness intercepts the request, runs the named operation in its own runtime environment, and appends the returned value as text to the context window before issuing the next model request. The model itself never executes code; it only requests execution and then reasons over the result the harness gives back.
-
-Mechanically, this creates three distinct boundaries:
-
-- **Initialization:** The model sees the tool's name, description, and schema before it can request the tool.
-- **Execution:** The harness, not the model, runs the operation after a valid tool call is emitted.
-- **Visibility:** The model sees the returned text, but not the underlying implementation.
+When the model emits a tool call matching a request schema, the harness intercepts the request, runs the named operation in its own runtime environment, and appends the returned value as text to the context window before issuing the next model request. The model itself never executes code; it only requests execution and then reasons over the result the harness gives back.
 
 ```text
 # illustrative only; actual syntax varies by harness
@@ -139,7 +133,7 @@ tool {
 >
 > Code-review runbooks; release or deployment runbooks; incident-response playbooks; organization-specific style-guide skills; and Anthropic's shipped document-processing skills for PDF, DOCX, XLSX, and PPTX.
 
-Where a tool exposes an operation the harness can execute, a skill exposes instructions the model can follow. Skill invocation resembles tool invocation at the model boundary: the model sees a name and description, then returns text the harness parses as a request to load that skill. The difference is the harness response. A tool request executes opaque code and returns a result; a skill request reads transparent procedural content into the context window.
+Where a tool exposes an operation the harness can execute, a skill exposes a dynamically loaded text bundle the model can request to be included in the context window. Skill invocation resembles tool invocation at the model boundary: the model sees a skill's name and description, then returns text the harness parses as a request to load that skill. The difference is the harness response. A tool request executes opaque code and returns a result; a skill request reads transparent content into the context window.
 
 Two details matter most:
 
@@ -177,18 +171,18 @@ skill {
 
 > **Examples:**
 >
-> Planner, Builder, Researcher, Code Reviewer, QA, and Security Reviewer are agent types configured with different prompts, tools, skills, and permissions.
+> Planner, Builder, and Researcher are agent types configured with different prompts, tools, skills, and permissions.
 
-With tools and skills defined, an agent is easier to see mechanically: it is not a peer to tools or skills in the sense of doing the same kind of work. Rather, an agent composes tools, skills, instructions, and permissions into a particular operating configuration.
+With tools and skills defined, an agent is easier to understand: it is not a peer to tools or skills in the sense of doing the same kind of work. Rather, an agent composes tools, skills, prose, and permissions into a particular operating configuration.
 
 That configuration usually includes:
 
 1. **System Prompt:** The instructions that define the agent's role, purpose, and behavior.
 2. **Toolset:** The operations the agent may request from the harness, along with any access limits around them.
-3. **Skill Set:** The procedural knowledge the agent may load into context when relevant.
+3. **Skill Set:** The conditionally loaded content the agent may load into context when relevant.
 4. **Permissions and Subagent Access:** The rules that determine what the agent may do directly and which separate loops, if any, it may ask the harness to start.
 
-Most harnesses ship with one or more **built-in agents**, which have predefined system prompts and toolsets exposed as *modes* (e.g., Planner, Coder, Researcher). Some harnesses also support **user-defined agents**, allowing operators to register their own system prompts and curate which tools, skills, MCP connections, and subagents are available within that agent's loop.
+Most harnesses ship with one or more **built-in agents**, which have predefined system prompts and toolsets exposed as *modes* (e.g., Planner, Builder, Researcher). Some harnesses also support **user-defined agents**, allowing operators to register their own system prompts and curate which tools, skills, MCP connections, and subagents are available within that agent's loop.
 
 Do not confuse an agent with files such as `AGENTS.md`, `CLAUDE.md`, or similar repository instruction files. Those files are not agents; they are context sources. If a harness loads them, their contents become instructions inside the context window for an agentic loop.
 
